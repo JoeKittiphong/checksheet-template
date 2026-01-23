@@ -2,13 +2,29 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build
-const formName = 'FAMB0003_V2';
+const formName = 'FAMB0002V2';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: 'copy-meta-json',
+      closeBundle() {
+        const srcPath = path.resolve(__dirname, `src/checksheet/${formName}/meta.json`);
+        const destPath = path.resolve(__dirname, `../server-checksheet/checksheet_form/${formName}/meta.json`);
+
+        if (fs.existsSync(srcPath)) {
+          fs.copyFileSync(srcPath, destPath);
+          console.log(`\n\x1b[32m✓ meta.json copied to ${formName}\x1b[0m`);
+        }
+      }
+    }
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

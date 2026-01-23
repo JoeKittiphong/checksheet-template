@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useForm, FormProvider } from "react-hook-form";
 import Cover from "./pages/Cover";
 import Page1 from "./pages/Page1";
@@ -47,11 +48,18 @@ function FAMB0004_V3() {
         }
     });
 
-    // Load data Effect
+    // Check authentication and load data
     useEffect(() => {
-        const loadData = async () => {
+        const checkAuthAndLoadData = async () => {
             setIsLoading(true);
             try {
+                // Check if user is logged in
+                const authRes = await axios.get(`${apiEndpoint}/auth/me`, { withCredentials: true });
+                if (!authRes.data.success) {
+                    window.location.href = '/'; // Redirect to login
+                    return;
+                }
+
                 const data = await loadForm({
                     apiEndpoint,
                     searchParams: window.location.search,
@@ -67,13 +75,14 @@ function FAMB0004_V3() {
                     }
                 }
             } catch (error) {
-                console.error("Error loading form data:", error);
+                console.error("Error checking auth or loading form data:", error);
+                window.location.href = '/'; // Redirect on error
             } finally {
                 setIsLoading(false);
             }
         };
 
-        loadData();
+        checkAuthAndLoadData();
     }, [methods]);
 
     const pages = [
@@ -127,6 +136,7 @@ function FAMB0004_V3() {
 
             if (result.success) {
                 alert(result.message);
+                window.location.href = '/';
             }
         } catch (error) {
             alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);

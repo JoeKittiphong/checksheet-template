@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useForm, FormProvider } from "react-hook-form";
 import Cover from "./pages/Cover";
 import Page1 from "./pages/Page1";
@@ -46,11 +47,18 @@ function FAMB0002V2() {
         }
     });
 
-    // ... (loadData effect remains)
+    // Check authentication and load data
     useEffect(() => {
-        const loadData = async () => {
+        const checkAuthAndLoadData = async () => {
             setIsLoading(true);
             try {
+                // Check if user is logged in
+                const authRes = await axios.get(`${apiEndpoint}/auth/me`, { withCredentials: true });
+                if (!authRes.data.success) {
+                    window.location.href = '/'; // Redirect to login
+                    return;
+                }
+
                 const data = await loadForm({
                     apiEndpoint,
                     searchParams: window.location.search,
@@ -66,13 +74,14 @@ function FAMB0002V2() {
                     }
                 }
             } catch (error) {
-                console.error("Error loading form data:", error);
+                console.error("Error checking auth or loading form data:", error);
+                window.location.href = '/'; // Redirect on error (likely unauthorized)
             } finally {
                 setIsLoading(false);
             }
         };
 
-        loadData();
+        checkAuthAndLoadData();
     }, [methods]);
 
     const pages = [
@@ -148,7 +157,10 @@ function FAMB0002V2() {
                     <div className="print:hidden">
                         <FloatingActionMenu onSave={async () => {
                             const res = await handleSave();
-                            if (res?.success) alert(res.message);
+                            if (res?.success) {
+                                alert(res.message);
+                                window.location.href = '/';
+                            }
                         }} isSaving={isSaving} />
                         <Pagination
                             currentPage={currentPage}
