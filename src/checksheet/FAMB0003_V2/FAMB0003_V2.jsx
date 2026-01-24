@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useForm, FormProvider } from "react-hook-form";
+import React from "react";
+import ChecksheetMaster from "@/components/ChecksheetMaster";
+import { meta, apiEndpoint } from "./FAMB0003_V2-setting";
+
+// Pages
 import Cover from "./pages/Cover";
 import Page1 from "./pages/Page1";
 import Page2 from "./pages/Page2";
@@ -26,65 +28,8 @@ import Page21 from "./pages/Page21";
 import Page22 from "./pages/Page22";
 import Page23 from "./pages/Page23";
 import Blankpage from "./pages/Blankpage";
-import ProfileBar from "@/components/UIcomponent/ProfileBar";
-import Pagination from "@/components/UIcomponent/Pagination";
-import { meta, apiEndpoint } from "./FAMB0003_V2-setting";
-import { saveForm, loadForm } from "@/utils/apiUtils";
-import { ChecksheetProvider } from "@/context/ChecksheetContext"; // Import Provider
 
 function FAMB0003_V2() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [formId, setFormId] = useState(null); // ID of the loaded record
-
-    // Initialize Global Form State
-    const methods = useForm({
-        mode: 'onBlur',
-        defaultValues: {
-            model: meta.model, // Pre-fill model from settings
-            machine_no: '', // Will be populated from CoverPage
-            // Other fields will be registered by child pages
-        }
-    });
-
-    // Check authentication and load data
-    useEffect(() => {
-        const checkAuthAndLoadData = async () => {
-            setIsLoading(true);
-            try {
-                // Check if user is logged in
-                const authRes = await axios.get(`${apiEndpoint}/auth/me`, { withCredentials: true });
-                if (!authRes.data.success) {
-                    window.location.href = '/'; // Redirect to login
-                    return;
-                }
-
-                const data = await loadForm({
-                    apiEndpoint,
-                    searchParams: window.location.search,
-                    meta
-                });
-
-                if (data) {
-                    if (data.checksheet_data) {
-                        methods.reset(data.checksheet_data);
-                    }
-                    if (data.id) {
-                        setFormId(data.id);
-                    }
-                }
-            } catch (error) {
-                console.error("Error checking auth or loading form data:", error);
-                window.location.href = '/'; // Redirect on error
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        checkAuthAndLoadData();
-    }, [methods]);
-
     const pages = [
         <Cover />,
         <Blankpage />,
@@ -123,93 +68,12 @@ function FAMB0003_V2() {
         "Page 21", "Page 22", "Page 23"
     ];
 
-    const handleSave = async () => {
-        setIsSaving(true);
-        try {
-            const formData = methods.getValues();
-            const result = await saveForm({
-                apiEndpoint,
-                formId,
-                meta,
-                formData
-            });
-
-            if (result.success) {
-                alert(result.message);
-                if (result.isNew) {
-                    // Optionally reload to get ID or just stay
-                    // window.location.reload(); or update id
-                }
-                return result;
-            }
-        } catch (error) {
-            alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
-            throw error;
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const handlePrint = () => {
-        window.print();
-    };
-
     return (
-        <FormProvider {...methods}>
-            <ChecksheetProvider handleSave={handleSave} isSaving={isSaving}>
-                <div className="flex flex-col h-screen">
-                    {/* Top Profile Bar */}
-                    <ProfileBar
-                        onSave={handleSave}
-                        onPrint={handlePrint}
-                        isSaving={isSaving}
-                    />
-
-                    {/* Screen-only elements - Pagination */}
-                    <div className="print:hidden my-2">
-                        {/* Remove FloatingActionMenu */}
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={pages.length}
-                            onPageChange={setCurrentPage}
-                            pageLabels={pageLabels}
-                            pageComponents={pages}
-                        />
-
-                        {/* Loading Indicator */}
-                        {isLoading && (
-                            <div className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg z-50 animate-pulse">
-                                <p className="font-bold">Loading...</p>
-                                <p>Fetching data from server</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Pages Container */}
-                    <div className="w-full flex flex-col items-center flex-1 overflow-auto bg-gray-100 print:bg-white print:overflow-visible">
-                        {/* Wrap pages in a constrained width container for screen view */}
-                        <div className="w-[210mm] bg-white shadow-lg print:shadow-none print:w-full">
-                            {pages.map((page, index) => {
-                                const pageNum = index + 1;
-                                const isCurrent = pageNum === currentPage;
-
-                                return (
-                                    <div
-                                        key={index}
-                                        className={`
-                                            ${isCurrent ? 'block' : 'hidden'} 
-                                            print:block print:w-full print:h-[297mm] print:break-after-page
-                                        `}
-                                    >
-                                        {page}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </ChecksheetProvider>
-        </FormProvider>
+        <ChecksheetMaster
+            config={{ meta, apiEndpoint }}
+            pages={pages}
+            pageLabels={pageLabels}
+        />
     );
 }
 
