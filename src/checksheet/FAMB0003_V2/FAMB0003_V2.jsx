@@ -26,10 +26,11 @@ import Page21 from "./pages/Page21";
 import Page22 from "./pages/Page22";
 import Page23 from "./pages/Page23";
 import Blankpage from "./pages/Blankpage";
-import FloatingActionMenu from "@/components/UIcomponent/FloatingActionMenu";
+import ProfileBar from "@/components/UIcomponent/ProfileBar";
 import Pagination from "@/components/UIcomponent/Pagination";
 import { meta, apiEndpoint } from "./FAMB0003_V2-setting";
 import { saveForm, loadForm } from "@/utils/apiUtils";
+import { ChecksheetProvider } from "@/context/ChecksheetContext"; // Import Provider
 
 function FAMB0003_V2() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -135,60 +136,79 @@ function FAMB0003_V2() {
 
             if (result.success) {
                 alert(result.message);
-                window.location.href = '/';
+                if (result.isNew) {
+                    // Optionally reload to get ID or just stay
+                    // window.location.reload(); or update id
+                }
+                return result;
             }
         } catch (error) {
             alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
+            throw error;
         } finally {
             setIsSaving(false);
         }
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     return (
         <FormProvider {...methods}>
-            <div>
-                {/* Screen-only elements */}
-                <div className="print:hidden">
-                    <FloatingActionMenu onSave={handleSave} isSaving={isSaving} />
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={pages.length}
-                        onPageChange={setCurrentPage}
-                        pageLabels={pageLabels}
-                        pageComponents={pages}
+            <ChecksheetProvider handleSave={handleSave} isSaving={isSaving}>
+                <div className="flex flex-col h-screen">
+                    {/* Top Profile Bar */}
+                    <ProfileBar
+                        onSave={handleSave}
+                        onPrint={handlePrint}
+                        isSaving={isSaving}
                     />
 
-                    {/* Loading Indicator */}
+                    {/* Screen-only elements - Pagination */}
+                    <div className="print:hidden my-2">
+                        {/* Remove FloatingActionMenu */}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={pages.length}
+                            onPageChange={setCurrentPage}
+                            pageLabels={pageLabels}
+                            pageComponents={pages}
+                        />
 
-                    {/* Loading Indicator */}
-                    {isLoading && (
-                        <div className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg z-50 animate-pulse">
-                            <p className="font-bold">Loading...</p>
-                            <p>Fetching data from server</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Pages Container */}
-                <div className="w-full flex flex-col items-center">
-                    {pages.map((page, index) => {
-                        const pageNum = index + 1;
-                        const isCurrent = pageNum === currentPage;
-
-                        return (
-                            <div
-                                key={index}
-                                className={`
-                                    ${isCurrent ? 'block' : 'hidden'} 
-                                    print:block print:w-full print:h-full
-                                `}
-                            >
-                                {page}
+                        {/* Loading Indicator */}
+                        {isLoading && (
+                            <div className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg z-50 animate-pulse">
+                                <p className="font-bold">Loading...</p>
+                                <p>Fetching data from server</p>
                             </div>
-                        );
-                    })}
+                        )}
+                    </div>
+
+                    {/* Pages Container */}
+                    <div className="w-full flex flex-col items-center flex-1 overflow-auto bg-gray-100 print:bg-white print:overflow-visible">
+                        {/* Wrap pages in a constrained width container for screen view */}
+                        <div className="w-[210mm] bg-white shadow-lg print:shadow-none print:w-full">
+                            {pages.map((page, index) => {
+                                const pageNum = index + 1;
+                                const isCurrent = pageNum === currentPage;
+
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`
+                                            ${isCurrent ? 'block' : 'hidden'} 
+                                            print:block print:w-full print:h-[297mm] print:break-after-page
+                                        `}
+                                    >
+                                        {page}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </ChecksheetProvider>
         </FormProvider>
     );
 }

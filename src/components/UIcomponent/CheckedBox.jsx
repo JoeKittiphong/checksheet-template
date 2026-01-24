@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from "../../context/AuthContext";
 import { useChecksheet } from "../../context/ChecksheetContext";
 import SignatureModal from "./SignatureModal";
+import DateInput from "./DateInput";
 
 /**
  * CheckedBox Component
@@ -59,12 +60,12 @@ function CheckedBox({
             const updates = {};
             updates.name = user.username;
 
-            // Create a date in local timezone YYYY-MM-DD
+            // Create a date in local timezone DD/MM/YYYY
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
-            const today = `${year}-${month}-${day}`;
+            const today = `${day}/${month}/${year}`;
 
             if (!date) {
                 updates.date = today;
@@ -117,10 +118,9 @@ function CheckedBox({
 
                     {/* Date - 30% */}
                     <div className="h-[30%] relative">
-                        <input
-                            type="date"
+                        <DateInput
                             value={date}
-                            onChange={(e) => dispatchUpdate({ date: e.target.value })}
+                            onChange={(newValue) => dispatchUpdate({ date: newValue })}
                             className="w-full h-full px-2 text-center text-xs bg-transparent outline-none cursor-pointer"
                         />
                     </div>

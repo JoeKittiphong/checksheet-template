@@ -4,11 +4,14 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import fs from 'fs'
 
-// แก้ตรงนี้ก่อน build
-const formName = 'FAMB0002V2';
+// แก้ตรงนี้ก่อน build หรือรับจาก env
+const formName = process.env.FORM_NAME || 'FAMB0004_V3';
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_FORM_NAME': JSON.stringify(formName),
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -16,11 +19,18 @@ export default defineConfig({
       name: 'copy-meta-json',
       closeBundle() {
         const srcPath = path.resolve(__dirname, `src/checksheet/${formName}/meta.json`);
-        const destPath = path.resolve(__dirname, `../server-checksheet/checksheet_form/${formName}/meta.json`);
+        // Ensure parent directory exists
+        const destDir = path.resolve(__dirname, `../server-checksheet/checksheet_form/${formName}`);
+        const destPath = path.join(destDir, 'meta.json');
 
         if (fs.existsSync(srcPath)) {
-          fs.copyFileSync(srcPath, destPath);
-          console.log(`\n\x1b[32m✓ meta.json copied to ${formName}\x1b[0m`);
+          // fs.mkdirSync(destDir, { recursive: true }); // Vite build likely creates this, but good safety
+          try {
+            fs.copyFileSync(srcPath, destPath);
+            console.log(`\n\x1b[32m✓ meta.json copied to ${formName}\x1b[0m`);
+          } catch (e) {
+            console.error(`Failed to copy meta.json: ${e.message}`);
+          }
         }
       }
     }

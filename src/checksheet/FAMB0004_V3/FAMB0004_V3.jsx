@@ -26,11 +26,11 @@ import Page21 from "./pages/Page21";
 import Page22 from "./pages/Page22";
 import Page23 from "./pages/Page23";
 import Blankpage from "./pages/Blankpage";
-import FloatingActionMenu from "@/components/UIcomponent/FloatingActionMenu";
+import ProfileBar from "@/components/UIcomponent/ProfileBar";
 import Pagination from "@/components/UIcomponent/Pagination";
 import { meta, apiEndpoint } from "./FAMB0004_V3-setting";
 import { saveForm, loadForm } from "@/utils/apiUtils";
-import { ChecksheetProvider } from "@/context/ChecksheetContext";
+import { ChecksheetProvider } from "@/context/ChecksheetContext"; // Import Provider
 
 function FAMB0004_V3() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +38,6 @@ function FAMB0004_V3() {
     const [isLoading, setIsLoading] = useState(true);
     const [formId, setFormId] = useState(null); // ID of the loaded record
 
-    // Initialize Global Form State
     const methods = useForm({
         mode: 'onBlur',
         defaultValues: {
@@ -48,7 +47,6 @@ function FAMB0004_V3() {
         }
     });
 
-    // Check authentication and load data
     useEffect(() => {
         const checkAuthAndLoadData = async () => {
             setIsLoading(true);
@@ -136,22 +134,38 @@ function FAMB0004_V3() {
 
             if (result.success) {
                 alert(result.message);
-                window.location.href = '/';
+                if (result.isNew) {
+                    // Optionally reload to get ID or just stay
+                    // window.location.reload(); or update id
+                }
+                return result;
             }
         } catch (error) {
             alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
+            throw error;
         } finally {
             setIsSaving(false);
         }
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     return (
         <FormProvider {...methods}>
             <ChecksheetProvider handleSave={handleSave} isSaving={isSaving}>
-                <div>
-                    {/* Screen-only elements */}
-                    <div className="print:hidden">
-                        <FloatingActionMenu onSave={handleSave} isSaving={isSaving} />
+                <div className="flex flex-col h-screen">
+                    {/* Top Profile Bar */}
+                    <ProfileBar
+                        onSave={handleSave}
+                        onPrint={handlePrint}
+                        isSaving={isSaving}
+                    />
+
+                    {/* Screen-only elements - Pagination */}
+                    <div className="print:hidden my-2">
+                        {/* Remove FloatingActionMenu */}
                         <Pagination
                             currentPage={currentPage}
                             totalPages={pages.length}
@@ -170,23 +184,26 @@ function FAMB0004_V3() {
                     </div>
 
                     {/* Pages Container */}
-                    <div className="w-full flex flex-col items-center">
-                        {pages.map((page, index) => {
-                            const pageNum = index + 1;
-                            const isCurrent = pageNum === currentPage;
+                    <div className="w-full flex flex-col items-center flex-1 overflow-auto bg-gray-100 print:bg-white print:overflow-visible">
+                        {/* Wrap pages in a constrained width container for screen view */}
+                        <div className="w-[210mm] bg-white shadow-lg print:shadow-none print:w-full">
+                            {pages.map((page, index) => {
+                                const pageNum = index + 1;
+                                const isCurrent = pageNum === currentPage;
 
-                            return (
-                                <div
-                                    key={index}
-                                    className={`
-                                        ${isCurrent ? 'block' : 'hidden'} 
-                                        print:block print:w-full print:h-full
-                                    `}
-                                >
-                                    {page}
-                                </div>
-                            );
-                        })}
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`
+                                            ${isCurrent ? 'block' : 'hidden'} 
+                                            print:block print:w-full print:h-[297mm] print:break-after-page
+                                        `}
+                                    >
+                                        {page}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </ChecksheetProvider>
