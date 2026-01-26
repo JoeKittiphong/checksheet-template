@@ -1,19 +1,18 @@
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0002v2-setting";
-import TableYABDIFF from "@/components/PageComponent/TableYABDIFF";
-import Checknumber from "@/components/UIcomponent/Checknumber";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
-import EDMTablePitchingY from "@/components/PageComponent/EDMTablePitchingY";
-import EDMTableRollingY from "@/components/PageComponent/EDMTableRollingY";
-import { useFormContext, Controller } from "react-hook-form";
+
+// Form Wrappers
+import FormTableYABDIFF from "@/components/FormComponents/FormTableYABDIFF";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import FormEDMTablePitchingY from "@/components/FormComponents/FormEDMTablePitchingY";
+import FormEDMTableRollingY from "@/components/FormComponents/FormEDMTableRollingY";
 
 // Images
 import image1 from "@/assets/FAMB0002V2/image-1.png";
 import image4 from "@/assets/FAMB0002V2/image-4.png";
 
 function Page2() {
-    const { control } = useFormContext();
-
     // Standards สำหรับ TableYABDIFF
     const tableYABStandards = [
         { min: 0, max: 0, arrow: '+' },
@@ -54,53 +53,28 @@ function Page2() {
                         <img src={image1} alt="page1" className="w-60 h-full m-2" />
                         <div>
                             <p className="mb-2">(เว้นระยะห่างช่องละ 105 mm.)</p>
-                            <Controller
+                            <FormTableYABDIFF
                                 name="page2.tableYABData"
-                                control={control}
+                                rows={9}
+                                standards={tableYABStandards}
+                                showStd={true}
+                                validateStd={true}
                                 defaultValue={[
                                     { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
                                     { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
                                     { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }
                                 ]}
-                                render={({ field }) => (
-                                    <TableYABDIFF
-                                        rows={9}
-                                        data={field.value}
-                                        onChange={field.onChange}
-                                        standards={tableYABStandards}
-                                        showStd={true}
-                                        validateStd={true}
-                                    />
-                                )}
                             />
                         </div>
                         <div className="h-70 flex flex-col justify-center ml-2 p-2">
-                            <Controller
+                            <FormChecknumber
                                 name="page2.levelingGaugeNo"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <Checknumber
-                                        label="Leveling guage No."
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                    />
-                                )}
+                                label="Leveling guage No."
                             />
                             <div className="h-5"></div>
-                            <Controller
+                            <FormCheckedBox
                                 name="page2.checkedInfo"
-                                control={control}
-                                defaultValue={{ name: '', date: '' }}
-                                render={({ field }) => (
-                                    <CheckedBox
-                                        name={field.value?.name ?? ''}
-                                        date={field.value?.date ?? ''}
-                                        onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                        onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                        label="CHECKED BY / DATE"
-                                    />
-                                )}
+                                label="CHECKED BY / DATE"
                             />
                         </div>
                     </div>
@@ -112,80 +86,42 @@ function Page2() {
                         <div>
                             <div className="flex">
                                 <div className="m-5">
-                                    <Controller
+                                    <FormEDMTablePitchingY
                                         name="page2.pitchingData"
-                                        control={control}
+                                        rows={5}
+                                        standards={pitchingStandards}
+                                        showStd={true}
+                                        validateStd={true}
                                         defaultValue={['', '', '', '', '']}
-                                        render={({ field }) => (
-                                            <EDMTablePitchingY
-                                                rows={5}
-                                                data={field.value}
-                                                onChange={field.onChange}
-                                                standards={pitchingStandards}
-                                                showStd={true}
-                                                validateStd={true}
-                                            />
-                                        )}
                                     />
                                     <p className="text-sm">(เว้นระยะห่างช่องละ 205 mm.)</p>
                                 </div>
                                 <div className="m-5">
-                                    <Controller
+                                    <FormEDMTableRollingY
                                         name="page2.rollingData"
-                                        control={control}
+                                        rows={5}
+                                        standards={rollingStandards}
+                                        showStd={true}
+                                        validateStd={true}
                                         defaultValue={['', '', '', '', '']}
-                                        render={({ field }) => (
-                                            <EDMTableRollingY
-                                                rows={5}
-                                                data={field.value}
-                                                onChange={field.onChange}
-                                                standards={rollingStandards}
-                                                showStd={true}
-                                                validateStd={true}
-                                            />
-                                        )}
                                     />
                                     <p className="text-sm">(เว้นระยะห่างช่องละ 205 mm.)</p>
                                 </div>
                             </div>
                             <div className="flex">
                                 <div className="mr-10">
-                                    <Controller
+                                    <FormChecknumber
                                         name="page2.levelingGaugeNo"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Checknumber
-                                                label="Leveling guage No."
-                                                value={field.value ?? ''}
-                                                onChange={field.onChange}
-                                            />
-                                        )}
+                                        label="Leveling guage No."
                                     />
-                                    <Controller
+                                    <FormChecknumber
                                         name="page2.levelingGaugeNo2"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({ field }) => (
-                                            <Checknumber
-                                                label="Leveling guage No."
-                                                value={field.value ?? ''}
-                                                onChange={field.onChange}
-                                            />
-                                        )}
+                                        label="Leveling guage No."
                                     />
                                 </div>
-                                <Controller
+                                <FormCheckedBox
                                     name="page2.checkedInfo"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <CheckedBox
-                                            name={field.value?.name ?? ''}
-                                            date={field.value?.date ?? ''}
-                                            onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                            onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                            label="CHECKED BY / DATE"
-                                        />
-                                    )}
+                                    label="CHECKED BY / DATE"
                                 />
                             </div>
                         </div>
@@ -197,4 +133,3 @@ function Page2() {
 }
 
 export default Page2;
-

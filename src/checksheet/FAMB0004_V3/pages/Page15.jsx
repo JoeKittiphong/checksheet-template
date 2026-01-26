@@ -1,8 +1,8 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import InputCheckSTD from "@/components/UIcomponent/InputCheckSTD";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
-import { useFormContext, Controller } from "react-hook-form";
+import FormInputCheckSTD from "@/components/FormComponents/FormInputCheckSTD";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import { useFormContext } from "react-hook-form";
 
 // Images
 import image22 from "@/assets/FAMB0004_V3/image-22.png";
@@ -21,51 +21,22 @@ function Page15() {
 
                     <div className="flex gap-10 items-center">
                         <div className="space-y-4">
-                            <Controller
+                            <FormInputCheckSTD
                                 name="page15.parallelHead1"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <InputCheckSTD
-                                        label="X = "
-                                        unit="μm"
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                        maxStd={parallelHeadSTD}
-                                        minStd={0}
-                                    />
-                                )}
+                                label="X = "
+                                unit="μm"
+                                maxStd={parallelHeadSTD}
+                                minStd={0}
                             />
-                            <Controller
+                            <FormInputCheckSTD
                                 name="page15.parallelHead2"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <InputCheckSTD
-                                        label="Y = "
-                                        unit="μm"
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                        maxStd={parallelHeadSTD}
-                                        minStd={0}
-                                    />
-                                )}
+                                label="Y = "
+                                unit="μm"
+                                maxStd={parallelHeadSTD}
+                                minStd={0}
                             />
                         </div>
-
-                        <Controller
-                            name="page15.checkedInfo22"
-                            control={control}
-                            defaultValue={{ name: '', date: '' }}
-                            render={({ field }) => (
-                                <CheckedBox
-                                    name={field.value?.name ?? ''}
-                                    date={field.value?.date ?? ''}
-                                    onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                    onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                />
-                            )}
-                        />
+                        <FormCheckedBox name="page15.checkedInfo22" />
                     </div>
                 </div>
             </div>
@@ -74,4 +45,3 @@ function Page15() {
 }
 
 export default Page15;
-

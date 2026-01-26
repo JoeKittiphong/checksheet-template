@@ -1,3 +1,4 @@
+import React from 'react';
 /**
  * StartFinishTime Component
  * Input สำหรับ Start/Finish time และคำนวณ Total Hours
@@ -10,14 +11,14 @@
  * @param {number} props.minHours - ค่า standard ต่ำสุด (default: 0)
  * @param {boolean} props.validateStd - เปิด/ปิดการ validate (default: false)
  */
-function StartFinishTime({
+const StartFinishTime = React.forwardRef(({
     startTime = '',
     finishTime = '',
     onStartChange = () => { },
     onFinishChange = () => { },
     minHours = 0,
     validateStd = false
-}) {
+}, ref) => {
     // คำนวณ Total Hours
     const calculateTotalHours = () => {
         if (!startTime || !finishTime) return '';
@@ -67,6 +68,7 @@ function StartFinishTime({
             <div className="flex items-center">
                 <span className="mr-2">Start :</span>
                 <input
+                    ref={ref}
                     type="time"
                     value={startTime}
                     onChange={(e) => onStartChange(e.target.value)}
@@ -95,6 +97,6 @@ function StartFinishTime({
             </div>
         </div>
     );
-}
+});
 
 export default StartFinishTime;

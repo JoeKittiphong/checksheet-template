@@ -6,8 +6,9 @@ const path = require('path');
 const forms = [
     "FAMB0002V2",
     "FAMB0003_V2",
-    "FAMB0004_V3"
-    // Add new forms here
+    "FAMB0004_V3",
+    "FAWI0002_V3"
+
 ];
 
 console.log("🚀 Starting Bulk Build Process...\n");

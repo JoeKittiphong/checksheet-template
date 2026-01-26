@@ -1,8 +1,8 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import EDMCoilTubeCheck from "@/components/PageComponent/EDMCoilTubeCheck";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
-import { useFormContext, Controller } from "react-hook-form";
+import FormEDMCoilTubeCheck from "@/components/FormComponents/FormEDMCoilTubeCheck";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import { useFormContext } from "react-hook-form";
 
 // Images
 import image12_1 from "@/assets/FAMB0004_V3/image-12-1.png";
@@ -23,35 +23,16 @@ function Page7() {
                             <img src={image12_1} alt="page7" className="w-60" />
                         </div>
                         <div className="mr-5">
-                            <Controller
+                            <FormEDMCoilTubeCheck
                                 name="page7.coilTubeData121"
-                                control={control}
                                 defaultValue={{
                                     x: { in: false, out: false },
                                     ykc: { in: false, out: false },
                                     ykb: { in: false, out: false }
                                 }}
-                                render={({ field }) => (
-                                    <EDMCoilTubeCheck
-                                        data={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
                             />
                         </div>
-                        <Controller
-                            name="page7.checkedInfo121"
-                            control={control}
-                            defaultValue={{ name: '', date: '' }}
-                            render={({ field }) => (
-                                <CheckedBox
-                                    name={field.value?.name ?? ''}
-                                    date={field.value?.date ?? ''}
-                                    onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                    onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                />
-                            )}
-                        />
+                        <FormCheckedBox name="page7.checkedInfo121" />
                     </div>
                 </div>
                 <div>
@@ -61,35 +42,16 @@ function Page7() {
                             <img src={image12_2} alt="page7" className="w-60" />
                         </div>
                         <div className="mr-5">
-                            <Controller
+                            <FormEDMCoilTubeCheck
                                 name="page7.coilTubeData122"
-                                control={control}
                                 defaultValue={{
                                     x: { in: false, out: false },
                                     ykc: { in: false, out: false },
                                     ykb: { in: false, out: false }
                                 }}
-                                render={({ field }) => (
-                                    <EDMCoilTubeCheck
-                                        data={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
                             />
                         </div>
-                        <Controller
-                            name="page7.checkedInfo122"
-                            control={control}
-                            defaultValue={{ name: '', date: '' }}
-                            render={({ field }) => (
-                                <CheckedBox
-                                    name={field.value?.name ?? ''}
-                                    date={field.value?.date ?? ''}
-                                    onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                    onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                />
-                            )}
-                        />
+                        <FormCheckedBox name="page7.checkedInfo122" />
                     </div>
                 </div>
             </div>
@@ -98,4 +60,3 @@ function Page7() {
 }
 
 export default Page7;
-

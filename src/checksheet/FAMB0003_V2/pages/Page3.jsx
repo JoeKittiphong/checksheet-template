@@ -1,8 +1,8 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0003_V2-setting";
-import EDMparallelY from "@/components/PageComponent/EDMparallelY";
-import Checknumber from "@/components/UIcomponent/Checknumber";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
+import FormEDMparallelY from "@/components/FormComponents/FormEDMparallelY";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 import { useFormContext, Controller } from "react-hook-form";
 
 // Images
@@ -37,67 +37,32 @@ function Page3() {
                     <img src={image5} alt="page3" className="w-60 h-full m-2" />
                     <div className="mr-10">
                         <p>(เว้นระยะห่างช่องละ 105 mm.)</p>
-                        <Controller
+                        <FormEDMparallelY
                             name="page3.tableYABData"
-                            control={control}
+                            rows={9}
+                            standards={tableYABStandards}
+                            showStd={false}
+                            validateStd={true}
                             defaultValue={[
                                 { a: '0', b: '0' }, { a: '', b: '' }, { a: '', b: '' },
                                 { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
                                 { a: '', b: '' }, { a: '', b: '' }, { a: '0', b: '' }
                             ]}
-                            render={({ field }) => (
-                                <EDMparallelY
-                                    rows={9}
-                                    data={field.value}
-                                    onChange={field.onChange}
-                                    standards={tableYABStandards}
-                                    showStd={false}
-                                    validateStd={true}
-                                />
-                            )}
                         />
                         <div className="h-5 mb-5">
                             <p>ค่าความตรงและขนานไม่เกิน 3 µm</p>
                         </div>
-                        <Controller
+                        <FormChecknumber
                             name="page3.dialGaugeNo"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Checknumber
-                                    label="Dial gauge No."
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
-                            )}
+                            label="Dial gauge No."
                         />
-                        <Controller
+                        <FormChecknumber
                             name="page3.parallelBarNo"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Checknumber
-                                    label="Parallel bar No."
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
-                            )}
+                            label="Parallel bar No."
                         />
                     </div>
                     <div className="h-80 flex flex-col justify-end">
-                        <Controller
-                            name="page3.checkedInfo"
-                            control={control}
-                            defaultValue={{ name: '', date: '' }}
-                            render={({ field }) => (
-                                <CheckedBox
-                                    name={field.value?.name ?? ''}
-                                    date={field.value?.date ?? ''}
-                                    onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                    onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                />
-                            )}
-                        />
+                        <FormCheckedBox name="page3.checkedInfo" />
                     </div>
                 </div>
                 <div className="mt-5">
@@ -156,4 +121,3 @@ function Page3() {
 }
 
 export default Page3;
-

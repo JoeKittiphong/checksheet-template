@@ -1,7 +1,7 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0003_V2-setting";
-import { useFormContext, Controller } from "react-hook-form";
-import EDMCoilMagnetCheck from "@/components/PageComponent/EDMCoilMagnetCheck";
+import FormEDMCoilMagnetCheck from "@/components/FormComponents/FormEDMCoilMagnetCheck";
+import { useFormContext } from "react-hook-form";
 
 function Page22() {
     const { control } = useFormContext();
@@ -29,47 +29,23 @@ function Page22() {
         <A4Paper content={content} currentPage={22}>
             <div className="flex flex-col gap-2 p-1">
                 <p className="text-sm font-bold uppercase mb-2">28. SPECIFICATION CHECK LIST </p>
-
-                <Controller
+                <FormEDMCoilMagnetCheck
                     name="page22.magnetData"
-                    control={control}
+                    title="MAGNET PLATE SPEC"
+                    config={magnetConfig}
                     defaultValue={{}}
-                    render={({ field }) => (
-                        <EDMCoilMagnetCheck
-                            title="MAGNET PLATE SPEC"
-                            config={magnetConfig}
-                            data={field.value}
-                            onChange={field.onChange}
-                        />
-                    )}
                 />
-
-                <Controller
+                <FormEDMCoilMagnetCheck
                     name="page22.coilData"
-                    control={control}
+                    title="LINEAR COIL SPEC"
+                    config={coilConfig}
                     defaultValue={{}}
-                    render={({ field }) => (
-                        <EDMCoilMagnetCheck
-                            title="LINEAR COIL SPEC"
-                            config={coilConfig}
-                            data={field.value}
-                            onChange={field.onChange}
-                        />
-                    )}
                 />
-
-                <Controller
+                <FormEDMCoilMagnetCheck
                     name="page22.scaleData"
-                    control={control}
+                    title="LINEAR SCALE SPEC"
+                    config={scaleConfig}
                     defaultValue={{}}
-                    render={({ field }) => (
-                        <EDMCoilMagnetCheck
-                            title="LINEAR SCALE SPEC"
-                            config={scaleConfig}
-                            data={field.value}
-                            onChange={field.onChange}
-                        />
-                    )}
                 />
             </div>
         </A4Paper>
@@ -77,4 +53,3 @@ function Page22() {
 }
 
 export default Page22;
-

@@ -6,7 +6,7 @@ import React, { useRef } from 'react';
  * - Switches to native date picker (YYYY-MM-DD) on focus/click.
  * - Converts selected date back to DD/MM/YYYY on change.
  */
-function DateInput({
+const DateInput = React.forwardRef(({
     value = '',
     onChange,
     className = '',
@@ -14,9 +14,7 @@ function DateInput({
     readOnly = false,
     disabled = false,
     style = {}
-}) {
-    const inputRef = useRef(null);
-
+}, ref) => {
     // Helpers
     const toISO = (dateStr) => {
         if (!dateStr) return '';
@@ -71,7 +69,7 @@ function DateInput({
 
     return (
         <input
-            ref={inputRef}
+            ref={ref}
             type="text"
             className={className}
             style={style}
@@ -85,6 +83,6 @@ function DateInput({
             onClick={handleFocus} // Ensure click also triggers
         />
     );
-}
+});
 
 export default DateInput;

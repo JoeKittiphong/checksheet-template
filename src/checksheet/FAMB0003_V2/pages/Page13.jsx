@@ -1,9 +1,9 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0003_V2-setting";
-import EDMTableStraightness from "@/components/PageComponent/EDMTableStraightness";
-import { useFormContext, Controller } from "react-hook-form";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
-import Checknumber from "@/components/UIcomponent/Checknumber";
+import FormEDMTableStraightness from "@/components/FormComponents/FormEDMTableStraightness";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import { useFormContext } from "react-hook-form";
 
 function Page13() {
     const { control } = useFormContext();
@@ -13,78 +13,35 @@ function Page13() {
             <div>
                 <p className="text-sm font-bold">20. STRAIGHTNESS  ( TOP )</p>
                 <div className="flex gap-5 ml-15 mt-2">
-                    <Controller
+                    <FormEDMTableStraightness
                         name="page13.straightnessDataLeft"
-                        control={control}
+                        title="Straight of X Axis"
+                        rowCount={31}
+                        strokeStep={20}
+                        standard={3}
                         defaultValue={{}}
-                        render={({ field }) => (
-                            <EDMTableStraightness
-                                title="Straight of X Axis"
-                                rowCount={31}
-                                strokeStep={20}
-                                data={field.value}
-                                onChange={field.onChange}
-                                standard={3}
-                            />
-                        )}
                     />
-
-                    <Controller
+                    <FormEDMTableStraightness
                         name="page13.straightnessDataRight"
-                        control={control}
+                        title="Straight of Y Axis"
+                        rowCount={31}
+                        strokeStep={20}
+                        standard={3}
                         defaultValue={{}}
-                        render={({ field }) => (
-                            <EDMTableStraightness
-                                title="Straight of Y Axis"
-                                rowCount={31}
-                                strokeStep={20}
-                                data={field.value}
-                                onChange={field.onChange}
-                                standard={3}
-                            />
-                        )}
                     />
                 </div>
                 <div className="flex justify-between mt-5 ml-50 mr-30">
                     <div className="space-y-2">
-                        <Controller
+                        <FormChecknumber
                             name="page13.dialGaugeNo"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Checknumber
-                                    label="Dial gauge No."
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
-                            )}
+                            label="Dial gauge No."
                         />
-                        <Controller
+                        <FormChecknumber
                             name="page13.parallelBarNo"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Checknumber
-                                    label="Parallel bar No."
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
-                            )}
+                            label="Parallel bar No."
                         />
                     </div>
-                    <Controller
-                        name="page13.checkedInfo20"
-                        control={control}
-                        defaultValue={{ name: '', date: '' }}
-                        render={({ field }) => (
-                            <CheckedBox
-                                name={field.value?.name ?? ''}
-                                date={field.value?.date ?? ''}
-                                onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                            />
-                        )}
-                    />
+                    <FormCheckedBox name="page13.checkedInfo20" />
                 </div>
             </div>
         </A4Paper>
@@ -92,4 +49,3 @@ function Page13() {
 }
 
 export default Page13;
-

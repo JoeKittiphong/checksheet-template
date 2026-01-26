@@ -1,8 +1,8 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import EDMBodyCheckTable from "@/components/PageComponent/EDMBodyCheckTable";
-import { useFormContext, Controller } from "react-hook-form";
-import Checknumber from "@/components/UIcomponent/Checknumber";
+import FormEDMBodyCheckTable from "@/components/FormComponents/FormEDMBodyCheckTable";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import { useFormContext } from "react-hook-form";
 
 // Images
 import image27_2 from "@/assets/FAMB0004_V3/image-27-2.png";
@@ -62,31 +62,16 @@ function Page21() {
                 <img src={image27_2} alt="page21" className="w-150" />
             </div>
             <div className="flex flex-col gap-4">
-                <Controller
+                <FormEDMBodyCheckTable
                     name="page21.bodyRows"
-                    control={control}
                     defaultValue={defaultBodyRows}
-                    render={({ field }) => (
-                        <EDMBodyCheckTable
-                            rows={field.value}
-                            onChange={field.onChange}
-                        />
-                    )}
                 />
             </div>
             <div className="flex justify-between mt-5">
                 <p className="text-sm">** DOBLE CHECK BY LEADER UP</p>
-                <Controller
+                <FormChecknumber
                     name="page21.torqueWrenchNo"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                        <Checknumber
-                            label="TORQUE NO."
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                        />
-                    )}
+                    label="TORQUE NO."
                 />
             </div>
         </A4Paper>
@@ -94,4 +79,3 @@ function Page21() {
 }
 
 export default Page21;
-

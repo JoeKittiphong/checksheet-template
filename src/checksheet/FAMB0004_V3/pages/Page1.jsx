@@ -1,10 +1,10 @@
-﻿import { useFormContext, Controller } from "react-hook-form";
+﻿import { useFormContext } from "react-hook-form";
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import LevelTableYAB from "@/components/PageComponent/LevelTableYAB";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
-import Checknumber from "@/components/UIcomponent/Checknumber";
-import TableYABDIFF from "@/components/PageComponent/TableYABDIFF";
+import FormLevelTableYAB from "@/components/FormComponents/FormLevelTableYAB";
+import FormTableYABDIFF from "@/components/FormComponents/FormTableYABDIFF";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 
 // Images
 import image1 from "@/assets/FAMB0004_V3/image-1.png";
@@ -35,50 +35,26 @@ function Page1() {
                         <img src={image1} alt="page1" className="w-70 h-full m-2" />
                         <div>
                             <p className="text-sm text-center mb-2">(เว้นระยะห่างช่องละ 105 mm.)</p>
-                            <Controller
+                            <FormLevelTableYAB
                                 name="page1.levelYData"
-                                control={control}
+                                rows={9}
+                                labelA="A=Kb"
+                                labelB="B"
                                 defaultValue={[
                                     { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
                                     { a: '0', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }
                                 ]}
-                                render={({ field }) => (
-                                    <LevelTableYAB
-                                        rows={9}
-                                        data={field.value}
-                                        onChange={field.onChange}
-                                        labelA="A=Kb"
-                                        labelB="B"
-                                    />
-                                )}
                             />
                         </div>
                         <div className="flex flex-col justify-end ml-4">
-                            <Controller
+                            <FormCheckedBox
                                 name="page1.checkedInfo"
-                                control={control}
-                                defaultValue={{ name: '', date: '' }}
-                                render={({ field }) => (
-                                    <CheckedBox
-                                        name={field.value.name}
-                                        date={field.value.date}
-                                        onChange={field.onChange}
-                                        label="CHECKED BY / DATE"
-                                    />
-                                )}
+                                label="CHECKED BY / DATE"
                             />
                             <div className="h-10"></div>
-                            <Controller
+                            <FormChecknumber
                                 name="page1.levelingGaugeNo"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <Checknumber
-                                        label="Leveling guage No."
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
+                                label="Leveling guage No."
                             />
                         </div>
                     </div>
@@ -89,64 +65,32 @@ function Page1() {
                         <img src={image1_2} alt="page1" className="w-70 h-full m-2" />
                         <div>
                             <p className="mb-2">(เว้นระยะห่างช่องละ 105 mm.)</p>
-                            <Controller
+                            <FormTableYABDIFF
                                 name="page1.tableYABData"
-                                control={control}
+                                rows={9}
+                                standards={tableYABStandards}
+                                showStd={false}
+                                validateStd={false}
                                 defaultValue={[
                                     { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
                                     { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }
                                 ]}
-                                render={({ field }) => (
-                                    <TableYABDIFF
-                                        rows={9}
-                                        data={field.value}
-                                        onChange={field.onChange}
-                                        standards={tableYABStandards}
-                                        showStd={false}
-                                        validateStd={false}
-                                    />
-                                )}
                             />
-                            <Controller
+                            <FormChecknumber
                                 name="page1.dialGaugeNo"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <Checknumber
-                                        className="mb-4"
-                                        label="Dial guage No."
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
+                                label="Dial guage No."
+                                className="mb-4"
                             />
-                            <Controller
+                            <FormChecknumber
                                 name="page1.parallelBarNo"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <Checknumber
-                                        className="mb-2"
-                                        label="parallel bar No."
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
+                                label="parallel bar No."
+                                className="mb-2"
                             />
                         </div>
                         <div className="flex flex-col justify-end m-5">
-                            <Controller
-                                name="page1.checkedInfo2" // Use distinct name if intended to be separate, or same if shared
-                                control={control}
-                                defaultValue={{ name: '', date: '' }}
-                                render={({ field }) => (
-                                    <CheckedBox
-                                        name={field.value.name}
-                                        date={field.value.date}
-                                        onChange={field.onChange}
-                                        label="CHECKED BY / DATE"
-                                    />
-                                )}
+                            <FormCheckedBox
+                                name="page1.checkedInfo2"
+                                label="CHECKED BY / DATE"
                             />
                         </div>
                     </div>
@@ -157,5 +101,3 @@ function Page1() {
 }
 
 export default Page1;
-
-

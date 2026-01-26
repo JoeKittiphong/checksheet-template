@@ -17,7 +17,7 @@ import { validateValue } from '../../utils/validationUtils';
 * @param {boolean} props.validateStd - เปิด/ปิดการ validate (default: true)
 * @param {string} props.inputWidth - ความกว้างของ input (default: 'w-24')
 */
-function InputCheckSTD({
+const InputCheckSTD = React.forwardRef(({
     label = '',
     unit = 'mm',
     value = '',
@@ -25,8 +25,10 @@ function InputCheckSTD({
     minStd = 0,
     maxStd = 0,
     validateStd = true,
-    inputWidth = 'w-24'
-}) {
+    inputWidth = 'w-24',
+    showCheckbox = false,
+    checkboxProps = {}
+}, ref) => {
     // Validate value against standard
     const isValid = () => {
         return validateValue(value, {
@@ -39,18 +41,41 @@ function InputCheckSTD({
 
     const handleChange = (e) => {
         const inputValue = e.target.value;
-        // Allow only numbers and decimal point
-        const cleanValue = inputValue.replace(/[^0-9.]/g, '');
+        // Allow numbers, decimal point, and minus sign
+        let cleanValue = inputValue.replace(/[^0-9.-]/g, '');
+
+        // Ensure only one minus sign and it must be at the beginning
+        if (cleanValue.includes('-')) {
+            const isNegative = cleanValue.startsWith('-');
+            cleanValue = (isNegative ? '-' : '') + cleanValue.replace(/-/g, '');
+        }
+
+        // Ensure only one decimal point
+        const parts = cleanValue.split('.');
+        if (parts.length > 2) {
+            cleanValue = parts[0] + '.' + parts.slice(1).join('');
+        }
+
         onChange(cleanValue);
     };
 
     return (
         <div className="flex items-center text-sm">
+            {/* Checkbox */}
+            {showCheckbox && (
+                <input
+                    type="checkbox"
+                    {...checkboxProps}
+                    className="w-4 h-4 mr-2 border-black border-2 rounded-sm shrink-0"
+                />
+            )}
+
             {/* Label */}
             <span className="mr-2 whitespace-nowrap">{label}</span>
 
             {/* Input */}
             <input
+                ref={ref}
                 type="text"
                 inputMode="decimal"
                 value={value}
@@ -62,6 +87,6 @@ function InputCheckSTD({
             <span className="ml-2 whitespace-nowrap">{unit}</span>
         </div>
     );
-}
+});
 
 export default InputCheckSTD;

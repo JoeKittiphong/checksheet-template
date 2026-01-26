@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from "../../context/AuthContext";
 import { useChecksheet } from "../../context/ChecksheetContext";
 import SignatureModal from "./SignatureModal";
@@ -17,14 +17,14 @@ import DateInput from "./DateInput";
  * @param {Function} props.onDateChange - callback เมื่อวันที่เปลี่ยน
  * @param {string} props.label - หัวข้อ (default: "CHECKED BY / DATE")
  */
-function CheckedBox({
+const CheckedBox = React.forwardRef(({
     name = '',
     date = '',
     onNameChange,
     onDateChange,
     onChange, // New unified handler
     label = 'CHECKED BY / DATE'
-}) {
+}, ref) => {
     const { user, logout } = useAuth();
     const { handleSave } = useChecksheet(); // Global save
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -101,6 +101,7 @@ function CheckedBox({
                     {/* Name - 70% */}
                     <div className="h-[70%] border-b border-black relative">
                         <input
+                            ref={ref}
                             type="text"
                             value={name}
                             onChange={(e) => dispatchUpdate({ name: e.target.value })}
@@ -136,6 +137,6 @@ function CheckedBox({
             />
         </>
     );
-}
+});
 
 export default CheckedBox;

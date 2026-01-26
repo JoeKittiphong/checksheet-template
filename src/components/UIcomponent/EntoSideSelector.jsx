@@ -1,3 +1,4 @@
+import React from 'react';
 /**
  * EntoSideSelector Component
  * แถวสำหรับเลือก Side (A, B, C, D, E) แบบ Single Selection
@@ -7,11 +8,11 @@
  * @param {string} props.value - ค่าที่ถูกเลือก (A, B, C, D, E)
  * @param {Function} props.onChange - callback เมื่อมีการเปลี่ยนการเลือก
  */
-function EntoSideSelector({
+const EntoSideSelector = React.forwardRef(({
     label = '',
     value = '',
     onChange = () => { }
-}) {
+}, ref) => {
     const options = ['A', 'B', 'C', 'D', 'E'];
 
     const handleToggle = (option) => {
@@ -30,9 +31,10 @@ function EntoSideSelector({
 
             {/* Checkboxes */}
             <div className="flex gap-1">
-                {options.map((option) => (
+                {options.map((option, index) => (
                     <label key={option} className="flex items-center gap-1 cursor-pointer select-none">
                         <input
+                            ref={index === 0 ? ref : null}
                             type="checkbox"
                             checked={value === option}
                             onChange={() => handleToggle(option)}
@@ -46,6 +48,6 @@ function EntoSideSelector({
             </div>
         </div>
     );
-}
+});
 
 export default EntoSideSelector;

@@ -1,8 +1,8 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import EDMBodyCheckTable from "@/components/PageComponent/EDMBodyCheckTable";
-import { useFormContext, Controller } from "react-hook-form";
-import Checknumber from "@/components/UIcomponent/Checknumber";
+import FormEDMBodyCheckTable from "@/components/FormComponents/FormEDMBodyCheckTable";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import { useFormContext } from "react-hook-form";
 
 // Images
 import image27 from "@/assets/FAMB0004_V3/image-27.png";
@@ -74,30 +74,15 @@ function Page20() {
                 <div className="flex justify-center">
                     <img src={image27} alt="page20" className="w-150" />
                 </div>
-                <Controller
+                <FormEDMBodyCheckTable
                     name="page20.bodyRows"
-                    control={control}
                     defaultValue={defaultBodyRows}
-                    render={({ field }) => (
-                        <EDMBodyCheckTable
-                            rows={field.value}
-                            onChange={field.onChange}
-                        />
-                    )}
                 />
                 <div className="flex justify-between">
                     <p className="text-sm">** DOBLE CHECK BY LEADER UP</p>
-                    <Controller
+                    <FormChecknumber
                         name="page20.torqueWrenchNo"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                            <Checknumber
-                                label="TORQUE NO."
-                                value={field.value ?? ''}
-                                onChange={field.onChange}
-                            />
-                        )}
+                        label="TORQUE NO."
                     />
                 </div>
             </div>
@@ -106,4 +91,3 @@ function Page20() {
 }
 
 export default Page20;
-

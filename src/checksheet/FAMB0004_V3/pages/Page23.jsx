@@ -2,8 +2,8 @@
 import { content, checkpoint } from "../FAMB0004_V3-setting";
 import ImagePointCheck from "@/components/PageComponent/ImagePointCheck";
 import { useFormContext, Controller } from "react-hook-form";
-import InputCheckSTD from "@/components/UIcomponent/InputCheckSTD";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
+import FormInputCheckSTD from "@/components/FormComponents/FormInputCheckSTD";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 
 // Images
 import image28 from "@/assets/FAMB0004_V3/image-28.png";
@@ -54,33 +54,15 @@ function Page23() {
                     />
                 </div>
                 <div className="flex items-start gap-2 justify-end">
-                    <Controller
+                    <FormInputCheckSTD
                         name="page23.totalPoint"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                            <InputCheckSTD
-                                label="- ตรวจสอบ Table down"
-                                unit="mm."
-                                value={field.value ?? ''}
-                                onChange={field.onChange}
-                                validateStd={false}
-                            />
-                        )}
+                        label="- ตรวจสอบ Table down"
+                        unit="mm."
+                        validateStd={false}
                     />
-                    <Controller
+                    <FormCheckedBox
                         name="page23.checkedInfo29"
-                        control={control}
-                        defaultValue={{ name: '', date: '' }}
-                        render={({ field }) => (
-                            <CheckedBox
-                                label="CHECKED BY / DATE"
-                                name={field.value?.name ?? ''}
-                                date={field.value?.date ?? ''}
-                                onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                            />
-                        )}
+                        label="CHECKED BY / DATE"
                     />
                 </div>
             </div>
@@ -89,4 +71,3 @@ function Page23() {
 }
 
 export default Page23;
-

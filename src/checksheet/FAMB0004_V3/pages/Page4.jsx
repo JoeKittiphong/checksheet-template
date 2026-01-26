@@ -1,9 +1,9 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormLevelTableXAB from "@/components/FormComponents/FormLevelTableXAB";
 import { useFormContext, Controller } from "react-hook-form";
-import Checknumber from "@/components/UIcomponent/Checknumber";
-import LevelTableXAB from "@/components/PageComponent/LevelTableXAB";
 
 // Images
 import image7 from "@/assets/FAMB0004_V3/image-7.png";
@@ -38,67 +38,28 @@ function Page4() {
                                     />
                                     <p>หมุน Leveling bolt support ตำแหน่ง 4 และ 5ลงมาชน Leveling block โดยไม่ได้ใช้ประแจเรียบร้อยแล้ว</p>
                                 </div>
-                                <Controller
-                                    name="page4.checkedInfo7"
-                                    control={control}
-                                    defaultValue={{ name: '', date: '' }}
-                                    render={({ field }) => (
-                                        <CheckedBox
-                                            name={field.value?.name ?? ''}
-                                            date={field.value?.date ?? ''}
-                                            onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                            onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                        />
-                                    )}
-                                />
+                                <FormCheckedBox name="page4.checkedInfo7" />
                             </div>
                         </div>
                     </div>
                     <p className="text-sm font-bold mb-5">8. LEVELING CHECK X AXIS (DATA FROM MA MACHINE) [การเช็คระดับน ้าแกน X, ข้อมูลจาก MA] หน่วยวัดเป็น µm</p>
                     <div className="flex">
                         <div className="p-2 flex flex-col justify-between">
-                            <Controller
+                            <FormChecknumber
                                 name="page4.levelingGaugeNo"
-                                control={control}
-                                defaultValue=""
-                                render={({ field }) => (
-                                    <Checknumber
-                                        label="Leveling guage No."
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                    />
-                                )}
+                                label="Leveling guage No."
                             />
-                            <Controller
-                                name="page4.checkedInfo8"
-                                control={control}
-                                defaultValue={{ name: '', date: '' }}
-                                render={({ field }) => (
-                                    <CheckedBox
-                                        name={field.value?.name ?? ''}
-                                        date={field.value?.date ?? ''}
-                                        onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                        onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                                    />
-                                )}
-                            />
+                            <FormCheckedBox name="page4.checkedInfo8" />
                         </div>
                         <img src={image8} alt="page4" className="w-80 m-2 ml-10" />
                     </div>
                     <div className="m-5 ml-20">
-                        <Controller
+                        <FormLevelTableXAB
                             name="page4.levelXData"
-                            control={control}
+                            cols={9}
+                            labelA="B"
+                            labelB="A=Kb"
                             defaultValue={{ a: [], b: [] }}
-                            render={({ field }) => (
-                                <LevelTableXAB
-                                    cols={9}
-                                    data={field.value}
-                                    onChange={field.onChange}
-                                    labelA="B"
-                                    labelB="A=Kb"
-                                />
-                            )}
                         />
                     </div>
                 </div>
@@ -108,4 +69,3 @@ function Page4() {
 }
 
 export default Page4;
-

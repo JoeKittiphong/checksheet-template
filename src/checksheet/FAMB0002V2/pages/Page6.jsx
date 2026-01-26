@@ -1,9 +1,9 @@
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0002v2-setting";
-import TableXABDIFF from "@/components/PageComponent/TableXABDIFF";
-import { useFormContext, Controller } from "react-hook-form";
-import Checknumber from "@/components/UIcomponent/Checknumber";
-import CheckedBox from "@/components/UIcomponent/CheckedBox";
+import FormTableXABDIFF from "@/components/FormComponents/FormTableXABDIFF";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import { useFormContext } from "react-hook-form";
 
 // Images
 import image11 from "@/assets/FAMB0002V2/image-11.png";
@@ -35,86 +35,41 @@ function Page6() {
                 </div>
                 <div className="ml-20 mb-10">
                     <p className="text-sm">ค่าความตรงและขนานจาก M/A</p>
-                    <Controller
+                    <FormTableXABDIFF
                         name="page6.straightnessMAData"
-                        control={control}
+                        cols={9}
+                        standards={StraightnessSTD}
+                        useArrow={false}
+                        labelA="B"
+                        labelB="A=Kb"
                         defaultValue={{ a: [], b: [] }}
-                        render={({ field }) => (
-                            <TableXABDIFF
-                                cols={9}
-                                data={field.value}
-                                onChange={field.onChange}
-                                standards={StraightnessSTD}
-                                showStd={false}
-                                validateStd={false}
-                                useArrow={false}
-                                labelA="B"
-                                labelB="A=Kb"
-                            />
-                        )}
                     />
                 </div>
                 <div className="ml-20 mb-10">
                     <p className="text-sm">ASSEMBLY ค่าความตรงและขนานไม่เกิน   3  µm</p>
-                    <Controller
+                    <FormTableXABDIFF
                         name="page6.straightnessAssemblyData"
-                        control={control}
+                        cols={9}
+                        standards={StraightnessSTD}
+                        validateStd={true}
+                        useArrow={false}
+                        labelA="B"
+                        labelB="A=Kb"
                         defaultValue={{ a: [], b: [] }}
-                        render={({ field }) => (
-                            <TableXABDIFF
-                                cols={9}
-                                data={field.value}
-                                onChange={field.onChange}
-                                standards={StraightnessSTD}
-                                showStd={false}
-                                validateStd={true}
-                                useArrow={false}
-                                labelA="B"
-                                labelB="A=Kb"
-                            />
-                        )}
                     />
                 </div>
                 <div className="flex w-full justify-center">
                     <div className="mr-10 flex flex-col items-center h-20 justify-between">
-                        <Controller
+                        <FormChecknumber
                             name="page6.parallelBarNo"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Checknumber
-                                    label="Parallel bar No."
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
-                            )}
+                            label="Parallel bar No."
                         />
-                        <Controller
+                        <FormChecknumber
                             name="page6.dialGaugeNo"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Checknumber
-                                    label="Dial gauge No."
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                />
-                            )}
+                            label="Dial gauge No."
                         />
                     </div>
-                    <Controller
-                        name="page6.checkedInfo11"
-                        control={control}
-                        defaultValue={{ name: '', date: '' }}
-                        render={({ field }) => (
-                            <CheckedBox
-                                name={field.value?.name ?? ''}
-                                date={field.value?.date ?? ''}
-                                onNameChange={(val) => field.onChange({ ...field.value, name: val })}
-                                onDateChange={(val) => field.onChange({ ...field.value, date: val })}
-                            />
-                        )}
-                    />
+                    <FormCheckedBox name="page6.checkedInfo11" />
                 </div>
             </div>
         </A4Paper>
@@ -122,4 +77,3 @@ function Page6() {
 }
 
 export default Page6;
-
