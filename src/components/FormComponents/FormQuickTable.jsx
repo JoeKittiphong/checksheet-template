@@ -6,13 +6,15 @@ import { validateValue } from '../../utils/validationUtils';
  * FormQuickTable Component
  * สร้างตารางแบบ Dynamic และรองรับ Auto RowSpan จากข้อมูลที่ซ้ำกัน
  * 
- * @param {Array} columns - โครงสร้างหัวตาราง [{ header: 'Name', key: 'id', rowGroup: true, type: 'text', width: '100px' }]
+ * @param {Array} columns - โครงสร้างคอลัมน์และหัวตาราง [{ header: 'Name', key: 'id', rowGroup: true, type: 'text', width: '100px' }]
  * @param {Array} data - ข้อมูลแถว [{ id: 'Row1', ... }]
+ * @param {Array} headerRows - (Optional) หัวตารางหลายชั้น [[{ header: 'H1', colSpan: 2 }, ...], [{ header: 'SubH1' }, { header: 'SubH2' }]]
  * @param {string} className - คลาสเพิ่มเติมสำหรับ <table>
  */
 const FormQuickTable = ({
     columns = [],
     data = [],
+    headerRows = null,
     className = ""
 }) => {
     const { register, watch } = useFormContext();
@@ -46,28 +48,56 @@ const FormQuickTable = ({
         <div className="overflow-x-auto">
             <table className={`border-collapse border border-black text-xs ${className}`}>
                 <thead className="bg-gray-200">
-                    <tr>
-                        {columns.map((col, idx) => (
-                            <th
-                                key={idx}
-                                style={{ width: col.width }}
-                                className="border border-black text-center font-bold"
-                            >
-                                {col.headerComponent ? col.headerComponent : (
-                                    <div className="flex px-1 py-0.5 justify-center items-center gap-2">
-                                        {col.headerCheckbox && (
-                                            <input
-                                                type="checkbox"
-                                                {...register(col.headerCheckbox)}
-                                                className="w-4 h-4 cursor-pointer"
-                                            />
-                                        )}
-                                        <span>{col.header}</span>
-                                    </div>
-                                )}
-                            </th>
-                        ))}
-                    </tr>
+                    {/* Render complex header rows if provided, else fallback to standard columns */}
+                    {headerRows ? (
+                        headerRows.map((row, rIdx) => (
+                            <tr key={rIdx}>
+                                {row.map((cell, cIdx) => (
+                                    <th
+                                        key={cIdx}
+                                        rowSpan={cell.rowSpan || 1}
+                                        colSpan={cell.colSpan || 1}
+                                        style={{ width: cell.width }}
+                                        className="border border-black text-center font-bold px-1 py-0.5"
+                                    >
+                                        <div className="flex justify-center items-center gap-2">
+                                            {cell.headerCheckbox && (
+                                                <input
+                                                    type="checkbox"
+                                                    {...register(cell.headerCheckbox)}
+                                                    className="w-4 h-4 cursor-pointer"
+                                                />
+                                            )}
+                                            <span>{cell.header}</span>
+                                        </div>
+                                    </th>
+                                ))}
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            {columns.map((col, idx) => (
+                                <th
+                                    key={idx}
+                                    style={{ width: col.width }}
+                                    className="border border-black text-center font-bold"
+                                >
+                                    {col.headerComponent ? col.headerComponent : (
+                                        <div className="flex px-1 py-0.5 justify-center items-center gap-2">
+                                            {col.headerCheckbox && (
+                                                <input
+                                                    type="checkbox"
+                                                    {...register(col.headerCheckbox)}
+                                                    className="w-4 h-4 cursor-pointer"
+                                                />
+                                            )}
+                                            <span>{col.header}</span>
+                                        </div>
+                                    )}
+                                </th>
+                            ))}
+                        </tr>
+                    )}
                 </thead>
                 <tbody>
                     {data.map((row, rIdx) => (
@@ -101,7 +131,9 @@ const FormQuickTable = ({
                                             ${!isValid ? 'bg-red-200' : ''}
                                         `}
                                     >
-                                        {col.type === 'checkbox' ? (
+                                        {col.render ? (
+                                            col.render(cellValue, row, { register, watch })
+                                        ) : col.type === 'checkbox' ? (
                                             <input
                                                 type="checkbox"
                                                 {...register(cellValue)}

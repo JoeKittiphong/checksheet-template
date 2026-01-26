@@ -7,7 +7,6 @@ import FormInputCheckSTD from '@/components/FormComponents/FormInputCheckSTD';
 import image4_3 from '@/assets/FAWI0002_V3/image-4-3.jpg';
 import FormCheckedBox from '@/components/FormComponents/FormCheckedBox';
 import FormQuickTable from '@/components/FormComponents/FormQuickTable';
-import FormValidatedCell from '@/components/FormComponents/FormValidatedCell';
 
 function Page3() {
     const { register } = useFormContext();
@@ -50,6 +49,7 @@ function Page3() {
 
                 <SectionTitle>5. Stroke Check (Manage - Parameter - Machine - Page 2)</SectionTitle>
                 <div className="ml-4 mt-2">
+                    {/* Table 5.1: Stroke Check */}
                     <FormQuickTable
                         className="mb-6"
                         columns={[
@@ -59,69 +59,39 @@ function Page3() {
                             { header: 'ALN400Q', key: 'aln400q', type: 'input', headerCheckbox: 'p3_tc_aln400q' },
                         ]}
                         data={[
-                            { label: 'X+U STROKE LIMIT MIN', al400g: 'p3_sc_xumin_400g', al400g_min: 15, al400g_max: 20, al400p: 'p3_sc_xumin_400p', al400p_min: 10, al400p_max: 20, aln400q: 'p3_sc_xumin_n400q', aln400q_min: 0, aln400q_max: 0, defaultValue: '15' },
-                            { label: 'X+U STROKE LIMIT MAX', al400g: 'p3_sc_xumax_400g', al400g_min: 990, al400g_max: 1000, al400p: 'p3_sc_xumax_400p', al400p_min: 525, al400p_max: 535, aln400q: 'p3_sc_xumax_n400q', aln400q_min: 990, aln400q_max: 1000, defaultValue: '1000' },
-                            { label: 'Y+V STROKE LIMIT MIN', al400g: 'p3_sc_yvmin_400g', al400g_min: 0, al400g_max: 0, al400p: 'p3_sc_yvmin_400p', al400p_min: 0, al400p_max: 0, aln400q: 'p3_sc_yvmin_n400q', aln400q_min: 0, aln400q_max: 0, defaultValue: '0' },
-                            { label: 'Y+V STROKE LIMIT MAX', al400g: 'p3_sc_yvmax_400g', al400g_min: 378, al400g_max: 478, al400p: 'p3_sc_yvmax_400p', al400p_min: 378, al400p_max: 478, aln400q: 'p3_sc_yvmax_n400q', aln400q_min: 378, aln400q_max: 478, defaultValue: '378' },
-                            { label: 'Z AXIS STROKE', al400g: 'p3_sc_z_400g', al400g_min: 252, al400g_max: 352, al400p: 'p3_sc_z_400p', al400p_min: 252, al400p_max: 352, aln400q: 'p3_sc_z_n400q', aln400q_min: 252, aln400q_max: 352, defaultValue: '252.00007' },
+                            { label: 'X+U STROKE LIMIT MIN', al400g: 'p3_sc_xumin_400g', al400p: 'p3_sc_xumin_400p', aln400q: 'p3_sc_xumin_n400q', defaultValue: '15' },
+                            { label: 'X+U STROKE LIMIT MAX', al400g: 'p3_sc_xumax_400g', al400p: 'p3_sc_xumax_400p', aln400q: 'p3_sc_xumax_n400q', defaultValue: '1000' },
+                            { label: 'Y+V STROKE LIMIT MIN', al400g: 'p3_sc_yvmin_400g', al400p: 'p3_sc_yvmin_400p', aln400q: 'p3_sc_yvmin_n400q', defaultValue: '0' },
+                            { label: 'Y+V STROKE LIMIT MAX', al400g: 'p3_sc_yvmax_400g', al400p: 'p3_sc_yvmax_400p', aln400q: 'p3_sc_yvmax_n400q', defaultValue: '378' },
+                            { label: 'Z AXIS STROKE', al400g: 'p3_sc_z_400g', al400p: 'p3_sc_z_400p', aln400q: 'p3_sc_z_n400q', defaultValue: '252.00007' },
                         ]}
                     />
 
-                    {/* Table 5.2 - Axis Measurement with Shared Validation Component */}
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse border border-black text-xs">
-                            <thead className="bg-gray-200">
-                                <tr>
-                                    <th rowSpan={2} className="border border-black px-2 py-1 w-16">Axis</th>
-                                    <th colSpan={2} className="border border-black px-2 py-1 text-sm font-bold">AL400G</th>
-                                    <th colSpan={2} className="border border-black px-2 py-1 text-sm font-bold">AL600G</th>
-                                </tr>
-                                <tr>
-                                    <th className="border border-black px-2 py-1">STD (mm)</th>
-                                    <th className="border border-black px-2 py-1">Measure (mm)</th>
-                                    <th className="border border-black px-2 py-1">STD (mm)</th>
-                                    <th className="border border-black px-2 py-1">Measure (mm)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-100 font-bold">X</td>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">400 ~ 402</td>
-                                    <FormValidatedCell name="p3_m_x_400g" min={400} max={402} />
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">600 ~ 602</td>
-                                    <FormValidatedCell name="p3_m_x_600g" min={600} max={602} />
-                                </tr>
-                                <tr>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-100 font-bold">Y</td>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">300 ~ 302</td>
-                                    <FormValidatedCell name="p3_m_y_400g" min={300} max={302} />
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">400 ~ 402</td>
-                                    <FormValidatedCell name="p3_m_y_600g" min={400} max={402} />
-                                </tr>
-                                <tr>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-100 font-bold">Z</td>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">249 ~ 252</td>
-                                    <FormValidatedCell name="p3_m_z_400g" min={249} max={252} />
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">349 ~ 352</td>
-                                    <FormValidatedCell name="p3_m_z_600g" min={349} max={352} />
-                                </tr>
-                                <tr>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-100 font-bold">U</td>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">150 ~ 151</td>
-                                    <FormValidatedCell name="p3_m_u_400g" min={150} max={151} />
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">150 ~ 151</td>
-                                    <FormValidatedCell name="p3_m_u_600g" min={150} max={151} />
-                                </tr>
-                                <tr>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-100 font-bold">V</td>
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">150 ~ 151</td>
-                                    <FormValidatedCell name="p3_m_v_400g" min={150} max={151} />
-                                    <td className="border border-black px-2 py-1 text-center bg-gray-50">150 ~ 151</td>
-                                    <FormValidatedCell name="p3_m_v_600g" min={150} max={151} />
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    {/* Table 5.2: Axis Measurement (Using nestedHeaders support) */}
+                    <FormQuickTable
+                        headerRows={[
+                            [
+                                { header: 'Axis', rowSpan: 2, width: '64px' },
+                                { header: 'AL400G', colSpan: 2 },
+                            ],
+                            [
+                                { header: 'STD (mm)' },
+                                { header: 'Measure (mm)' },
+                            ]
+                        ]}
+                        columns={[
+                            { key: 'axis', align: 'center' },
+                            { key: 'std1', align: 'center' },
+                            { key: 'val1', type: 'input' }
+                        ]}
+                        data={[
+                            { axis: 'X', std1: '400 ~ 402', val1: 'p3_m_x_400g', val1_min: 400, val1_max: 402, std2: '600 ~ 602', val2: 'p3_m_x_600g', val2_min: 600, val2_max: 602 },
+                            { axis: 'Y', std1: '300 ~ 302', val1: 'p3_m_y_400g', val1_min: 300, val1_max: 302, std2: '400 ~ 402', val2: 'p3_m_y_600g', val2_min: 400, val2_max: 402 },
+                            { axis: 'Z', std1: '249 ~ 252', val1: 'p3_m_z_400g', val1_min: 249, val1_max: 252, std2: '349 ~ 352', val2: 'p3_m_z_600g', val2_min: 349, val2_max: 352 },
+                            { axis: 'U', std1: '150 ~ 151', val1: 'p3_m_u_400g', val1_min: 150, val1_max: 151, std2: '150 ~ 151', val2: 'p3_m_u_600g', val2_min: 150, val2_max: 151 },
+                            { axis: 'V', std1: '150 ~ 151', val1: 'p3_m_v_400g', val1_min: 150, val1_max: 151, std2: '150 ~ 151', val2: 'p3_m_v_600g', val2_min: 150, val2_max: 151 },
+                        ]}
+                    />
                 </div>
             </div>
         </A4Paper>

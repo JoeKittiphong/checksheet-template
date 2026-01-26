@@ -66,53 +66,57 @@ const FormItemCheck = ({
     };
 
     return (
-        <div className={`flex items-center gap-2 flex-wrap ${className}`}>
+        <div className={`flex items-start gap-2 ${className}`}>
             {/* Checkbox */}
             {showCheckbox && (
                 <input
                     type="checkbox"
                     {...register(name)}
-                    className="w-4 h-4 border-black border-2 rounded-sm shrink-0"
+                    className="w-4 h-4 border-black border-2 rounded-sm shrink-0 mt-0.5"
                 />
             )}
 
             {/* --- Mode 1: Items Array (Advance) --- */}
             {items && items.length > 0 ? (
-                items.map((item, idx) => renderItem(item, idx))
+                <div className="flex flex-wrap items-center gap-2 flex-1">
+                    {items.map((item, idx) => renderItem(item, idx))}
+                </div>
             ) : (
                 /* --- Mode 2: Legacy (Label + Optional Input) --- */
-                <>
-                    {/* Label */}
-                    <span className="text-sm whitespace-pre-wrap">
-                        {label}
-                    </span>
+                <div className="flex flex-col gap-1 flex-1">
+                    <div className="flex items-start gap-2 flex-wrap">
+                        {/* Label */}
+                        <span className="text-sm whitespace-pre-wrap flex-1">
+                            {label}
+                        </span>
 
-                    {/* Optional Input */}
-                    {input && (() => {
-                        const val = watch(input.name);
-                        const isValid = validateValue(val, {
-                            min: input.minStd,
-                            max: input.maxStd,
-                            validateStd: input.validateStd ?? true
-                        });
-                        return (
-                            <div className="flex items-center gap-1">
-                                <input
-                                    type={input.type || "text"}
-                                    {...register(input.name)}
-                                    defaultValue={input.defaultValue || ""}
-                                    style={{ width: input.width || '150px' }}
-                                    className={`border-b border-black text-center text-sm outline-none px-1 ${!isValid ? 'bg-red-200' : ''}`}
-                                />
-                                {input.suffix && (
-                                    <span className="text-sm">
-                                        {input.suffix}
-                                    </span>
-                                )}
-                            </div>
-                        );
-                    })()}
-                </>
+                        {/* Optional Input */}
+                        {input && (() => {
+                            const val = watch(input.name);
+                            const isValid = validateValue(val, {
+                                min: input.minStd,
+                                max: input.maxStd,
+                                validateStd: input.validateStd ?? true
+                            });
+                            return (
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <input
+                                        type={input.type || "text"}
+                                        {...register(input.name)}
+                                        defaultValue={input.defaultValue || ""}
+                                        style={{ width: input.width || '150px' }}
+                                        className={`border-b border-black text-center text-sm outline-none px-1 ${!isValid ? 'bg-red-200' : ''}`}
+                                    />
+                                    {input.suffix && (
+                                        <span className="text-sm">
+                                            {input.suffix}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })()}
+                    </div>
+                </div>
             )}
         </div>
     );
