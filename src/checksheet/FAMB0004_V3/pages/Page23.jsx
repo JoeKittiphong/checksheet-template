@@ -6,7 +6,7 @@ import FormInputCheckSTD from "@/components/FormComponents/FormInputCheckSTD";
 import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 
 // Images
-import image28 from "@/assets/FAMB0004_V3/image-28.png";
+import image28 from "@/assets/FAMB0004_V3/image-29.PNG";
 
 function Page23() {
     const { control } = useFormContext();

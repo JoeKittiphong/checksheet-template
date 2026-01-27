@@ -5,7 +5,7 @@ import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image27_2 from "@/assets/FAMB0004_V3/image-27-2.png";
+import image27_2 from "@/assets/FAMB0004_V3/image-20-12.png";
 
 function Page21() {
     const { control } = useFormContext();

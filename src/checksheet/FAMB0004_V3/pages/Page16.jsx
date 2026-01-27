@@ -7,9 +7,9 @@ import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import { useFormContext, Controller } from "react-hook-form";
 
 // Images
-import image23_1 from "@/assets/FAMB0004_V3/image-23-1.png";
-import image23_2 from "@/assets/FAMB0004_V3/image-23-2.png";
-import image23_3 from "@/assets/FAMB0004_V3/image-23-3.png";
+import image23_1 from "@/assets/FAMB0004_V3/image-16.PNG";
+import image23_2 from "@/assets/FAMB0004_V3/image-16.PNG";
+import image23_3 from "@/assets/FAMB0004_V3/image-16.PNG";
 
 function Page16() {
     const { control } = useFormContext();

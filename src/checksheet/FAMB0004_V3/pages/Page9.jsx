@@ -6,7 +6,7 @@ import FormStartFinishTime from "@/components/FormComponents/FormStartFinishTime
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image14 from "@/assets/FAMB0004_V3/image-14.png";
+import image14 from "@/assets/FAMB0004_V3/image-14-1.PNG";
 
 function Page9() {
     const { control } = useFormContext();

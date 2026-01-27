@@ -7,8 +7,8 @@ import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 
 // Images
-import image1 from "@/assets/FAMB0004_V3/image-1.png";
-import image1_2 from "@/assets/FAMB0004_V3/image-1-2.png";
+import image1 from "@/assets/FAMB0004_V3/image-1.PNG";
+import image1_2 from "@/assets/FAMB0004_V3/image-1.PNG";
 
 function Page1() {
     const { control } = useFormContext();

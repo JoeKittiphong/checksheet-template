@@ -8,8 +8,8 @@ import FormEDMTableRollingY from "@/components/FormComponents/FormEDMTableRollin
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image3 from "@/assets/FAMB0004_V3/image-3.png";
-import image4 from "@/assets/FAMB0004_V3/image-4.png";
+import image3 from "@/assets/FAMB0004_V3/image-3.PNG";
+import image4 from "@/assets/FAMB0004_V3/image-4.PNG";
 
 function Page2() {
     const { control } = useFormContext();

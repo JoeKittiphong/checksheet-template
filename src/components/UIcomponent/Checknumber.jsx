@@ -16,7 +16,14 @@ const Checknumber = React.forwardRef(({
                 className={`border-b border-black outline-none px-1 font-arial ${inputClass}`}
                 style={{ textTransform: 'uppercase' }}
                 value={value}
-                onChange={(e) => onChange(e.target.value.toUpperCase())}
+                onChange={(e) => {
+                    let val = e.target.value.toUpperCase();
+                    if (val === '**' || val === '***') {
+                        onChange('∞');
+                    } else {
+                        onChange(val);
+                    }
+                }}
             />
         </div>
     );

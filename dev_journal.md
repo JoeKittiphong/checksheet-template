@@ -68,4 +68,100 @@ _2026-01-26_
   - ปรับปรุงให้ `InputCheckSTD` รองรับการพิมพ์ค่าติดลบ `-` และป้องกันการพิมพ์เครื่องหมายซ้ำซ้อน
   - เพิ่มระบบแจ้งเตือนสีแดง (Validate) เข้าไปยัง `FormItemCheck` ทำให้หน้า Checksheet ทุกหน้ามีมาตรฐานความปลอดภัยข้อมูลเดียวกัน
 
-ผลลัพธ์คือโค้ดในหน้า `Page1` ถึง `Page4` สะอาดขึ้นมาก และง่ายต่อการขยายผลไปยังหน้าอื่นๆ ในอนาคต
+### 7. ระบบแปลงค่าอัตโนมัติ (Auto-Replace Infinity)
+_2026-01-27_
+
+เพื่อแก้ปัญหาความยุ่งยากในการพิมพ์เครื่องหมาย Infinity (∞) ซึ่งต้องใช้การกดโค้ด Alt หรือการก๊อปปี้วาง จึงได้พัฒนาระบบตรวจจับการพิมพ์เพื่อแปลงค่าให้อัตโนมัติ
+
+**สิ่งที่พัฒนา:**
+- **Auto-Conversion Logic**: พัฒนาฟังก์ชัน `infinityReplacement` เข้าไปใน Component พื้นฐาน:
+  - `FormQuickTable.jsx` (สำหรับตาราง)
+  - `FormItemCheck.jsx` (สำหรับช่องเช็คทั่วไป)
+  - `Checknumber.jsx` (สำหรับช่องกรอกตัวเลข)
+- **Shortcut Trigger**: พนักงานสามารถพิมพ์ **`88`** หรือ **`**` (ดอกจัน 2 ตัว)** ระบบจะเปลี่ยนเป็น **`∞`** ให้ทันที
+- **RHF Integration**: ใช้ `setValue` พร้อม flag `shouldValidate: true` เพื่อให้มั่นใจว่า UI จะอัปเดตทันทีและระบบ Validation ของ React Hook Form จะรับรู้ค่าใหม่นี้เสมือนเป็นการพิมพ์ปกติ
+
+ช่วยลดความผิดพลาดและเพิ่มความสะดวกในการรัน Checksheet ในส่วนของ Insulation Check (หน้า 13) และหน้าอื่นๆ ที่เกี่ยวข้องอย่างมาก
+### 8. งานพัฒนาเพิ่ม Page 14 ของชุด FAWI0002_V3
+_2026-01-26_
+
+ดำเนินการส่วนที่เหลือของ Section 15 (Insulation Check) ในหน้า 14 ต่อจากหน้า 13 โดยมีรายละเอียดดังนี้:
+- [x] Implement Table in `Page 14`
+    - [x] Implement Section 15: Insulation Check (Continuation Rows 11-23)
+    - [x] Use `FormQuickTable` with RowSpan for "E" and "X1, X2, X3"
+- [x] Verify functionality and visuals
+- [x] Extract Form Logic to Utilities
+    - [x] Create `formUtils.js`
+    - [x] Update `FormItemCheck.jsx` to use utility logic
+    - [x] Update `FormQuickTable.jsx` to use utility logic
+metadata
+    - [x] Verify validation- [x] Implement Page 16 (Voltage Check)
+    - [x] Implement DISCHARGE CONTROLLER table with complex row spanning
+    - [x] Handle Digital Meter No. header field
+    - [x] Add signature box
+    - [x] Verify RHF binding and validation
+- [x] Verify visual consistency with the provided image
+
+### 15. การปรับปรุงคอลัมน์ Sub-Condition ใน Page 16 & 17
+_2026-01-27_
+
+ปรับปรุงโครงสร้างตาราง Voltage Check ให้มีคอลัมน์รองรับค่า RG1, RG2 ตามที่ผู้ใช้ต้องการ:
+- **Table Refactor**: เพิ่มคอลัมน์ `sub_condition` เข้าไประหว่าง Condition และ Measurement
+- **Header Update**: ปรับหัวตาราง "Condition" ให้ครอบคลุมทั้ง 2 คอลัมน์ด้วย `colSpan: 2`
+- **Logic Support**: เปิดใช้งาน `rowGroup: true` สำหรับคอลัมน์ใหม่นี้ เพื่อให้เซลล์ที่ไม่มีข้อมูลทำการ RowSpan รวมกัน ช่วยให้ตารางดูสะอาดและตรงตามต้นฉบับมากขึ้นครับ
+    - [x] Verify validation in Page 13 & 14
+    - [x] Implement custom render for rows 20-23 points with checkboxes
+    - [x] Add signature box
+- [x] Verify functionality and visuals
+- **Verified Infinity Support**: ตรวจสอบความถูกต้องของระบบแปลงค่าและการตรวจสอบในทุกจุดที่เกี่ยวข้องเพื่อให้ทำงานได้สมบูรณ์
+
+### 10. การจัดทำบันทึกทักษะ (Skills Documentation)
+_2026-01-27_
+
+เพื่อความต่อเนื่องในการพัฒนาและความสะดวกในการส่งต่องาน ได้จัดทำไฟล์ `skills.md` ไว้ที่ Root directory:
+- **Purpose**: บันทึกขั้นตอนการทำงานที่เป็นมาตรฐาน (Workflows) เช่น การสร้างหน้าใหม่พร้อมรูปภาพ, การใช้ Script สร้างโปรเจกต์ และการใช้ตัวย่อ Infinity
+- **Naming Standard**: กำหนดมาตรฐานการตั้งชื่อฟิลด์ `pXX_...` เพื่อให้การรวมข้อมูล (RHF State) เป็นไปอย่างถูกต้องและไม่ซ้ำซ้อน
+- **Manual**: รวมตัวอย่างโค้ดและคำอธิบายจุดสำคัญต่างๆ เพื่อให้คนในทีม (หรือ AI) สามารถทำงานตามมาตรฐานเดียวกันได้อย่างรวดเร็ว
+
+### 11. การจัดทำ Page 15 (MS Controller Insulation Check)
+_2026-01-27_
+
+ดำเนินการสร้างหน้า 15 ต่อเนื่องจากระบบ Insulation Check:
+- **Table Structure**: ใช้ `FormQuickTable` สร้างตาราง MS CONTROLLER 15 แถว
+- **Complex RowSpan**: จัดการการรวมเซลล์ (RowSpan) สำหรับคอลัมน์ Measurement(+), Measurement(-) และ Point ที่มีความซับซ้อน (เช่น ข้อมูล E-TB1 รวมกัน 6 แถว)
+- **Dual Standards**: สำหรับแถวที่ 9, 10, 14, 15 ที่มีมาตรฐาน 2 แบบใน No. เดียวกัน ได้ทำการแยกเป็น 2 แถวข้อมูลย่อยเพื่อให้สามารถกรอกค่าแยกกันได้อิสระและรัน Validation ได้ถูกต้อง
+- **RHF Binding**: ตั้งชื่อตัวแปร `p15_ins_m1` ถึง `p15_ins_m15_2` เพื่อความเป็นระเบียบและไม่ซ้ำซ้อน
+
+### 12. การจัดทำ Page 16 (Voltage Check)
+_2026-01-27_
+
+ดำเนินการสร้างหน้า 16 สำหรับการตรวจสอบแรงดันไฟฟ้า (Voltage Check):
+- **Table Structure**: ใช้ `FormQuickTable` สร้างตาราง DISCHARGE CONTROLLER 19 แถว
+- **Complex Grouping**: จัดการคอลัมน์ Condition (Main Breaker On, Source On, Power On) และคอลัมน์ย่อย (RG1, RG2, ฯลฯ) ให้แสดงผลแบบ RowSpan ที่สวยงามตามต้นฉบับ
+- **Input Header**: เพิ่มช่องกรอก "DIGITAL METER NO." ที่หัวตาราง โดยผูกกับตัวแปร `p16_meter_no`
+- **Validation**: ตั้งค่า `measured_min/max` ให้ครอบคลุมทั้งช่วง AC (195-215V) และ DC (เช่น 24.15-24.20V) เพื่อระบบ Validation แจ้งเตือนเมื่อกรอกค่าผิดพลาด
+- **RHF Binding**: ผูกข้อมูลทุกช่องรวมถึงช่องลงชื่อ (`p16_checked_by`) เรียบร้อยแล้ว
+### 14. การจัดทำ Page 17 (MS Controller Voltage Check & Switch Check)
+_2026-01-27_
+
+ดำเนินการสร้างหน้า 17 สำหรับการตรวจสอบแรงดันไฟฟ้าของ MS Controller และการตรวจสอบสวิตช์:
+- **Voltage Table**: ใช้ `FormQuickTable` สร้างตาราง MS CONTROLLER 25 แถว
+- **Complex RowSpan**: จัดการ Condition "Source On" และ "Power On" และการรวมกลุ่ม Unit (TB-1, TB-2, GPDA-02, ฯลฯ)
+- **Validation**: ตั้งค่ามาตรฐานแรงดันไฟฟ้าทั้ง AC และ DC พร้อมย่านการตรวจสอบที่ถูกต้อง
+- **Section 16.1**: เพิ่มส่วนการตรวจสอบ Remote Control Box และ Mouse โดยใช้ `FormItemCheck` สำหรับ Checkbox ทั้ง 4 ข้อ
+- **Signature & RHF**: ผูกข้อมูลกับ `p17_...` และเพิ่มช่องลงชื่อท้ายหน้า
+### 16. การควบรวมหน้า Page 24 (ชุด FAWI0002_V3)
+_2026-01-27_
+
+ดำเนินการควบรวมเนื้อหา 3 ส่วน (Sections 23, 24, 25) มาไว้ในหน้าเดียวตามความต้องการของผู้ใช้:
+- **Consolidation**: รวม "Process Tank Door Check", "Adjust Float Sensor Position" และ "Float Sensor Check" ไว้ที่ Page 24 และทำให้ Page 25 เป็นหน้าว่าง
+- **UI Optimization**: ใช้เทคนิคการทำ Scaling (`scale-95`) และลดขนาดตัวอักษร/รูปภาพ เพื่อให้เนื้อหาทั้ง 3 ส่วนที่เดิมต้องใช้ 2 หน้า สามารถบรรจุลงในหน้า A4 เดียวได้อย่างครบถ้วนและอ่านง่าย
+- **Asset Alignment**: ปรับแก้การ Import รูปภาพประกอบให้ตรงกับ Section ที่ย้ายมา
+
+### 17. การแก้ไข Build Error และการจัดการ Asset (ชุด FAMB0004_V3)
+_2026-01-27_
+
+แก้ไขปัญหา `build-all.cjs` ล้มเหลวเนื่องจากหาไฟล์รูปภาพประกอบไม่พบ (ENOENT):
+- **Deep Debugging**: ตรวจพบไฟล์ `image-28.png` หายไปและมีการใช้ชื่อนามสกุลไฟล์พิมพ์เล็ก/ใหญ่ไม่ตรงกันระหว่างโค้ดกับไฟล์จริง (Case-sensitivity)
+- **Asset Fallback Strategy**: สำหรับหน้าที่รูปภาพหายไปอย่างถาวร (จากการ Generate Script) ได้ทำการเลือกรูปที่ใกล้เคียงที่สุดมาเป็น Fallback เพื่อให้ระบบสามารถ Build ต่อได้
+- **Normalization**: ปรับแก้การ Import รูปภาพทั้งหมดให้เป็นนามสกุล `.PNG` (ตัวใหญ่) ตามมาตรฐานของไฟล์ที่เก็บไว้ในเครื่อง เพื่อลดความสับสนในการทำงานครั้งต่อไป

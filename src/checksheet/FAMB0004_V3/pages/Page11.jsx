@@ -7,8 +7,8 @@ import FormInputCheckSTD from "@/components/FormComponents/FormInputCheckSTD";
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image18_1 from "@/assets/FAMB0004_V3/image-18-1.png";
-import image18_2 from "@/assets/FAMB0004_V3/image-18-2.png";
+import image18_1 from "@/assets/FAMB0004_V3/image-11.PNG";
+import image18_2 from "@/assets/FAMB0004_V3/image-11.PNG";
 
 function Page11() {
     const { control } = useFormContext();

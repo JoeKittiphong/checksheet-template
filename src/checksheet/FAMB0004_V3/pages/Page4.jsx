@@ -6,8 +6,8 @@ import FormLevelTableXAB from "@/components/FormComponents/FormLevelTableXAB";
 import { useFormContext, Controller } from "react-hook-form";
 
 // Images
-import image7 from "@/assets/FAMB0004_V3/image-7.png";
-import image8 from "@/assets/FAMB0004_V3/image-8.png";
+import image7 from "@/assets/FAMB0004_V3/image-7.PNG";
+import image8 from "@/assets/FAMB0004_V3/image-8.PNG";
 
 function Page4() {
     const { control } = useFormContext();

@@ -6,7 +6,7 @@ import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image11 from "@/assets/FAMB0004_V3/image-11.png";
+import image11 from "@/assets/FAMB0004_V3/image-11.PNG";
 
 function Page6() {
     const { control } = useFormContext();

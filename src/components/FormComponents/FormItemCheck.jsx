@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { validateValue } from '../../utils/validationUtils';
+import { handleInfinityShortcut, getValidationClass } from '../../utils/formUtils';
 
 /**
  * FormItemCheck Component
@@ -26,7 +26,7 @@ const FormItemCheck = ({
     className = "",
     showCheckbox = true
 }) => {
-    const { register, watch } = useFormContext();
+    const { register, watch, setValue } = useFormContext();
 
     // --- Helper to render specific item types ---
     const renderItem = (item, index) => {
@@ -39,9 +39,10 @@ const FormItemCheck = ({
         }
         if (item.input) {
             const val = watch(item.input.name);
-            const isValid = validateValue(val, {
+            const validationClass = getValidationClass(val, {
                 min: item.input.minStd,
                 max: item.input.maxStd,
+                expectedValue: item.input.expectedValue,
                 validateStd: item.input.validateStd ?? true
             });
 
@@ -50,9 +51,13 @@ const FormItemCheck = ({
                     <input
                         type={item.input.type || "text"}
                         {...register(item.input.name)}
+                        onChange={(e) => {
+                            register(item.input.name).onChange(e);
+                            handleInfinityShortcut(e, item.input.name, setValue);
+                        }}
                         defaultValue={item.input.defaultValue || ""}
                         style={{ width: item.input.width || '150px' }}
-                        className={`border-b border-black text-center text-sm outline-none px-1 ${!isValid ? 'bg-red-200' : ''}`}
+                        className={`border-b border-black text-center text-sm outline-none px-1 ${validationClass}`}
                     />
                     {item.input.suffix && (
                         <span className="text-sm">
@@ -86,26 +91,32 @@ const FormItemCheck = ({
                 <div className="flex flex-col gap-1 flex-1">
                     <div className="flex items-start gap-2 flex-wrap">
                         {/* Label */}
-                        <span className="text-sm whitespace-pre-wrap flex-1">
+                        <span className="text-sm whitespace-pre-wrap">
                             {label}
                         </span>
 
                         {/* Optional Input */}
                         {input && (() => {
                             const val = watch(input.name);
-                            const isValid = validateValue(val, {
+                            const validationClass = getValidationClass(val, {
                                 min: input.minStd,
                                 max: input.maxStd,
+                                expectedValue: input.expectedValue,
                                 validateStd: input.validateStd ?? true
                             });
+
                             return (
                                 <div className="flex items-center gap-1 shrink-0">
                                     <input
                                         type={input.type || "text"}
                                         {...register(input.name)}
+                                        onChange={(e) => {
+                                            register(input.name).onChange(e);
+                                            handleInfinityShortcut(e, input.name, setValue);
+                                        }}
                                         defaultValue={input.defaultValue || ""}
                                         style={{ width: input.width || '150px' }}
-                                        className={`border-b border-black text-center text-sm outline-none px-1 ${!isValid ? 'bg-red-200' : ''}`}
+                                        className={`border-b border-black text-center text-sm outline-none px-1 ${validationClass}`}
                                     />
                                     {input.suffix && (
                                         <span className="text-sm">

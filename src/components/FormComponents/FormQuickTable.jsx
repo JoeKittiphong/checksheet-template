@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { validateValue } from '../../utils/validationUtils';
+import { handleInfinityShortcut, getValidationClass } from '../../utils/formUtils';
 
 /**
  * FormQuickTable Component
@@ -17,7 +17,7 @@ const FormQuickTable = ({
     headerRows = null,
     className = ""
 }) => {
-    const { register, watch } = useFormContext();
+    const { register, watch, setValue } = useFormContext();
 
     // -- Helper to calculate row spans for grouping columns --
     const calculateRowSpans = () => {
@@ -45,7 +45,7 @@ const FormQuickTable = ({
     const rowSpans = calculateRowSpans();
 
     return (
-        <div className="overflow-x-auto">
+        <div className={`overflow-x-auto ${className}`}>
             <table className={`border-collapse border border-black text-xs ${className}`}>
                 <thead className="bg-gray-200">
                     {/* Render complex header rows if provided, else fallback to standard columns */}
@@ -107,17 +107,20 @@ const FormQuickTable = ({
                                 if (span === 0) return null; // Skip if spanned by above cell
 
                                 const cellValue = row[col.key];
-                                const isLabel = !col.type || col.type === 'label';
+
+                                // Determine cell type: row.type can override col.type, but col.isLabel forces label mode
+                                const effectiveType = col.isLabel ? 'label' : (row.type || col.type || 'label');
+                                const isLabel = effectiveType === 'label';
 
                                 // Validation logic for inputs
-                                let isValid = true;
-                                if (col.type === 'input') {
+                                let validationClass = "";
+                                if (effectiveType === 'input') {
                                     const val = watch(cellValue);
                                     const min = row[`${col.key}_min`];
                                     const max = row[`${col.key}_max`];
-                                    if (min !== undefined || max !== undefined) {
-                                        isValid = validateValue(val, { min, max });
-                                    }
+                                    const expectedValue = row.std_val === '∞' ? '∞' : row[`${col.key}_expected`];
+
+                                    validationClass = getValidationClass(val, { min, max, expectedValue });
                                 }
 
                                 return (
@@ -128,24 +131,42 @@ const FormQuickTable = ({
                                             border border-black px-1 py-0.5 text-center
                                             ${isLabel ? 'bg-gray-50' : ''}
                                             ${col.align === 'left' ? 'text-left' : 'text-center'}
-                                            ${!isValid ? 'bg-red-200' : ''}
+                                            ${validationClass}
                                         `}
                                     >
                                         {col.render ? (
                                             col.render(cellValue, row, { register, watch })
-                                        ) : col.type === 'checkbox' ? (
+                                        ) : effectiveType === 'tristate' ? (
+                                            <div
+                                                onClick={() => {
+                                                    const current = watch(cellValue) || '';
+                                                    const next = current === '' ? '✓' : current === '✓' ? '✕' : '';
+                                                    setValue(cellValue, next, { shouldValidate: true, shouldDirty: true });
+                                                }}
+                                                className="w-6 h-6 border border-gray-400 bg-white mx-auto flex items-center justify-center cursor-pointer hover:bg-gray-100 select-none text-sm font-bold shadow-sm rounded-sm"
+                                            >
+                                                {watch(cellValue)}
+                                            </div>
+                                        ) : effectiveType === 'checkbox' ? (
                                             <input
                                                 type="checkbox"
                                                 {...register(cellValue)}
                                                 className="w-4 h-4 cursor-pointer"
                                             />
-                                        ) : col.type === 'input' ? (
-                                            <input
-                                                type="text"
-                                                {...register(cellValue)}
-                                                defaultValue={row.defaultValue ?? ''}
-                                                className="bg-transparent outline-none text-center border-b border-transparent focus:border-blue-500 w-full"
-                                            />
+                                        ) : effectiveType === 'input' ? (
+                                            <div className="flex items-center gap-1">
+                                                <input
+                                                    type="text"
+                                                    {...register(cellValue)}
+                                                    onChange={(e) => {
+                                                        register(cellValue).onChange(e);
+                                                        handleInfinityShortcut(e, cellValue, setValue);
+                                                    }}
+                                                    defaultValue={row.defaultValue ?? ''}
+                                                    className="bg-transparent outline-none text-center border-b border-transparent focus:border-blue-500 w-full flex-1"
+                                                />
+                                                {row.suffix && <span className="shrink-0">{row.suffix}</span>}
+                                            </div>
                                         ) : (
                                             <span className="whitespace-pre-wrap">{cellValue}</span>
                                         )}

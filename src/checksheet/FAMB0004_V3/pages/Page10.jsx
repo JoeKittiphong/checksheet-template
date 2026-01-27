@@ -7,7 +7,7 @@ import FormEDMLevelCeramic from "@/components/FormComponents/FormEDMLevelCeramic
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image17 from "@/assets/FAMB0004_V3/image-17.png";
+import image17 from "@/assets/FAMB0004_V3/image-10.PNG";
 
 function Page10() {
     const { control } = useFormContext();
