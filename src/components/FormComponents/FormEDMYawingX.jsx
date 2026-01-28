@@ -13,7 +13,12 @@ const FormEDMYawingX = ({ name, defaultValue, ...props }) => {
             render={({ field }) => (
                 <EDMYawingX
                     data={field.value || {}}
-                    onChange={field.onChange}
+                    onChange={(key, val) => {
+                        field.onChange({
+                            ...(field.value || {}),
+                            [key]: val
+                        });
+                    }}
                     {...props}
                 />
             )}

@@ -256,7 +256,7 @@ function EDMYawingX({
     stdYawing = 2,     // Standard for overall Yawing X
     stdSquare = 10     // Standard for Square Y value
 }) {
-    const [allPoints, setAllPoints] = useState({
+    const [allPoints, setAllPoints] = useState(data.points || {
         xMinus: { top: '', mid1: '', mid2: '' },
         xC: { top: '', mid1: '', mid2: '' },
         xPlus: { top: '', mid1: '', mid2: '' }
@@ -272,13 +272,15 @@ function EDMYawingX({
     const [validSquare, setValidSquare] = useState(true);
 
     const handlePointUpdate = (graphKey, pointKey, val) => {
-        setAllPoints(prev => ({
-            ...prev,
+        const newPoints = {
+            ...allPoints,
             [graphKey]: {
-                ...prev[graphKey],
+                ...allPoints[graphKey],
                 [pointKey]: val
             }
-        }));
+        };
+        setAllPoints(newPoints);
+        onChange('points', newPoints);
     };
 
     // Calculate overall Yawing X

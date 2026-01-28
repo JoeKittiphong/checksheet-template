@@ -15,6 +15,7 @@
 ### ขั้นตอนที่ 2: สร้างไฟล์ Component หน้า (PageX.jsx)
 - **DRY (Don't Repeat Yourself)**: หากพบว่ามี UI Pattern เดิมที่เคยเขียนไว้ในหน้าอื่น ให้พยายามดึงออกมาเป็น Component หรือใช้ Component ที่มีอยู่แล้วเสมอ
 - **Check Existing Components**: ก่อนสร้าง Section หรือ Table ใหม่ ให้ตรวจสอบที่ `src/components/FormComponents` และ `src/components/UIcomponent` ว่ามี Component ที่วาง Pattern ไว้แล้วหรือไม่ เพื่อให้ UI ทั้งโปรเจกต์เป็นไปในทิศทางเดียวกัน
+- **Verify Imports**: เมื่อสร้างหน้า Page ใหม่ ให้ตรวจสอบว่าได้ `import { content }` จากไฟล์ setting ประจำ Checksheet มาใช้ใน `<A4Paper />` เสมอ เพื่อป้องกันปัญหาหน้าจอขาว (White Screen)
 
 ### ขั้นตอนที่ 3: ลงทะเบียนหน้าใหม่
 ไปที่ไฟล์หลักของ Checksheet (เช่น `FAWI0002_V3.jsx`) แล้วทำการ:
