@@ -5,6 +5,7 @@ import ProfileBar from "@/components/UIcomponent/ProfileBar";
 import Pagination from "@/components/UIcomponent/Pagination";
 import { saveForm, loadForm } from "@/utils/apiUtils";
 import { ChecksheetProvider } from "@/context/ChecksheetContext";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 /**
  * ChecksheetMaster Component
@@ -30,6 +31,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [formId, setFormId] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
 
     // Initialize Global Form State
     const methods = useForm({
@@ -40,6 +42,10 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
             ...initialValues
         }
     });
+
+    // Auto-Save Hook
+    const autoSaveKey = currentUser ? `autosave_${currentUser.code}_${meta.checksheet_name}` : null;
+    const { clearSavedData } = useAutoSave(methods, autoSaveKey);
 
     // Check authentication and load data
     useEffect(() => {
@@ -52,6 +58,8 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                     window.location.href = '/'; // Redirect to login/home
                     return;
                 }
+                const user = authRes.data.user;
+                setCurrentUser(user);
 
                 const data = await loadForm({
                     apiEndpoint,
@@ -60,9 +68,24 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                 });
 
                 if (data) {
-                    if (data.checksheet_data) {
-                        methods.reset(data.checksheet_data);
+                    let finalData = data.checksheet_data || {};
+
+                    // Auto-Restore logic: Merge DB data with LocalStorage data
+                    const key = `autosave_${user.code}_${meta.checksheet_name}`;
+                    try {
+                        const savedLocal = localStorage.getItem(key);
+                        if (savedLocal) {
+                            const parsedLocal = JSON.parse(savedLocal);
+                            console.log("Restoring data from AutoSave...");
+                            // Merge: LocalStorage takes priority for draft changes
+                            finalData = { ...finalData, ...parsedLocal };
+                        }
+                    } catch (e) {
+                        console.error("Failed to restore auto-save data:", e);
                     }
+
+                    methods.reset(finalData);
+
                     if (data.id) {
                         setFormId(data.id);
                     }
@@ -91,6 +114,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
             });
 
             if (result.success) {
+                clearSavedData(); // Clear auto-save on success
                 alert(result.message); // Existing alert
                 return result; // Return result for ProfileBar to handle modal/redirect
             }
