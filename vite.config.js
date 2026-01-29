@@ -6,7 +6,7 @@ import path from 'path'
 import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
-const formName = process.env.FORM_NAME || 'FAWI0002_V3';
+const formName = process.env.FORM_NAME || 'FAMB0002V2';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -47,10 +47,21 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,json}'],
+        // Exclude index.html from precaching to ensure NetworkFirst handles it
+        globPatterns: ['**/*.{js,css,ico,png,svg,jpg,jpeg,json}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         cleanupOutdatedCaches: true,
         runtimeCaching: [
+          {
+            // Use NetworkFirst strategy for the main page (navigation)
+            // This ensures we hit the server's auth check when online
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              networkTimeoutSeconds: 3,
+            }
+          },
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
             handler: 'NetworkFirst',

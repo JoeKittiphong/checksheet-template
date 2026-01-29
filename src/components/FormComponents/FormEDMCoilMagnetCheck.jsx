@@ -9,10 +9,27 @@ const FormEDMCoilMagnetCheck = ({ name, defaultValue, ...props }) => {
         <Controller
             name={name}
             control={control}
-            defaultValue={defaultValue || []}
+            defaultValue={defaultValue || {}}
+            rules={{
+                validate: (value) => {
+                    // Check if S/N fields are filled according to config
+                    if (!props.config) return true;
+
+                    for (const group of props.config) {
+                        const axisData = value?.[group.axis] || [];
+                        const specCount = group.specs?.length || 0;
+
+                        for (let i = 0; i < specCount; i++) {
+                            const item = axisData[i] || {};
+                            if (!item.sn || item.sn.trim() === '') return "Required";
+                        }
+                    }
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <EDMCoilMagnetCheck
-                    data={field.value || []}
+                    data={field.value || {}}
                     onChange={field.onChange}
                     {...props}
                 />

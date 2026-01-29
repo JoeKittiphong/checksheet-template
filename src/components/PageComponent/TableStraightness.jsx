@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -30,6 +31,7 @@ function TableStraightness({
     topLabel = "Top",
     sideLabel = "Side"
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     const inputRefsTop = useRef([]);
     const inputRefsSide = useRef([]);
@@ -169,11 +171,20 @@ function TableStraightness({
             const validTop = isValid('top', dataIndex);
             const validSide = isValid('side', dataIndex);
 
+            const isReqErrorTop = isSubmitted && (isValid('top', dataIndex) && (data.top?.[dataIndex] === '' || data.top?.[dataIndex] === null || data.top?.[dataIndex] === undefined));
+            // Correct logic: isReqError if Submitted AND Value is Empty.
+            // My previous logic in other components was: isSubmitted && (val === '' ...)
+            const valTop = data.top?.[dataIndex];
+            const isReqErrorT = isSubmitted && (valTop === '' || valTop === null || valTop === undefined);
+
+            const valSide = data.side?.[dataIndex];
+            const isReqErrorS = isSubmitted && (valSide === '' || valSide === null || valSide === undefined);
+
             rowElements.push(
                 <tr key={i}>
                     <td className="border border-black p-1 text-center text-sm w-10">{displayStep}</td>
                     <td className="border border-black p-1 text-center text-sm w-12">{stork}</td>
-                    <td className={`border border-black p-1 ${!validTop ? 'bg-red-200' : ''}`}>
+                    <td className={`border p-1 ${isReqErrorT ? 'border-red-500 border-2' : 'border-black'} ${!isReqErrorT && !validTop ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsTop.current[dataIndex] = el)}
                             type="text"
@@ -186,7 +197,7 @@ function TableStraightness({
                             className="w-full h-full text-center bg-transparent outline-none text-sm"
                         />
                     </td>
-                    <td className={`border border-black p-1 ${!validSide ? 'bg-red-200' : ''}`}>
+                    <td className={`border p-1 ${isReqErrorS ? 'border-red-500 border-2' : 'border-black'} ${!isReqErrorS && !validSide ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsSide.current[dataIndex] = el)}
                             type="text"

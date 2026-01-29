@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useChecksheet } from "../../context/ChecksheetContext";
 import SignatureModal from "./SignatureModal";
 import DateInput from "./DateInput";
+import TristateCheckbox from "@/components/UIcomponent/TristateCheckbox";
 
 /**
  * OverApproval Component
@@ -67,11 +68,10 @@ function OverApproval({
                 `}</style>
                 {/* Checkbox Column */}
                 <div className="border-r border-black flex items-center justify-center" style={{ width: '8mm' }}>
-                    <input
-                        type="checkbox"
-                        checked={data.isApproved || false}
-                        onChange={(e) => handleChange('isApproved', e.target.checked)}
-                        className="cursor-pointer"
+                    <TristateCheckbox
+                        value={data.isApproved}
+                        onChange={(val) => handleChange('isApproved', val)}
+                        size="w-5 h-5"
                     />
                 </div>
 

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -21,6 +22,7 @@ function TableEnto({
     maxValue = 15,      // Validation max for A and B
     maxDiff = 1         // Validation max for diff
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     // Generate Row labels: top = (rowCount-1)*stepSize, bottom = 0
     const rowLabels = [];
@@ -169,7 +171,7 @@ function TableEnto({
                             <td style={tdStyle}>{label}</td>
 
                             {/* Column A */}
-                            <td style={{ ...tdStyle, padding: 0, ...(isABInvalid('a', idx) ? invalidStyle : {}) }}>
+                            <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('a', idx) ? (isABInvalid('a', idx) ? invalidStyle : {}) : { border: '2px solid red' }) }}>
                                 <input
                                     ref={el => inputRefsA.current[idx] = el}
                                     type="text"
@@ -183,7 +185,7 @@ function TableEnto({
                             </td>
 
                             {/* Column B */}
-                            <td style={{ ...tdStyle, padding: 0, ...(isABInvalid('b', idx) ? invalidStyle : {}) }}>
+                            <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('b', idx) ? (isABInvalid('b', idx) ? invalidStyle : {}) : { border: '2px solid red' }) }}>
                                 <input
                                     ref={el => inputRefsB.current[idx] = el}
                                     type="text"

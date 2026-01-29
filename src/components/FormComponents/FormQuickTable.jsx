@@ -1,16 +1,12 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form'; // Add Controller
 import { handleInfinityShortcut, getValidationClass } from '../../utils/formUtils';
 import { useKeypad } from '../../context/KeypadContext';
+import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox'; // Add TristateCheckbox
 
 /**
  * FormQuickTable Component
- * สร้างตารางแบบ Dynamic และรองรับ Auto RowSpan จากข้อมูลที่ซ้ำกัน
- * 
- * @param {Array} columns - โครงสร้างคอลัมน์และหัวตาราง [{ header: 'Name', key: 'id', rowGroup: true, type: 'text', width: '100px' }]
- * @param {Array} data - ข้อมูลแถว [{ id: 'Row1', ... }]
- * @param {Array} headerRows - (Optional) หัวตารางหลายชั้น [[{ header: 'H1', colSpan: 2 }, ...], [{ header: 'SubH1' }, { header: 'SubH2' }]]
- * @param {string} className - คลาสเพิ่มเติมสำหรับ <table>
+ * ...
  */
 const FormQuickTable = ({
     columns = [],
@@ -18,7 +14,7 @@ const FormQuickTable = ({
     headerRows = null,
     className = ""
 }) => {
-    const { register, watch, setValue } = useFormContext();
+    const { register, watch, setValue, control, formState: { errors } } = useFormContext(); // Add control and errors
     const { openKeypad, isKeypadEnabled } = useKeypad();
 
     // -- Helper to calculate row spans for grouping columns --
@@ -64,10 +60,17 @@ const FormQuickTable = ({
                                     >
                                         <div className="flex justify-center items-center gap-2">
                                             {cell.headerCheckbox && (
-                                                <input
-                                                    type="checkbox"
-                                                    {...register(cell.headerCheckbox)}
-                                                    className="w-4 h-4 cursor-pointer"
+                                                <Controller
+                                                    name={cell.headerCheckbox}
+                                                    control={control}
+                                                    rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                                                    render={({ field }) => (
+                                                        <TristateCheckbox
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            size="w-4 h-4"
+                                                        />
+                                                    )}
                                                 />
                                             )}
                                             <span>{cell.header}</span>
@@ -87,10 +90,17 @@ const FormQuickTable = ({
                                     {col.headerComponent ? col.headerComponent : (
                                         <div className="flex px-1 py-0.5 justify-center items-center gap-2">
                                             {col.headerCheckbox && (
-                                                <input
-                                                    type="checkbox"
-                                                    {...register(col.headerCheckbox)}
-                                                    className="w-4 h-4 cursor-pointer"
+                                                <Controller
+                                                    name={col.headerCheckbox}
+                                                    control={control}
+                                                    rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                                                    render={({ field }) => (
+                                                        <TristateCheckbox
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            size="w-4 h-4"
+                                                        />
+                                                    )}
                                                 />
                                             )}
                                             <span>{col.header}</span>
@@ -150,19 +160,37 @@ const FormQuickTable = ({
                                                 {watch(cellValue)}
                                             </div>
                                         ) : effectiveType === 'checkbox' ? (
-                                            <input
-                                                type="checkbox"
-                                                {...register(cellValue)}
-                                                className="w-4 h-4 cursor-pointer"
+                                            <Controller
+                                                name={cellValue}
+                                                control={control}
+                                                rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                                                render={({ field, fieldState: { error } }) => (
+                                                    <TristateCheckbox
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        error={!!error}
+                                                        size="w-5 h-5"
+                                                    />
+                                                )}
                                             />
                                         ) : effectiveType === 'input' ? (
                                             <div className="flex items-center gap-1">
                                                 {(() => {
                                                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+                                                    // Helper to get nested error
+                                                    const getNestedError = (obj, path) => {
+                                                        return path && path.split('.').reduce((acc, part) => acc && acc[part], obj);
+                                                    };
+                                                    // errors is not defined in this scope, assuming it should come from useFormContext
+                                                    // errors is already defined in the component scope
+                                                    // const { formState: { errors } } = useFormContext();
+                                                    const error = getNestedError(errors, cellValue);
+
                                                     return (
                                                         <input
                                                             type="text"
-                                                            {...register(cellValue)}
+                                                            {...register(cellValue, { required: true })} // Default required
                                                             inputMode={isMobile ? "none" : "text"}
                                                             readOnly={isMobile}
                                                             onClick={() => {
@@ -177,7 +205,9 @@ const FormQuickTable = ({
                                                                 }
                                                             }}
                                                             defaultValue={row.defaultValue ?? ''}
-                                                            className="bg-transparent outline-none text-center border-b border-transparent focus:border-blue-500 w-full flex-1 cursor-pointer"
+                                                            className={`bg-transparent outline-none text-center border-b focus:border-blue-500 w-full flex-1 cursor-pointer
+                                                                ${error ? 'border-red-500' : 'border-transparent'}
+                                                            `}
                                                         />
                                                     );
                                                 })()}

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
+import { useFormContext } from 'react-hook-form';
 
 // ...
 
@@ -31,6 +32,7 @@ function LevelTableXAB({
     showStd = true,
     validateStd = true
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     // Refs สำหรับ input fields
     const inputRefsB = useRef([]);
@@ -177,8 +179,14 @@ function LevelTableXAB({
         const inputs = [];
         for (let i = 0; i < cols; i++) {
             const valid = isValid(row, i);
+            const val = getInputValue(row, i);
+            // Check if empty and submitted
+            // getInputValue returns formatted string. data[row][i] is raw.
+            const rawVal = data[row]?.[i];
+            const isReqError = isSubmitted && (rawVal === '' || rawVal === null || rawVal === undefined);
+
             inputs.push(
-                <td key={i} className={`border border-black p-1 ${!valid ? 'bg-red-200' : ''}`}>
+                <td key={i} className={`border border-black p-1 ${isReqError ? 'border-red-500 border-2' : ''} ${!isReqError && !valid ? 'bg-red-200' : ''}`}>
                     <input
                         ref={(el) => (refs.current[i] = el)}
                         type="text"

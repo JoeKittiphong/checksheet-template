@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -24,6 +25,7 @@ function TablePitchingX({
     standard = { min: -20, max: 20 },
     referenceCol = 1  // X0 เป็น reference (0-indexed)
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const cols = 3; // X+, X0, X-
     const colHeaders = ['X+', 'X0', 'X-'];
 
@@ -189,8 +191,12 @@ function TablePitchingX({
                     </td>
                 );
             } else {
+                const rowData = data['b'] || [];
+                const val = rowData[i];
+                const isReqError = isSubmitted && (val === '' || val === null || val === undefined);
+
                 cells.push(
-                    <td key={i} className={`border border-black p-1 ${!valid ? 'bg-red-200' : ''}`}>
+                    <td key={i} className={`border p-1 ${isReqError ? 'border-red-500 border-2' : 'border-black'} ${!isReqError && !valid ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsB.current[i] = el)}
                             type="text"
@@ -223,8 +229,12 @@ function TablePitchingX({
                     </td>
                 );
             } else {
+                const rowData = data['t'] || [];
+                const val = rowData[i];
+                const isReqError = isSubmitted && (val === '' || val === null || val === undefined);
+
                 cells.push(
-                    <td key={i} className={`border border-black p-1 ${!valid ? 'bg-red-200' : ''}`}>
+                    <td key={i} className={`border p-1 ${isReqError ? 'border-red-500 border-2' : 'border-black'} ${!isReqError && !valid ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsT.current[i] = el)}
                             type="text"

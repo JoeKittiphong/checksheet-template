@@ -10,6 +10,12 @@ const FormStartFinishTime = ({ name, minHours, validateStd, defaultValue = { sta
             name={name}
             control={control}
             defaultValue={defaultValue}
+            rules={{
+                validate: (value) => {
+                    if (!value) return false;
+                    return (value.startTime && value.finishTime) || "Required";
+                }
+            }}
             render={({ field }) => (
                 <StartFinishTime
                     {...field}

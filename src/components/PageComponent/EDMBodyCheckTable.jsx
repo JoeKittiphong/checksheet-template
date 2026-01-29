@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import SignatureModal from "../UIcomponent/SignatureModal";
 import DateInput from "../UIcomponent/DateInput";
 import { useChecksheet } from "../../context/ChecksheetContext";
+import { useFormContext } from 'react-hook-form';
 
 /**
  * EDMBodyCheckTable Component
@@ -14,6 +15,7 @@ function EDMBodyCheckTable({
 }) {
     const { user, logout } = useAuth();
     const { handleSave } = useChecksheet();
+    const { formState: { isSubmitted } } = useFormContext();
     const [modalState, setModalState] = useState({ isOpen: false, rowNo: null, type: null });
 
     const handleUpdate = (no, field, value) => {
@@ -154,7 +156,7 @@ function EDMBodyCheckTable({
                                             <div className="flex flex-col h-full divide-y divide-black">
                                                 <input
                                                     type="text"
-                                                    style={inputStyle}
+                                                    style={{ ...inputStyle, ...(isSubmitted && !row.actionBy ? { border: '1px solid #ef4444', backgroundColor: '#fef2f2' } : {}) }}
                                                     value={row.actionBy || ''}
                                                     readOnly={true}
                                                     onClick={() => handleSignClick(row.no, 'action')}
@@ -165,6 +167,7 @@ function EDMBodyCheckTable({
                                                     style={{ ...inputStyle, fontSize: '8px' }}
                                                     value={row.actionDate || ''}
                                                     onChange={(newValue) => handleUpdate(row.no, 'actionDate', newValue)}
+                                                    error={isSubmitted && !row.actionDate}
                                                 />
                                             </div>
                                         </td>
@@ -172,7 +175,7 @@ function EDMBodyCheckTable({
                                             <div className="flex flex-col h-full divide-y divide-black">
                                                 <input
                                                     type="text"
-                                                    style={inputStyle}
+                                                    style={{ ...inputStyle, ...(isSubmitted && !row.doubleBy ? { border: '1px solid #ef4444', backgroundColor: '#fef2f2' } : {}) }}
                                                     value={row.doubleBy || ''}
                                                     readOnly={true}
                                                     onClick={() => handleSignClick(row.no, 'double')}
@@ -183,6 +186,7 @@ function EDMBodyCheckTable({
                                                     style={{ ...inputStyle, fontSize: '8px' }}
                                                     value={row.doubleDate || ''}
                                                     onChange={(newValue) => handleUpdate(row.no, 'doubleDate', newValue)}
+                                                    error={isSubmitted && !row.doubleDate}
                                                 />
                                             </div>
                                         </td>

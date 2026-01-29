@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import Checknumber from "@/components/UIcomponent/Checknumber";
@@ -15,7 +16,8 @@ function SingleYawingGraphY({
     zeroLineY = 40,
     polarity = -1, // Default -1 (Up is +) based on Y+ image logic
     graphType = "horizontal",
-    axisLayout = "topRight" // "topRight", "bottomRight", "cornerGamma"
+    axisLayout = "topRight", // "topRight", "bottomRight", "cornerGamma"
+    error = false
 }) {
     const [activePoint, setActivePoint] = useState(null);
     const [inputValue, setInputValue] = useState('');
@@ -299,7 +301,7 @@ function SingleYawingGraphY({
                 <span className="mr-2 text-sm font-bold">{label}</span>
                 <input
                     type="text"
-                    className="w-16 border-b border-black text-center outline-none bg-transparent"
+                    className={`w-16 border-b border-black text-center outline-none bg-transparent ${error ? 'bg-red-50 border-red-500' : ''}`}
                     value={value || ''}
                     readOnly
                 />
@@ -313,6 +315,7 @@ function YawingY({
     data = { yPlus: '', yC: '', yMinus: '' },
     onChange = () => { }
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const [allPoints, setAllPoints] = useState({
         yPlus: { mid1: 0, mid2: 0, bot: 0 },
         yC: { mid1: 0, mid2: 0, bot: 0 },
@@ -425,6 +428,7 @@ function YawingY({
                             onChange={(val) => onChange('squareNo', val)}
                             labelClass="text-[10px]"
                             inputClass="w-12 text-[10px]"
+                            error={isSubmitted && !data.squareNo}
                         />
                     </div>
                     <div className="text-sm">
@@ -434,6 +438,7 @@ function YawingY({
                             onChange={(val) => onChange('dialGaugeNo', val)}
                             labelClass="text-[10px]"
                             inputClass="w-12 text-[10px]"
+                            error={isSubmitted && !data.dialGaugeNo}
                         />
                     </div>
                 </div>
@@ -465,6 +470,7 @@ function YawingY({
                     zeroLineY={40}
                     polarity={-1} // UP is +
                     axisLayout="topRight"
+                    error={isSubmitted && !data.yPlus}
                 />
 
                 {/* Yc */}
@@ -480,6 +486,7 @@ function YawingY({
                     polarity={-1} // UP is +
                     axisLayout="cornerGamma"
                     graphType="corner"
+                    error={isSubmitted && !data.yC}
                 />
 
                 {/* Y- */}
@@ -492,6 +499,7 @@ function YawingY({
                     zeroLineY={120}
                     polarity={1} // DOWN is +
                     axisLayout="bottomRight"
+                    error={isSubmitted && !data.yMinus}
                 />
             </div>
         </div>

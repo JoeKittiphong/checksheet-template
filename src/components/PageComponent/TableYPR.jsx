@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -26,6 +27,7 @@ function TableYPR({
     rows = 3,
     referenceRow = 1  // แถวที่เป็นจุดอ้างอิง (0-indexed), default แถวกลาง
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     const inputRefsP = useRef([]);
     const inputRefsR = useRef([]);
@@ -167,37 +169,26 @@ function TableYPR({
             const isRValid = isReference ? true : isValid(i, 'r');
 
             if (isReference) {
-                // แถวอ้างอิง - แสดงค่า 0 พร้อมลูกศรบอกทิศทาง และไม่สามารถแก้ไขได้
+                // Reference row
                 rowElements.push(
                     <tr key={i}>
-                        {/* Fixed P = 0 with vertical arrow */}
-                        <td className="border border-black p-1 w-12 text-center text-sm bg-gray-50">
-                            0↕
-                        </td>
-                        {/* Fixed R = 0 with horizontal arrow */}
-                        <td className="border border-black p-1 w-12 text-center text-sm bg-gray-50">
-                            ←0→
-                        </td>
-                        {/* STD P = 0 */}
-                        <td className="border border-black p-1 w-12 text-center text-xs bg-gray-100">
-                            0
-                        </td>
-                        {/* STD R = 0 */}
-                        <td className="border border-black p-1 w-12 text-center text-xs bg-gray-100">
-                            0
-                        </td>
-                        {/* No. */}
-                        <td className="border border-black p-1 w-10 text-center bg-gray-200 font-medium">
-                            {rows - i}
-                        </td>
+                        <td className="border border-black p-1 w-12 text-center text-sm bg-gray-50">0↕</td>
+                        <td className="border border-black p-1 w-12 text-center text-sm bg-gray-50">←0→</td>
+                        <td className="border border-black p-1 w-12 text-center text-xs bg-gray-100">0</td>
+                        <td className="border border-black p-1 w-12 text-center text-xs bg-gray-100">0</td>
+                        <td className="border border-black p-1 w-10 text-center bg-gray-200 font-medium">{rows - i}</td>
                     </tr>
                 );
             } else {
-                // แถวปกติ - รับ input ได้
+                // Normal row
+                const rowData = data[i] || { p: '', r: '' };
+                const isReqErrorP = isSubmitted && (rowData.p === '' || rowData.p === null || rowData.p === undefined);
+                const isReqErrorR = isSubmitted && (rowData.r === '' || rowData.r === null || rowData.r === undefined);
+
                 rowElements.push(
                     <tr key={i}>
                         {/* Input P */}
-                        <td className={`border border-black p-1 w-12 ${!isPValid ? 'bg-red-200' : ''}`}>
+                        <td className={`border p-1 w-12 ${isReqErrorP ? 'border-red-500 border-2' : 'border-black'} ${!isReqErrorP && !isPValid ? 'bg-red-200' : ''}`}>
                             <input
                                 ref={(el) => (inputRefsP.current[i] = el)}
                                 type="text"
@@ -211,7 +202,7 @@ function TableYPR({
                             />
                         </td>
                         {/* Input R */}
-                        <td className={`border border-black p-1 w-12 ${!isRValid ? 'bg-red-200' : ''}`}>
+                        <td className={`border p-1 w-12 ${isReqErrorR ? 'border-red-500 border-2' : 'border-black'} ${!isReqErrorR && !isRValid ? 'bg-red-200' : ''}`}>
                             <input
                                 ref={(el) => (inputRefsR.current[i] = el)}
                                 type="text"

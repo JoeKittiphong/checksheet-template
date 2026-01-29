@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { cleanNumericInput } from '../../utils/formatUtils';
 
 /**
@@ -25,6 +26,7 @@ function SQRgrapX({
     showTopSigns = false, // Show +/- for top axis
     showZeros = false,    // Show 0 markers
 }) {
+    const { formState: { isSubmitted } } = useFormContext(); // Get submission state
     // State for points: mid1, mid2, bot (Top is fixed at 0)
     // Values in μm
     const [points, setPoints] = useState({ mid1: 0, mid2: 0, bot: 0 });
@@ -285,7 +287,7 @@ function SQRgrapX({
                 <input
                     type="text"
                     inputMode="numeric"
-                    className="w-16 border-b border-black text-center outline-none bg-transparent text-sm"
+                    className={`w-16 border-b text-center outline-none bg-transparent text-sm ${isSubmitted && !value ? 'border-red-500 bg-red-50' : 'border-black'}`}
                     value={value}
                     onChange={(e) => {
                         const cleanVal = e.target.value.replace(/[^0-9.\-]/g, '');

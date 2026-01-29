@@ -1,5 +1,9 @@
 
 
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import TristateCheckbox from '../UIcomponent/TristateCheckbox';
+
 /**
  * EDMCoilTubeCheck Component
  * ตารางเช็ค Coil Tube IN/OUT สำหรับแต่ละ Axis
@@ -19,12 +23,14 @@ function EDMCoilTubeCheck({
     },
     onChange = () => { }
 }) {
-    const handleCheckChange = (axis, type) => {
+    const { formState: { isSubmitted } } = useFormContext();
+
+    const handleCheckChange = (axis, type, value) => {
         const newData = { ...data };
         if (!newData[axis]) {
             newData[axis] = { in: false, out: false };
         }
-        newData[axis][type] = !newData[axis][type];
+        newData[axis][type] = value;
         onChange(newData);
     };
 
@@ -39,6 +45,11 @@ function EDMCoilTubeCheck({
 
         axisConfig.forEach((axis) => {
             // First row (Coil "IN")
+            const inValue = data[axis.key]?.in;
+            const outValue = data[axis.key]?.out;
+            const isInError = isSubmitted && !inValue;
+            const isOutError = isSubmitted && !outValue;
+
             rows.push(
                 <tr key={`${axis.key}-in`}>
                     <td
@@ -48,12 +59,12 @@ function EDMCoilTubeCheck({
                         {axis.label}
                     </td>
                     <td className="border border-black p-1 text-center">Coil "IN"</td>
-                    <td className="border border-black p-1 text-center">
-                        <input
-                            type="checkbox"
-                            checked={data[axis.key]?.in || false}
-                            onChange={() => handleCheckChange(axis.key, 'in')}
-                            className="w-4 h-4 cursor-pointer"
+                    <td className="border border-black p-1 text-center flex justify-center">
+                        <TristateCheckbox
+                            value={inValue}
+                            onChange={(val) => handleCheckChange(axis.key, 'in', val)}
+                            error={isInError}
+                            size="w-4 h-4"
                         />
                     </td>
                 </tr>
@@ -63,12 +74,12 @@ function EDMCoilTubeCheck({
             rows.push(
                 <tr key={`${axis.key}-out`}>
                     <td className="border border-black p-1 text-center">Coil "OUT"</td>
-                    <td className="border border-black p-1 text-center">
-                        <input
-                            type="checkbox"
-                            checked={data[axis.key]?.out || false}
-                            onChange={() => handleCheckChange(axis.key, 'out')}
-                            className="w-4 h-4 cursor-pointer"
+                    <td className="border border-black p-1 text-center flex justify-center">
+                        <TristateCheckbox
+                            value={outValue}
+                            onChange={(val) => handleCheckChange(axis.key, 'out', val)}
+                            error={isOutError}
+                            size="w-4 h-4"
                         />
                     </td>
                 </tr>

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -37,6 +38,8 @@ function TableXABDIFF({
     labelA = 'A = Kb',
     labelB = 'B'
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
+    const { moveFocus } = useFocusNavigation();
     const inputRefsB = useRef([]);
     const inputRefsA = useRef([]);
 
@@ -206,8 +209,12 @@ function TableXABDIFF({
         const inputs = [];
         for (let i = 0; i < cols; i++) {
             const valid = isValid(row, i);
+            const rowData = data[row] || [];
+            const val = rowData[i];
+            const isReqError = isSubmitted && (val === '' || val === null || val === undefined);
+
             inputs.push(
-                <td key={i} className={`border border-black p-1 ${!valid ? 'bg-red-200' : ''}`}>
+                <td key={i} className={`border p-1 ${isReqError ? 'border-red-500 border-2' : 'border-black'} ${!isReqError && !valid ? 'bg-red-200' : ''}`}>
                     <input
                         ref={(el) => (refs.current[i] = el)}
                         type="text"

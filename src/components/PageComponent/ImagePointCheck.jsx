@@ -1,4 +1,5 @@
 import React from 'react';
+import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox';
 
 /**
  * ImagePointCheck Component
@@ -14,6 +15,7 @@ import React from 'react';
  *   - x, y: position as percentage (0-100) or mm
  *   - textPosition: 'left' | 'right' | 'top' | 'bottom' (default 'right')
  * - onChange: callback when a point check is toggled
+ * - error: boolean default false
  */
 function ImagePointCheck({
     backgroundImage = '',
@@ -21,7 +23,8 @@ function ImagePointCheck({
     height = 'auto',
     points = [],
     onChange = () => { },
-    aspectRatio = null  // e.g., '16/9' or '4/3'
+    aspectRatio = null,
+    error = false
 }) {
     const handleCheckChange = (pointId, checked) => {
         onChange(pointId, checked);
@@ -66,12 +69,12 @@ function ImagePointCheck({
                 >
                     {/* Checkbox */}
                     <div className="relative flex items-center">
-                        <input
-                            type="checkbox"
-                            checked={point.checked || false}
-                            onChange={(e) => handleCheckChange(point.id, e.target.checked)}
-                            className="cursor-pointer"
-                            style={{ width: '5mm', height: '5mm' }}
+                        <TristateCheckbox
+                            value={point.checked}
+                            onChange={(val) => handleCheckChange(point.id, val)}
+                            size="w-5 h-5"
+                            className="bg-white/80"
+                            error={error && (point.checked === null || point.checked === '' || point.checked === undefined)}
                         />
 
                         {/* Label */}

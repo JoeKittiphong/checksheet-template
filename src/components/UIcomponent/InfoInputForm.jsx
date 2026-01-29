@@ -1,4 +1,6 @@
 import { useKeypad } from '../../context/KeypadContext';
+import { useFormContext } from 'react-hook-form';
+import { useEffect } from 'react';
 
 /**
  * InfoInputForm Component
@@ -11,6 +13,15 @@ function InfoInputForm({
 }) {
     const { openKeypad, isKeypadEnabled } = useKeypad();
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Add validation
+    const { register } = useFormContext();
+    useEffect(() => {
+        register('machineNo', { required: true });
+        register('controllerNo', { required: true });
+        // register('startDate', { required: true }); // Start/Finish Date might be optional? User didn't specify.
+        // Usually Machine No is critical. I'll require Machine/Controller No for now.
+    }, [register]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

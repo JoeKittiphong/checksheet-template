@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 
@@ -10,8 +11,11 @@ function SingleUVGraph({
     onPointChange,
     secondaryPoints,      // Secondary Points (Blue)
     onSecondaryPointChange,
+    onSecondaryPointChange,
     axisLabel1 = "U",
-    axisLabel2 = "V"
+    axisLabel2 = "V",
+    errorU = false,
+    errorV = false
 }) {
     const [activePoint, setActivePoint] = useState(null);
     const [inputValue, setInputValue] = useState('');
@@ -123,7 +127,7 @@ function SingleUVGraph({
 
                 {/* U axis label (horizontal) */}
                 <line x1="60" y1="35" x2="60" y2="45" stroke="black" strokeWidth="1.5" />
-                <text x="50" y="45" fontSize="14" textAnchor="end">{axisLabel1}</text>
+                <text x="50" y="45" fontSize="14" textAnchor="end" fill={errorU ? 'red' : 'black'}>{axisLabel1}</text>
                 <text x="60" y="65" fontSize="12" textAnchor="middle">+</text>
 
                 {/* Origin 0 */}
@@ -131,7 +135,7 @@ function SingleUVGraph({
 
                 {/* V axis label (vertical) */}
                 <line x1="155" y1="120" x2="165" y2="120" stroke="black" strokeWidth="1.5" />
-                <text x="160" y="140" fontSize="14" textAnchor="middle">{axisLabel2}</text>
+                <text x="160" y="140" fontSize="14" textAnchor="middle" fill={errorV ? 'red' : 'black'}>{axisLabel2}</text>
                 <text x="145" y="120" fontSize="12" textAnchor="end">+</text>
                 <text x="175" y="120" fontSize="12" textAnchor="start">-</text>
 
@@ -224,6 +228,7 @@ function YawingUV({
     stdU = 2,
     stdV = 2
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const [allPoints, setAllPoints] = useState({
         primary: { mid1: 0, mid2: 0, bot: 0 },   // V axis (vertical, red)
         secondary: { mid1: 0, mid2: 0, bot: 0 } // U axis (horizontal, blue)
@@ -280,6 +285,8 @@ function YawingUV({
                 onSecondaryPointChange={(pk, val) => handlePointUpdate('secondary', pk, val)}
                 axisLabel1="U"
                 axisLabel2="V"
+                errorU={isSubmitted && !data.u}
+                errorV={isSubmitted && !data.v}
             />
 
         </div>

@@ -2,7 +2,8 @@
  * SignBox Component
  * กล่องลงนาม Checked By และ Approved By
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useAuth } from "../../context/AuthContext";
 import { useChecksheet } from "../../context/ChecksheetContext";
 import SignatureModal from "./SignatureModal";
@@ -13,7 +14,16 @@ function SignBox({
 }) {
     const { user, logout } = useAuth();
     const { handleSave } = useChecksheet(); // Global save
+    const { formState: { isSubmitted }, register } = useFormContext(); // Get submit state
     const [modalState, setModalState] = useState({ isOpen: false, roleType: null });
+
+    // Validate required fields
+    useEffect(() => {
+        register('checkCode', { required: true });
+        register('checkName', { required: true });
+        register('approveCode', { required: true });
+        register('approveName', { required: true });
+    }, [register]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -76,7 +86,7 @@ function SignBox({
                                 name="checkCode"
                                 value={formData.checkCode || ''}
                                 onChange={handleChange}
-                                className="w-full h-full bg-transparent text-center outline-none cursor-pointer"
+                                className={`w-full h-full bg-transparent text-center outline-none cursor-pointer ${isSubmitted && !formData.checkCode ? 'border-2 border-red-500' : ''}`}
                                 placeholder={user ? "Click to sign" : ""}
                                 onClick={() => handleSignClick('check')}
                                 readOnly={!!user}
@@ -87,7 +97,7 @@ function SignBox({
                                 name="checkName"
                                 value={formData.checkName || ''}
                                 onChange={handleChange}
-                                className="w-full h-full bg-transparent text-center outline-none cursor-pointer"
+                                className={`w-full h-full bg-transparent text-center outline-none cursor-pointer ${isSubmitted && !formData.checkName ? 'border-2 border-red-500' : ''}`}
                                 onClick={() => handleSignClick('check')}
                                 readOnly={!!user}
                             />

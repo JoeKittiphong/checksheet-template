@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -27,6 +28,7 @@ function TableXPR({
     cols = 3,
     referenceCol = 1  // คอลัมน์ที่เป็นจุดอ้างอิง (0-indexed), default คอลัมน์กลาง
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     const inputRefsP = useRef([]);
     const inputRefsR = useRef([]);
@@ -220,8 +222,12 @@ function TableXPR({
                     </td>
                 );
             } else {
+                const rowData = data['p'] || [];
+                const val = rowData[i];
+                const isReqError = isSubmitted && (val === '' || val === null || val === undefined);
+
                 cells.push(
-                    <td key={i} className={`border border-black p-1 ${!valid ? 'bg-red-200' : ''}`}>
+                    <td key={i} className={`border p-1 ${isReqError ? 'border-red-500 border-2' : 'border-black'} ${!isReqError && !valid ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsP.current[i] = el)}
                             type="text"
@@ -254,8 +260,12 @@ function TableXPR({
                     </td>
                 );
             } else {
+                const rowData = data['r'] || [];
+                const val = rowData[i];
+                const isReqError = isSubmitted && (val === '' || val === null || val === undefined);
+
                 cells.push(
-                    <td key={i} className={`border border-black p-1 ${!valid ? 'bg-red-200' : ''}`}>
+                    <td key={i} className={`border p-1 ${isReqError ? 'border-red-500 border-2' : 'border-black'} ${!isReqError && !valid ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsR.current[i] = el)}
                             type="text"

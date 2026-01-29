@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
+import { useFormContext } from 'react-hook-form';
 
 /**
  * EDMTableStraightness Component
@@ -21,9 +22,11 @@ function EDMTableStraightness({
     strokeStep = 20,
     data = {},
     onChange = () => { },
-    standard = 3
+    standard = 3,
+    cols = 5
 }) {
-    const { moveFocus, focusNext } = useFocusNavigation();
+    const { formState: { isSubmitted } } = useFormContext();
+    const { moveFocus } = useFocusNavigation();
     const inputRefs = useRef([]);
     const [focusedRow, setFocusedRow] = useState(null);
     const [diffValue, setDiffValue] = useState(0);
@@ -144,7 +147,7 @@ function EDMTableStraightness({
                                 <input
                                     ref={el => inputRefs.current[rowIndex] = el}
                                     type="text"
-                                    className="w-full h-full text-center text-xs outline-none bg-transparent"
+                                    className={`w-full h-full text-center text-xs outline-none ${isSubmitted && !data[rowIndex] ? 'bg-red-50 border border-red-500' : 'bg-transparent'}`}
                                     value={data[rowIndex] || ''}
                                     onChange={(e) => handleInputChange(rowIndex, e.target.value)}
                                     onKeyDown={(e) => handleKeyDown(e, rowIndex)}

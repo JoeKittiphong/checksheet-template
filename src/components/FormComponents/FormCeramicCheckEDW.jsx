@@ -10,6 +10,7 @@ const FormCeramicCheckEDW = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || []}
+            rules={{ required: true }}
             render={({ field }) => (
                 <CeramicCheckEDW
                     data={field.value || []}

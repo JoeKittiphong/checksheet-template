@@ -10,6 +10,18 @@ const FormEDMYawingX = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || {}}
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    // Required fields: squareNo, dialGaugeNo
+                    if (!value.squareNo || !value.dialGaugeNo) return false;
+                    // Check if points are filled (at least some?)
+                    // The calculated values xMinus, xC, xPlus should be present if points are filled
+                    if (!value.xMinus || !value.xC || !value.xPlus) return false;
+
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <EDMYawingX
                     data={field.value || {}}

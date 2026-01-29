@@ -1,6 +1,7 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form'; // Add Controller
 import { handleInfinityShortcut, getValidationClass } from '../../utils/formUtils';
+import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox'; // Add TristateCheckbox
 
 /**
  * FormItemCheck Component
@@ -26,7 +27,11 @@ const FormItemCheck = ({
     className = "",
     showCheckbox = true
 }) => {
-    const { register, watch, setValue } = useFormContext();
+    const { register, watch, setValue, control, formState: { errors } } = useFormContext();
+
+    const getNestedError = (obj, path) => {
+        return path && path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    };
 
     // --- Helper to render specific item types ---
     const renderItem = (item, index) => {
@@ -46,18 +51,20 @@ const FormItemCheck = ({
                 validateStd: item.input.validateStd ?? true
             });
 
+            const error = getNestedError(errors, item.input.name);
+
             return (
                 <div key={`input-${index}`} className="flex items-center gap-1">
                     <input
                         type={item.input.type || "text"}
-                        {...register(item.input.name)}
+                        {...register(item.input.name, { required: true })}
                         onChange={(e) => {
                             register(item.input.name).onChange(e);
                             handleInfinityShortcut(e, item.input.name, setValue);
                         }}
                         defaultValue={item.input.defaultValue || ""}
                         style={{ width: item.input.width || '150px' }}
-                        className={`border-b border-black text-center text-sm outline-none px-1 ${validationClass}`}
+                        className={`border-b ${error ? 'border-red-500' : 'border-black'} text-center text-sm outline-none px-1 ${validationClass}`}
                     />
                     {item.input.suffix && (
                         <span className="text-sm">
@@ -73,11 +80,21 @@ const FormItemCheck = ({
     return (
         <div className={`flex items-start gap-2 ${className}`}>
             {/* Checkbox */}
+            {/* Checkbox */}
             {showCheckbox && (
-                <input
-                    type="checkbox"
-                    {...register(name)}
-                    className="w-4 h-4 border-black border-2 rounded-sm shrink-0 mt-0.5"
+                <Controller
+                    name={name}
+                    control={control}
+                    rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                    render={({ field, fieldState: { error } }) => (
+                        <TristateCheckbox
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={!!error}
+                            className="mr-2 shrink-0 mt-0.5"
+                            size="w-5 h-5"
+                        />
+                    )}
                 />
             )}
 
@@ -98,6 +115,7 @@ const FormItemCheck = ({
                         {/* Optional Input */}
                         {input && (() => {
                             const val = watch(input.name);
+                            const error = getNestedError(errors, input.name);
                             const validationClass = getValidationClass(val, {
                                 min: input.minStd,
                                 max: input.maxStd,
@@ -109,14 +127,14 @@ const FormItemCheck = ({
                                 <div className="flex items-center gap-1 shrink-0">
                                     <input
                                         type={input.type || "text"}
-                                        {...register(input.name)}
+                                        {...register(input.name, { required: true })}
                                         onChange={(e) => {
                                             register(input.name).onChange(e);
                                             handleInfinityShortcut(e, input.name, setValue);
                                         }}
                                         defaultValue={input.defaultValue || ""}
                                         style={{ width: input.width || '150px' }}
-                                        className={`border-b border-black text-center text-sm outline-none px-1 ${validationClass}`}
+                                        className={`border-b ${error ? 'border-red-500' : 'border-black'} text-center text-sm outline-none px-1 ${validationClass}`}
                                     />
                                     {input.suffix && (
                                         <span className="text-sm">

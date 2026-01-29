@@ -23,9 +23,14 @@ const FormValidatedCell = ({
     placeholder = "-",
     ...props
 }) => {
-    const { register, watch } = useFormContext();
+    const { register, watch, formState: { errors } } = useFormContext();
     const { openKeypad, isKeypadEnabled } = useKeypad();
     const val = watch(name);
+
+    const getNestedError = (obj, path) => {
+        return path && path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    };
+    const hasError = getNestedError(errors, name);
 
     // Mobile detection
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -33,11 +38,11 @@ const FormValidatedCell = ({
     // ทำการ Validate ค่าแบบ real-time
     const isValid = validateValue(val, { min, max });
 
-    return (
-        <td className={`border border-black px-2 py-1 ${!isValid ? 'bg-red-200' : ''} ${className}`}>
+    return ( // Priority: Required Error (Red Border) > Value Invalid (Red BG)
+        <td className={`border px-2 py-1 ${hasError ? 'border-red-500 border-2' : 'border-black'} ${!isValid ? 'bg-red-200' : ''} ${className}`}>
             <input
                 type="text"
-                {...register(name)}
+                {...register(name, { required: true })}
                 placeholder={placeholder}
                 inputMode={isMobile ? "none" : "text"}
                 readOnly={isMobile}

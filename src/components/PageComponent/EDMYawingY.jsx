@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import Checknumber from "@/components/UIcomponent/Checknumber";
+import { useFormContext } from 'react-hook-form';
 
 /**
  * Single Yawing Y Graph Component
@@ -291,6 +292,7 @@ function EDMYawingY({
     stdYawing = 2,     // Standard for overall Yawing Y
     stdSquare = 10     // Standard for Square X value
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const [allPoints, setAllPoints] = useState(data.points || {
         yPlus: { mid1: '', mid2: '', right: '' },
         yC: { mid1: '', mid2: '', right: '' },
@@ -432,7 +434,7 @@ function EDMYawingY({
                     {/* Yawing Y */}
                     <div className="flex items-center">
                         <span className="mr-2 text-sm">Yawing Y =</span>
-                        <span className={`border-b border-black px-3 min-w-[50px] text-center ${!isYawingValid ? 'bg-red-200 text-red-600' : ''}`}>
+                        <span className={`border-b border-black px-3 min-w-[50px] text-center ${(!isYawingValid || (isSubmitted && (!data.yPlus || !data.yC || !data.yMinus))) ? 'bg-red-200 text-red-600' : ''}`}>
                             {yawingDiff || '0'}
                         </span>
                         <span className="ml-1 text-sm">μm</span>

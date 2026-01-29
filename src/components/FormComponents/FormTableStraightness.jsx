@@ -16,6 +16,19 @@ const FormTableStraightness = ({ name, rows, standards, showStd = false, validat
             name={name}
             control={control}
             defaultValue={getDefaultValue()}
+            rules={{
+                validate: (value) => {
+                    if (!Array.isArray(value)) return "Required";
+                    // Same check as EDMTableStraightness
+                    const filled = value.filter(item =>
+                        item &&
+                        item.a !== undefined && item.a !== '' &&
+                        item.b !== undefined && item.b !== ''
+                    );
+                    if (filled.length < rows) return false;
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <TableStraightness
                     rows={rows}

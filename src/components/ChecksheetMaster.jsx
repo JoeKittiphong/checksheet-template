@@ -37,7 +37,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
     // Initialize Global Form State
     const methods = useForm({
-        mode: 'onBlur',
+        mode: 'all', // Validation triggers on change and blur for immediate feedback
         defaultValues: {
             model: meta.model,
             machine_no: '',
@@ -58,9 +58,14 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
             setIsLoading(true);
             try {
                 // Check if user is logged in
-                const authRes = await axios.get(`${apiEndpoint}/auth/me`, { withCredentials: true });
+                const authRes = await axios.get(`${apiEndpoint}/auth/me`, {
+                    withCredentials: true,
+                    timeout: 5000 // Give it some time
+                });
+
                 if (!authRes.data.success) {
-                    window.location.href = '/'; // Redirect to login/home
+                    console.warn("Auth failed: Response success is false");
+                    window.location.href = '/';
                     return;
                 }
                 const user = authRes.data.user;
@@ -99,8 +104,16 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                     }
                 }
             } catch (error) {
-                console.error("Error checking auth or loading form data:", error);
-                window.location.href = '/'; // Redirect on error
+                console.error("ChecksheetMaster Load Error:", error);
+
+                // Only redirect if it's an authentication error (401/403)
+                // If it's a network error (no response) or 500, we might stay on page for PWA/offline
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    console.error("Authentication expired. Redirecting to home...");
+                    window.location.href = '/';
+                } else if (!error.response) {
+                    console.error("Network error. Server might be down or you are offline.");
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -148,6 +161,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                             onSave={handleSave}
                             onPrint={handlePrint}
                             isSaving={isSaving}
+                            onSetPage={setCurrentPage} // Pass page setter
                         />
 
                         {/* Screen-only elements - Pagination */}

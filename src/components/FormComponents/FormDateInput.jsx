@@ -10,10 +10,12 @@ const FormDateInput = ({ name, label, defaultValue = "", ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue}
-            render={({ field }) => (
+            rules={{ required: true }}
+            render={({ field, fieldState: { error } }) => (
                 <DateInput
                     {...field}
                     label={label}
+                    error={!!error}
                     {...props}
                 />
             )}

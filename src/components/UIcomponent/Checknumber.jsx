@@ -7,7 +7,8 @@ const Checknumber = React.forwardRef(({
     onChange = () => { },
     labelClass = "text-sm",
     inputClass = "w-20 text-sm",
-    name // Expect Name
+    name, // Expect Name
+    error = false, // Receive error state
 }, ref) => {
     const { openKeypad, isKeypadEnabled } = useKeypad();
     // Simple mobile detection (can be extracted to util)
@@ -30,7 +31,9 @@ const Checknumber = React.forwardRef(({
                 // Mobile: readOnly to force keypad. PC: readOnly=false to allow typing
                 readOnly={isMobile}
                 inputMode={isMobile ? "none" : "text"}
-                className={`border-b border-black outline-none px-1 font-arial cursor-pointer ${inputClass}`}
+                className={`border-b outline-none px-1 font-arial cursor-pointer ${inputClass}
+                    ${error ? 'border-red-500' : 'border-black'}
+                `}
                 style={{ textTransform: 'uppercase' }}
                 value={value}
                 onClick={handleInputClick}

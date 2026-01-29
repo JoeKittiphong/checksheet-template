@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 
@@ -18,6 +19,7 @@ function EDMLevelCeramic({
     standardX = 20,
     standardY = 20
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     // Refs for focus management
     const refsX = {
         tl: useRef(null), tc: useRef(null), tr: useRef(null),
@@ -149,7 +151,7 @@ function EDMLevelCeramic({
                 ref={refs[key]}
                 type="text"
                 inputMode="numeric"
-                className="w-10 h-6 border border-black text-center outline-none bg-transparent text-xs"
+                className={`w-10 h-6 text-center outline-none bg-transparent text-xs ${isSubmitted && !getValue(key, axis) ? 'border border-red-500 bg-red-50' : 'border border-black'}`}
                 value={getValue(key, axis)}
                 onFocus={() => handleFocus(key, axis)}
                 onChange={(e) => handleInputChange(e.target.value)}

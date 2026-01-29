@@ -16,6 +16,24 @@ const FormLevelTableXAB = ({ name, rows, labelA, labelB, defaultValue, ...props 
             name={name}
             control={control}
             defaultValue={getDefaultValue()}
+            rules={{
+                validate: (value) => {
+                    if (!Array.isArray(value)) return "Required";
+                    const rowCount = props.rows || 16;
+
+                    // Filter for completely filled rows (A and B present)
+                    const filled = value.filter(item =>
+                        item &&
+                        (item.a !== '' && item.a !== null && item.a !== undefined) &&
+                        (item.b !== '' && item.b !== null && item.b !== undefined)
+                    );
+
+                    // Check if we have enough filled rows
+                    // Assuming all rows must be filled
+                    if (filled.length < rowCount) return "Required";
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <LevelTableXAB
                     rows={rows}

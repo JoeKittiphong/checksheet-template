@@ -165,3 +165,19 @@ _2026-01-27_
 - **Deep Debugging**: ตรวจพบไฟล์ `image-28.png` หายไปและมีการใช้ชื่อนามสกุลไฟล์พิมพ์เล็ก/ใหญ่ไม่ตรงกันระหว่างโค้ดกับไฟล์จริง (Case-sensitivity)
 - **Asset Fallback Strategy**: สำหรับหน้าที่รูปภาพหายไปอย่างถาวร (จากการ Generate Script) ได้ทำการเลือกรูปที่ใกล้เคียงที่สุดมาเป็น Fallback เพื่อให้ระบบสามารถ Build ต่อได้
 - **Normalization**: ปรับแก้การ Import รูปภาพทั้งหมดให้เป็นนามสกุล `.PNG` (ตัวใหญ่) ตามมาตรฐานของไฟล์ที่เก็บไว้ในเครื่อง เพื่อลดความสับสนในการทำงานครั้งต่อไป
+
+### 18. การตรวจสอบข้อมูลระดับโกลบอลและการบังคับลงนาม (Global Validation & Signature Enforcement)
+_2026-01-29_
+
+เพื่อความสมบูรณ์ของข้อมูลก่อนการส่งมอบ ได้ทำการ Audit และปรับปรุงระบบ Validation ทั่วทั้งแอปพลิเคชัน:
+- **Required by Default**: ปรับปรุงทุก Input Component (`TristateCheckbox`, `InputCheckSTD`, `FormQuickTable`) ให้มีสถานะ **"จำเป็นต้องกรอก"** เป็นค่าเริ่มต้น หากต้องการให้เป็น Optional ต้องระบุ `required={false}` เท่านั้น
+- **Signature Blocking**: แก้ไขปัญหา `SignBox` และ `InfoInputForm` ที่เดิมแสดงแค่ขอบแดงแต่ยังกด Verify ผ่านได้ โดยการใช้ `useEffect` เพื่อทำ `register({ required: true })` เข้ากับ React Hook Form ทำให้ไม่สามารถกด "Verify" ผ่านได้ถ้ายังไม่ได้ลงชื่อหรือกรอกข้อมูลเครื่องจักร
+- **Visual Standardization**: ปรับสไตล์การแจ้งเตือน Error ให้เหลือเพียง **ขอบแดง (Red Border)** และนำสีพื้นหลังสีแดงออก เพื่อความสะอาดตาและเป็นไปตามมาตรฐานเดียวกันทุกจุด
+
+### 19. การแก้ไขปัญหาเด้งกลับหน้าหลัก (PWA Redirect Loop Fix)
+_2026-01-29_
+
+ตรวจพบปัญหาการ Redirect วนลูปเมื่อเปิด Checksheet จาก Admin Panel ซึ่งมีสาเหตุมาจากระบบ Cache ของ PWA:
+- **Root Cause**: PWA ทำการ Precache ไฟล์ `index.html` ไว้ ทำให้ Browser โหลดหน้าเว็บจากเครื่องแทนที่จะถาม Server ส่งผลให้ข้ามขั้นตอนการเช็ค Token ของ Server ไป แต่เมื่อแอปเริ่มทำงาน JavaScript กลับพบว่า Session หมดอายุจึงสั่ง Redirect กลับหน้าหลัก
+- **NetworkFirst Strategy**: ปรับโครงสร้าง `vite.config.js` ให้ใช้กลยุทธ์ `NetworkFirst` สำหรับคำขอประเภท Navigation (การเปิดหน้าเว็บ) เพื่อให้พยายามติดต่อ Server เพื่อเช็คสิทธิ์ก่อนเสมอ
+- **Resilient Auth Check**: ปรับปรุง `ChecksheetMaster.jsx` ให้ฉลาดขึ้น โดยจะสั่ง Redirect เฉพาะเมื่อได้รับ Error 401 หรือ 403 จาก Server เท่านั้น เพื่อป้องกันการเด้งกลับเมื่อเกิดปัญหา Network ทั่วไป

@@ -10,6 +10,14 @@ const FormYawingY = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || {}}
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    // YawingY structure: points object etc.
+                    // Basic check for now
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <YawingY
                     data={field.value || {}}

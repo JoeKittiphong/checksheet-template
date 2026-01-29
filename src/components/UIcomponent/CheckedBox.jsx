@@ -23,7 +23,8 @@ const CheckedBox = React.forwardRef(({
     onNameChange,
     onDateChange,
     onChange, // New unified handler
-    label = 'CHECKED BY / DATE'
+    label = 'CHECKED BY / DATE',
+    error = false
 }, ref) => {
     const { user, logout } = useAuth();
     const { handleSave } = useChecksheet(); // Global save
@@ -90,7 +91,7 @@ const CheckedBox = React.forwardRef(({
 
     return (
         <>
-            <div className="border border-black w-[150px] h-[120px] relative group">
+            <div className={`border w-[150px] h-[120px] relative group ${error ? 'border-red-500' : 'border-black'}`}>
                 {/* Header */}
                 <div className="border-b border-black px-2 py-1 text-xs font-medium bg-white flex justify-between items-center">
                     <span>{label}</span>

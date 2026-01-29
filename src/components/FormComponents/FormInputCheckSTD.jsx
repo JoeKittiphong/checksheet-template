@@ -32,7 +32,7 @@ const FormInputCheckSTD = ({
                     validateStd={validateStd}
                     inputWidth={inputWidth}
                     showCheckbox={showCheckbox}
-                    checkboxProps={showCheckbox ? register(checkboxName || `${name}_check`) : {}}
+                    checkboxName={checkboxName || `${name}_check`} // Pass name instead of register props
                     {...props}
                 />
             )}

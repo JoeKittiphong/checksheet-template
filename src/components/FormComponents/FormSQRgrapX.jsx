@@ -10,9 +10,10 @@ const FormSQRgrapX = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || []}
+            rules={{ required: true }}
             render={({ field }) => (
                 <SQRgrapX
-                    data={field.value || []}
+                    value={field.value || ''}
                     onChange={field.onChange}
                     {...props}
                 />

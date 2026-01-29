@@ -16,6 +16,16 @@ const FormEDMparallelX = ({ name, rows, standards, showStd = false, validateStd 
             name={name}
             control={control}
             defaultValue={getDefaultValue()}
+            rules={{
+                validate: (value) => {
+                    if (!Array.isArray(value)) return "Required";
+                    const rowCount = rows || 5;
+                    // Verify all rows are filled
+                    const filled = value.filter(item => item && (item.a !== '' && item.a !== null) && (item.b !== '' && item.b !== null));
+                    if (filled.length < rowCount) return "Required";
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <EDMparallelX
                     rows={rows}

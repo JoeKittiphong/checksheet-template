@@ -10,6 +10,12 @@ const FormYawingUV = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || {}}
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <YawingUV
                     data={field.value || {}}

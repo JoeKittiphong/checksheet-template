@@ -10,11 +10,13 @@ const FormChecknumber = ({ name, label, defaultValue = "", className, ...props }
             name={name}
             control={control}
             defaultValue={defaultValue}
-            render={({ field }) => (
+            rules={{ required: props.required ?? true }} // Default required unless props.required is false
+            render={({ field, fieldState: { error } }) => (
                 <Checknumber
                     {...field}
                     label={label}
                     className={className}
+                    error={!!error} // Pass error state to child
                     {...props}
                 />
             )}

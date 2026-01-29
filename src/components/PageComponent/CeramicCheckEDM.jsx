@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 
 /**
@@ -29,6 +30,7 @@ function CeramicCheckEDM({
     standard = { min: -10, max: 10 },
     parallelStandard = 5
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     // Refs for focus management
     const refs = {
         bl: useRef(null),
@@ -208,7 +210,7 @@ function CeramicCheckEDM({
                     ref={refs[key]}
                     type="text"
                     inputMode="numeric"
-                    className="w-12 border-b border-black text-center outline-none bg-transparent text-xs ml-1"
+                    className={`w-12 border-b text-center outline-none bg-transparent text-xs ml-1 ${isSubmitted && !getValue(key) ? 'border-red-500 bg-red-50' : 'border-black'}`}
                     value={getValue(key)}
                     onFocus={() => handleFocus(key)}
                     onChange={(e) => handleInputChange(e.target.value)}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from "../../context/AuthContext";
 import { useKeypad } from "../../context/KeypadContext";
+import { useFormContext } from "react-hook-form";
 
 /**
  * ProfileBar Component
@@ -11,15 +12,47 @@ import { useKeypad } from "../../context/KeypadContext";
  * Logic:
  * - Hides Print button if user.role === 'worker'
  */
-function ProfileBar({ onSave, onPrint, isSaving }) {
+function ProfileBar({ onSave, onPrint, isSaving, onSetPage }) {
     const { user } = useAuth();
     const { isKeypadEnabled, toggleKeypadEnabled } = useKeypad();
+    const methods = useFormContext(); // Get methods to trigger validation
 
     if (!user) return null;
 
     const isWorker = user.role === 'worker';
 
     const [showExitModal, setShowExitModal] = useState(false);
+
+    const handleVerify = methods.handleSubmit(
+        (data) => {
+            // Form is valid
+            alert("Data is valid!");
+        },
+        (errors) => {
+            // Form is invalid
+            console.log("Validation Errors:", errors);
+            const firstErrorKey = Object.keys(errors)[0];
+            if (firstErrorKey) {
+                // Try to extract page number (e.g., p12_xxxxx -> Page 12)
+                const match = firstErrorKey.match(/^p(\d+)_/);
+                if (match && match[1]) {
+                    const pageNum = parseInt(match[1], 10);
+                    if (onSetPage) {
+                        onSetPage(pageNum);
+                    }
+
+                    // Delay slightly to allow page switch, then scroll
+                    setTimeout(() => {
+                        const element = document.getElementsByName(firstErrorKey)[0];
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            element.focus();
+                        }
+                    }, 300);
+                }
+            }
+        }
+    );
 
     return (
         <>
@@ -65,6 +98,19 @@ function ProfileBar({ onSave, onPrint, isSaving }) {
 
                 {/* Actions */}
                 <div className="flex space-x-3">
+
+
+
+                    {/* Verify Button with Auto-Jump */}
+                    <button
+                        onClick={handleVerify}
+                        className="flex flex-col items-center justify-center w-16 h-full hover:bg-white/10 transition-colors mr-1 text-white gap-1"
+                        title="Verify Data"
+                    >
+                        <span className="text-xl">🔍</span>
+                        <span className="text-[10px]">Verify</span>
+                    </button>
+
                     <button
                         onClick={toggleKeypadEnabled}
                         title={isKeypadEnabled ? "Disable Virtual Keypad" : "Enable Virtual Keypad"}
@@ -76,6 +122,8 @@ function ProfileBar({ onSave, onPrint, isSaving }) {
                         <span className="mr-2">⌨️</span>
                         <span className="text-xs font-bold">{isKeypadEnabled ? 'ON' : 'OFF'}</span>
                     </button>
+
+
 
                     <button
                         onClick={async () => {
@@ -120,7 +168,7 @@ function ProfileBar({ onSave, onPrint, isSaving }) {
                         </button>
                     )}
                 </div>
-            </div>
+            </div >
         </>
     );
 }

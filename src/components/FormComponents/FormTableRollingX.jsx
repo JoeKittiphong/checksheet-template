@@ -8,7 +8,7 @@ const FormTableRollingX = ({ name, rows, standards, showStd = false, validateStd
     // Generate default value if not provided
     const getDefaultValue = () => {
         if (defaultValue) return defaultValue;
-        return Array(rows).fill('');
+        return { b: [], t: [] };
     };
 
     return (
@@ -16,6 +16,18 @@ const FormTableRollingX = ({ name, rows, standards, showStd = false, validateStd
             name={name}
             control={control}
             defaultValue={getDefaultValue()}
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    const { b = [], t = [] } = value;
+                    const isFilled = (arr) => (arr?.[0] !== '' && arr?.[0] != null && arr?.[0] !== undefined) &&
+                        (arr?.[2] !== '' && arr?.[2] != null && arr?.[2] !== undefined);
+
+                    const tRequired = props.showRowT !== false;
+
+                    return (isFilled(b) && (!tRequired || isFilled(t))) || "Required";
+                }
+            }}
             render={({ field }) => (
                 <TableRollingX
                     rows={rows}

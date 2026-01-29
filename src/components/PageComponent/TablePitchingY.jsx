@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -24,6 +25,7 @@ function TablePitchingY({
     standard = { min: -20, max: 20 },
     referenceRow = 1  // แถว 0 เป็น reference (0-indexed = 1)
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     const rows = 3; // Y+, 0, Y-
     const rowHeaders = ['Y+', '0', 'Y-'];
@@ -210,10 +212,18 @@ function TablePitchingY({
                 );
             } else {
                 // Normal row - รับ input ได้
+                const rowDataB = data['b'] || [];
+                const valB = rowDataB[i];
+                const isReqErrorB = isSubmitted && (valB === '' || valB === null || valB === undefined);
+
+                const rowDataC = data['c'] || [];
+                const valC = rowDataC[i];
+                const isReqErrorC = isSubmitted && (valC === '' || valC === null || valC === undefined);
+
                 rowElements.push(
                     <tr key={i}>
                         <td className="border border-black p-1 text-center font-medium">{rowHeaders[i]}</td>
-                        <td className={`border border-black p-1 ${!validB ? 'bg-red-200' : ''}`}>
+                        <td className={`border p-1 ${isReqErrorB ? 'border-red-500 border-2' : 'border-black'} ${!isReqErrorB && !validB ? 'bg-red-200' : ''}`}>
                             <input
                                 ref={(el) => (inputRefsB.current[i] = el)}
                                 type="text"
@@ -226,7 +236,7 @@ function TablePitchingY({
                                 className="w-full h-full text-center bg-transparent outline-none text-sm"
                             />
                         </td>
-                        <td className={`border border-black p-1 ${!validC ? 'bg-red-200' : ''}`}>
+                        <td className={`border p-1 ${isReqErrorC ? 'border-red-500 border-2' : 'border-black'} ${!isReqErrorC && !validC ? 'bg-red-200' : ''}`}>
                             <input
                                 ref={(el) => (inputRefsC.current[i] = el)}
                                 type="text"

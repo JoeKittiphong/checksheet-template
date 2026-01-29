@@ -11,18 +11,22 @@ import { useFormContext } from 'react-hook-form';
  * @param {string} prefix - prefix สำหรับชื่อ field เพื่อป้องกันชื่อซ้ำ (default: "version_")
  */
 const EDWVersionCheck = ({ prefix = "version_" }) => {
-    const { register } = useFormContext();
+    const { register, formState: { errors } } = useFormContext();
 
-    const renderField = (label, name) => (
-        <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm min-w-[50px]">{label} : </span>
-            <input
-                type="text"
-                {...register(`${prefix}${name}`)}
-                className="border-b border-black outline-none px-1 text-sm flex-1"
-            />
-        </div>
-    );
+    const renderField = (label, name) => {
+        const fieldName = `${prefix}${name}`;
+        const error = errors[fieldName];
+        return (
+            <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm min-w-[50px]">{label} : </span>
+                <input
+                    type="text"
+                    {...register(fieldName, { required: true })}
+                    className={`border-b outline-none px-1 text-sm flex-1 ${error ? 'border-red-500 bg-red-50' : 'border-black'}`}
+                />
+            </div>
+        );
+    };
 
     return (
         <div className="grid grid-cols-2 gap-x-12 p-2">

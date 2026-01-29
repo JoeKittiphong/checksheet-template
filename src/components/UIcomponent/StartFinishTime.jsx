@@ -1,4 +1,6 @@
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
+
 /**
  * StartFinishTime Component
  * Input สำหรับ Start/Finish time และคำนวณ Total Hours
@@ -19,6 +21,7 @@ const StartFinishTime = React.forwardRef(({
     minHours = 0,
     validateStd = false
 }, ref) => {
+    const { formState: { isSubmitted } } = useFormContext(); // Global validation state
     // คำนวณ Total Hours
     const calculateTotalHours = () => {
         if (!startTime || !finishTime) return '';
@@ -72,7 +75,7 @@ const StartFinishTime = React.forwardRef(({
                     type="time"
                     value={startTime}
                     onChange={(e) => onStartChange(e.target.value)}
-                    className="border-b border-black outline-none px-1 text-center w-28"
+                    className={`border-b outline-none px-1 text-center w-28 ${isSubmitted && !startTime ? 'border-red-500 bg-red-50' : 'border-black'}`}
                 />
             </div>
 
@@ -83,7 +86,7 @@ const StartFinishTime = React.forwardRef(({
                     type="time"
                     value={finishTime}
                     onChange={(e) => onFinishChange(e.target.value)}
-                    className="border-b border-black outline-none px-1 text-center w-28"
+                    className={`border-b outline-none px-1 text-center w-28 ${isSubmitted && !finishTime ? 'border-red-500 bg-red-50' : 'border-black'}`}
                 />
             </div>
 

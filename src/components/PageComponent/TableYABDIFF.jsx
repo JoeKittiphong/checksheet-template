@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -30,6 +31,7 @@ function TableYABDIFF({
     validateStd = true,
     useArrow = true
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     const inputRefsA = useRef([]);
     const inputRefsB = useRef([]);
@@ -197,7 +199,8 @@ function TableYABDIFF({
                 <tr key={i}>
                     <td className="border border-black py-0.5 px-1 text-center w-8">{i + 1}</td>
                     {showStd && <td className="border border-black py-0.5 px-1 text-center w-14">{formatStd(std)}</td>}
-                    <td className={`border border-black py-0.5 px-1 ${!isAValid ? 'bg-red-200' : ''}`}>
+                    {/* Column A */}
+                    <td className={`border py-0.5 px-1 ${isSubmitted && (getInputValue(i, 'a') === '' || getInputValue(i, 'a') === undefined) ? 'border-red-500 border-2' : 'border-black'} ${!isAValid && !(isSubmitted && (getInputValue(i, 'a') === '' || getInputValue(i, 'a') === undefined)) ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsA.current[i] = el)}
                             type="text"
@@ -210,7 +213,8 @@ function TableYABDIFF({
                             className="w-full h-full text-center bg-transparent outline-none"
                         />
                     </td>
-                    <td className={`border border-black py-0.5 px-1 ${!isBValid ? 'bg-red-200' : ''}`}>
+                    {/* Column B */}
+                    <td className={`border py-0.5 px-1 ${isSubmitted && (getInputValue(i, 'b') === '' || getInputValue(i, 'b') === undefined) ? 'border-red-500 border-2' : 'border-black'} ${!isBValid && !(isSubmitted && (getInputValue(i, 'b') === '' || getInputValue(i, 'b') === undefined)) ? 'bg-red-200' : ''}`}>
                         <input
                             ref={(el) => (inputRefsB.current[i] = el)}
                             type="text"

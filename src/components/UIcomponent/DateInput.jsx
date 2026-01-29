@@ -13,6 +13,7 @@ const DateInput = React.forwardRef(({
     placeholder = 'DD/MM/YYYY',
     readOnly = false,
     disabled = false,
+    error = false,
     style = {}
 }, ref) => {
     // Helpers
@@ -71,7 +72,7 @@ const DateInput = React.forwardRef(({
         <input
             ref={ref}
             type="text"
-            className={className}
+            className={`${className} ${error ? 'border border-red-500' : ''}`}
             style={style}
             placeholder={placeholder}
             value={value} // Controlled display value (DD/MM/YYYY)

@@ -16,6 +16,14 @@ const FormEDMTableRollingY = ({ name, rows, standards, showStd = false, validate
             name={name}
             control={control}
             defaultValue={getDefaultValue()}
+            rules={{
+                validate: (value) => {
+                    if (!Array.isArray(value)) return "Required";
+                    const filled = value.filter(item => item !== undefined && item !== null && item !== '');
+                    if (filled.length < rows) return false;
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <EDMTableRollingY
                     rows={rows}

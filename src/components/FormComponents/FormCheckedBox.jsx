@@ -10,7 +10,14 @@ const FormCheckedBox = ({ name, label = "CHECKED BY / DATE", defaultValue = { na
             name={name}
             control={control}
             defaultValue={defaultValue}
-            render={({ field }) => (
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    if (!value.name || !value.date) return "Required";
+                    return true;
+                }
+            }}
+            render={({ field, fieldState: { error } }) => (
                 <CheckedBox
                     {...field}
                     name={field.value?.name || ''}
@@ -19,6 +26,7 @@ const FormCheckedBox = ({ name, label = "CHECKED BY / DATE", defaultValue = { na
                     onDateChange={(val) => field.onChange({ ...field.value, date: val })}
                     label={label}
                     className={className}
+                    error={!!error}
                     {...props}
                 />
             )}

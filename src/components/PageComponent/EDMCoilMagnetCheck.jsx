@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
 
 /**
  * EDMCoilMagnetCheck Component
@@ -23,6 +24,8 @@ function EDMCoilMagnetCheck({
     };
 
     const getVal = (axis, index, field) => data[axis]?.[index]?.[field] || (field === 'checked' ? false : '');
+
+    const { formState: { isSubmitted } } = useFormContext();
 
     return (
         <table className="w-full border-collapse text-[11px] font-sans border-2 border-black mb-4 print:mb-2">
@@ -65,7 +68,7 @@ function EDMCoilMagnetCheck({
                             <td className="border border-black text-center align-middle">
                                 <input
                                     type="text"
-                                    className="w-full h-full border-none text-center text-[11px] bg-transparent outline-none p-1"
+                                    className={`w-full h-full border-none text-center text-[11px] outline-none p-1 ${isSubmitted && !getVal(group.axis, idx, 'sn') ? 'border border-red-500 bg-red-50 px-1' : 'bg-transparent'}`}
                                     value={getVal(group.axis, idx, 'sn')}
                                     onChange={(e) => handleUpdate(group.axis, idx, 'sn', e.target.value)}
                                 />
@@ -77,5 +80,7 @@ function EDMCoilMagnetCheck({
         </table>
     );
 }
+
+
 
 export default EDMCoilMagnetCheck;

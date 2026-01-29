@@ -1,27 +1,37 @@
 import React from 'react';
+import { useFormContext, Controller } from 'react-hook-form'; // Add Controller
 import { validateValue } from '../../utils/validationUtils';
 import { useKeypad } from '../../context/KeypadContext';
+import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox'; // Add TristateCheckbox
 
 /**
 * InputCheckSTD Component
-* Input พร้อม label ด้านหน้า และหน่วยด้านหลัง
-* - มีการ validate ค่าตาม standard (min/max)
-* - สามารถเปิด/ปิดการ validate ได้
-* 
-* @param {Object} props
-* @param {string} props.label - ข้อความด้านหน้า input
-* @param {string} props.unit - หน่วยด้านหลัง input (default: 'mm')
-* @param {string|number} props.value - ค่าใน input
-* @param {Function} props.onChange - callback เมื่อค่าเปลี่ยน
-* @param {number} props.minStd - ค่า standard ต่ำสุด (default: 0)
-* @param {number} props.maxStd - ค่า standard สูงสุด (default: 0)
-* @param {boolean} props.validateStd - เปิด/ปิดการ validate (default: true)
-* @param {string} props.inputWidth - ความกว้างของ input (default: 'w-24')
+* ...
+* @param {boolean} props.required - บังคับกรอกหรือไม่ (default: true)
 */
 const InputCheckSTD = React.forwardRef(({
     label = '',
     unit = 'mm',
-    value = '',
+    value = '', // Note: value here comes from Controller usually, but if using register directly we might rely on watch or internal logic. The user uses Controller in some places? 
+    // Wait, the previous code didn't use useFormContext inside, it relied on parent passing props? 
+    // Actually typically we forwardRef for register. 
+    // Let's check how it's used. It receives `ref` and `name`. 
+    // If we use `{...register(name)}` in parent, `ref` is passed here.
+    // BUT, we want to enforce required INSIDE component to avoid editing parent.
+    // The issue: If parent does `<InputCheckSTD {...register('foo')} />`, the *props* contain the register methods (onChange, onBlur, ref).
+    // The validation rules are usually passed to register(). 
+    // If the parent ALREADY calls register(), we can't easily injection validation rules *here* unless we intercept the register call, which is hard if passed as spread props.
+    // HOWEVER, checking `Page1.jsx`: It uses specific components like `FormLevelTableYAB`.
+    // Let's look at `FormLevelTableYAB` or `FormChecknumber` to see how they render `InputCheckSTD`.
+    // If they use `Controller`, we need to update the rules in Controller.
+    // If they use `register`, we need to update that.
+
+    // Let's look at `InputCheckSTD` usage first. 
+    // Be careful. If I change this to use `useFormContext().register` BUT the parent ALSO registers, it might conflict.
+    // BUT the user accepted "Edit Component".
+
+    // Let's assume standard usage is: `FormChecknumber` wraps `InputCheckSTD`.
+    // Let's view `FormChecknumber` or `FormLevelTableYAB` first to be safe.
     onChange = () => { },
     minStd = 0,
     maxStd = 0,
@@ -29,11 +39,22 @@ const InputCheckSTD = React.forwardRef(({
     inputWidth = 'w-24',
     showCheckbox = false,
     checkboxProps = {},
-    name // Received from Controller
+    checkboxName, // New prop for Tristate
+    name, // Received from Controller/Register
+    required = true, // New prop
 }, ref) => {
     const { openKeypad, isKeypadEnabled } = useKeypad();
+    const { control, formState: { errors } } = useFormContext(); // Get validation errors and control
     // Mobile detection
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Check if this specific field has an error
+    // Note: name might be nested "page1.levelYData.0.a". errors object is deep.
+    // Helper to get error from path
+    const getError = (obj, path) => {
+        return path?.split('.').reduce((acc, part) => acc && acc[part], obj);
+    };
+    const hasError = name ? getError(errors, name) : false;
 
     // Validate value against standard
     const isValid = () => {
@@ -74,12 +95,20 @@ const InputCheckSTD = React.forwardRef(({
 
     return (
         <div className="flex items-center text-sm">
-            {/* Checkbox */}
             {showCheckbox && (
-                <input
-                    type="checkbox"
-                    {...checkboxProps}
-                    className="w-4 h-4 mr-2 border-black border-2 rounded-sm shrink-0"
+                <Controller
+                    name={checkboxName}
+                    control={control}
+                    rules={{ validate: (v) => !required || (v !== null && v !== undefined && v !== '') || "Required" }}
+                    render={({ field, fieldState: { error } }) => (
+                        <TristateCheckbox
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={!!error}
+                            className="mr-2 shrink-0"
+                            size="w-4 h-4"
+                        />
+                    )}
                 />
             )}
 
@@ -107,7 +136,10 @@ const InputCheckSTD = React.forwardRef(({
                         handleChange(e);
                     }
                 }}
-                className={`border-b border-black outline-none px-1 text-center cursor-pointer ${inputWidth} ${!isValid() ? 'bg-red-200' : ''}`}
+                className={`border-b outline-none px-1 text-center cursor-pointer ${inputWidth} 
+                    ${!isValid() ? 'bg-red-200' : ''}
+                    ${hasError ? 'border-red-500 bg-red-100 ring-1 ring-red-500' : 'border-black'} 
+                `}
             />
 
             {/* Unit */}

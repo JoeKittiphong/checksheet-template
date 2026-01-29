@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 
@@ -12,15 +13,25 @@ import { cleanNumericInput } from '../../utils/formatUtils';
  */
 
 // Input style helper
-const getInputStyle = (isValid) => ({
-    border: 'none',
-    borderBottom: isValid ? '2px solid #9ca3af' : '2px solid #ef4444',
-    backgroundColor: isValid ? 'rgba(254, 202, 202, 0.2)' : '#fecaca',
-    color: isValid ? 'inherit' : '#b91c1c'
-});
+const getInputStyle = (isValid, isSubmitted, hasValue) => {
+    // If submitted and empty -> Red Border (Required)
+    if (isSubmitted && !hasValue) {
+        return {
+            border: '2px solid #ef4444',
+            backgroundColor: '#fee2e2', // red-100?
+            color: 'inherit'
+        };
+    }
+    return {
+        border: 'none',
+        borderBottom: isValid ? '2px solid #9ca3af' : '2px solid #ef4444',
+        backgroundColor: isValid ? 'rgba(254, 202, 202, 0.2)' : '#fecaca',
+        color: isValid ? 'inherit' : '#b91c1c'
+    };
+};
 
 // Single Input Component - ใช้ local state เพื่อไม่ให้หลุด focus
-const SingleInput = React.memo(({ section, index, value, isValid, onValueChange }) => {
+const SingleInput = React.memo(({ section, index, value, isValid, isSubmitted, onValueChange }) => {
     const [localValue, setLocalValue] = useState(value);
     const inputRef = useRef(null);
 
@@ -40,7 +51,7 @@ const SingleInput = React.memo(({ section, index, value, isValid, onValueChange 
             ref={inputRef}
             type="text"
             className="w-12 h-7 text-center outline-none text-lg m-0.5"
-            style={getInputStyle(isValid)}
+            style={getInputStyle(isValid, isSubmitted, !!localValue)}
             value={localValue}
             onChange={handleChange}
         />
@@ -55,6 +66,8 @@ function WorkstandCheck({
     maxTotalDiff = 8,
     maxAdjacentDiff = 5
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
+
     // ใช้ ref เพื่อเก็บ data ล่าสุด
     const dataRef = useRef(data);
     dataRef.current = data;
@@ -234,6 +247,7 @@ function WorkstandCheck({
             index={index}
             value={getValue(section, index)}
             isValid={getInputValid(section, index)}
+            isSubmitted={isSubmitted}
             onValueChange={handleChange}
         />
     );

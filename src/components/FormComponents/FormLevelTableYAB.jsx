@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import LevelTableYAB from '@/components/PageComponent/LevelTableYAB';
 
@@ -16,6 +16,22 @@ const FormLevelTableYAB = ({ name, rows, labelA, labelB, defaultValue, ...props 
             name={name}
             control={control}
             defaultValue={getDefaultValue()}
+            rules={{
+                validate: (value) => {
+                    if (!Array.isArray(value)) return "Required";
+                    const rowCount = props.rows || 16;
+
+                    // Filter for completely filled rows (A and B present)
+                    const filled = value.filter(item =>
+                        item &&
+                        (item.a !== '' && item.a !== null && item.a !== undefined) &&
+                        (item.b !== '' && item.b !== null && item.b !== undefined)
+                    );
+
+                    if (filled.length < rowCount) return "Required";
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <LevelTableYAB
                     rows={rows}

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -25,6 +26,7 @@ function TableEntoDual({
     maxDiff = 1,
     formula = "A+B"  // "A+B" or "A-B"
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     // Ensure nested structures exist
     const leftData = data?.left || { a: [], b: [] };
@@ -271,14 +273,21 @@ function TableEntoDual({
     const grayBgStyle = { backgroundColor: '#f2f2f2' };
 
     const renderInput = (table, col, idx, refs) => {
-        const invalid = isABInvalid(table, col, idx);
+        const val = getVal(table, col, idx);
+        const isReqError = isSubmitted && !val;
+        const invalid = !isReqError && isABInvalid(table, col, idx);
+
         return (
             <td style={{ ...tdStyle, padding: 0, ...grayBgStyle, ...(invalid ? invalidStyle : {}) }}>
                 <input
                     ref={el => refs.current[idx] = el}
                     type="text"
-                    style={{ ...inputStyle, ...(invalid ? { color: 'red' } : {}) }}
-                    value={getVal(table, col, idx)}
+                    style={{
+                        ...inputStyle,
+                        ...(isReqError ? { border: '2px solid red' } : {}),
+                        ...(invalid ? { color: 'red' } : {})
+                    }}
+                    value={val}
                     onFocus={() => handleFocus(table, col, idx, (table === 'left' ? leftData : rightData)[col]?.[idx])}
                     onChange={e => handleChange(e.target.value)}
                     onKeyDown={e => handleKeyDown(e, table, col, idx)}

@@ -10,6 +10,20 @@ const FormTableYPR = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || {}}
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    const { p = [], r = [] } = value;
+                    const cols = props.cols || 3;
+                    const ref = props.referenceCol !== undefined ? props.referenceCol : 1;
+
+                    for (let i = 0; i < cols; i++) {
+                        if (i === ref) continue;
+                        if ((p[i] === '' || p[i] == null) || (r[i] === '' || r[i] == null)) return "Required";
+                    }
+                    return true;
+                }
+            }}
             render={({ field }) => (
                 <TableYPR
                     data={field.value || {}}

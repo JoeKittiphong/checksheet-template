@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { validateValue } from '../../utils/validationUtils';
 import { formatWithArrows, parseArrowInput, cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
+import { useFormContext } from 'react-hook-form';
 
 /**
  * EDMTablePitchingY Component
@@ -24,8 +25,10 @@ function EDMTablePitchingY({
     standards = [],
     rows = 5,
     showStd = true,
-    validateStd = true
+    validateStd = true,
+    label = 'Pitching'
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     const inputRefs = useRef([]);
     const [editingCell, setEditingCell] = useState(null);
@@ -122,7 +125,7 @@ function EDMTablePitchingY({
                             onChange={(e) => handleChange(e.target.value)}
                             onBlur={() => handleBlur(i)}
                             onKeyDown={(e) => handleKeyDown(e, i)}
-                            className="w-full h-full text-center bg-transparent outline-none"
+                            className={`w-full h-full text-center outline-none ${isSubmitted && !data[i] ? 'bg-red-50 border border-red-500' : 'bg-transparent'}`}
                         />
                     </td>
                 </tr>

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
@@ -18,6 +19,7 @@ function TablePitchCheck({
     maxDiff = 1,     // Max allowed value for A-B diff
     showCalcCol = true  // Show/hide the calculated column
 }) {
+    const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
     // Generate Row labels: bottom row (before RETURN) = 0, ascending upward
     const rowLabels = [];
@@ -208,7 +210,7 @@ function TablePitchCheck({
                         <tr key={idx}>
                             <td style={tdStyle}>{label}</td>
                             <td style={tdStyle}>{showCalcCol ? getCalcCol(idx) : ''}</td>
-                            <td style={{ ...tdStyle, padding: 0, ...(isABInvalid('a', idx) ? invalidStyle : {}) }}>
+                            <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('a', idx) ? (isABInvalid('a', idx) ? invalidStyle : {}) : { border: '2px solid red' }) }}>
                                 <input
                                     ref={el => inputRefsA.current[idx] = el}
                                     type="text"
@@ -220,7 +222,7 @@ function TablePitchCheck({
                                     onBlur={handleBlur}
                                 />
                             </td>
-                            <td style={{ ...tdStyle, padding: 0, ...(isABInvalid('b', idx) ? invalidStyle : {}) }}>
+                            <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('b', idx) ? (isABInvalid('b', idx) ? invalidStyle : {}) : { border: '2px solid red' }) }}>
                                 <input
                                     ref={el => inputRefsB.current[idx] = el}
                                     type="text"
@@ -239,7 +241,7 @@ function TablePitchCheck({
                     {/* RETURN Row */}
                     <tr>
                         <td colSpan={3} style={{ ...tdStyle, textAlign: 'left', paddingLeft: '4px' }}>RETURN</td>
-                        <td style={{ ...tdStyle, padding: 0 }}>
+                        <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('b', returnIndex) ? {} : { border: '2px solid red' }) }}>
                             <input
                                 ref={el => inputRefsB.current[returnIndex] = el}
                                 type="text"
