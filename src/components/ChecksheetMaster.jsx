@@ -6,6 +6,8 @@ import Pagination from "@/components/UIcomponent/Pagination";
 import { saveForm, loadForm } from "@/utils/apiUtils";
 import { ChecksheetProvider } from "@/context/ChecksheetContext";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { KeypadProvider } from "@/context/KeypadContext";
+import VirtualKeypad from "@/components/UIcomponent/VirtualKeypad";
 
 /**
  * ChecksheetMaster Component
@@ -44,7 +46,10 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     });
 
     // Auto-Save Hook
-    const autoSaveKey = currentUser ? `autosave_${currentUser.code}_${meta.checksheet_name}` : null;
+    // Derive ID from URL to scope the auto-save (separate drafts for separate records)
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlId = searchParams.get('id');
+    const autoSaveKey = currentUser ? `autosave_${currentUser.code}_${meta.checksheet_name}_${urlId || 'new'}` : null;
     const { clearSavedData } = useAutoSave(methods, autoSaveKey);
 
     // Check authentication and load data
@@ -71,12 +76,15 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                     let finalData = data.checksheet_data || {};
 
                     // Auto-Restore logic: Merge DB data with LocalStorage data
-                    const key = `autosave_${user.code}_${meta.checksheet_name}`;
+                    const currentUrlParams = new URLSearchParams(window.location.search);
+                    const currentId = currentUrlParams.get('id');
+                    const key = `autosave_${user.code}_${meta.checksheet_name}_${currentId || 'new'}`;
+
                     try {
                         const savedLocal = localStorage.getItem(key);
                         if (savedLocal) {
                             const parsedLocal = JSON.parse(savedLocal);
-                            console.log("Restoring data from AutoSave...");
+                            console.log("Restoring data from AutoSave...", key);
                             // Merge: LocalStorage takes priority for draft changes
                             finalData = { ...finalData, ...parsedLocal };
                         }
@@ -132,58 +140,63 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
     return (
         <FormProvider {...methods}>
-            <ChecksheetProvider handleSave={handleSave} isSaving={isSaving}>
-                <div className="flex flex-col h-screen">
-                    {/* Top Profile Bar */}
-                    <ProfileBar
-                        onSave={handleSave}
-                        onPrint={handlePrint}
-                        isSaving={isSaving}
-                    />
-
-                    {/* Screen-only elements - Pagination */}
-                    <div className="print:hidden my-2">
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={pages.length}
-                            onPageChange={setCurrentPage}
-                            pageLabels={pageLabels}
-                            pageComponents={pages}
+            <KeypadProvider>
+                <ChecksheetProvider handleSave={handleSave} isSaving={isSaving}>
+                    <div className="flex flex-col h-screen">
+                        {/* Top Profile Bar */}
+                        <ProfileBar
+                            onSave={handleSave}
+                            onPrint={handlePrint}
+                            isSaving={isSaving}
                         />
 
-                        {/* Loading Indicator */}
-                        {isLoading && (
-                            <div className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg z-50 animate-pulse">
-                                <p className="font-bold">Loading...</p>
-                                <p>Fetching data from server</p>
-                            </div>
-                        )}
-                    </div>
+                        {/* Screen-only elements - Pagination */}
+                        <div className="print:hidden my-2">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={pages.length}
+                                onPageChange={setCurrentPage}
+                                pageLabels={pageLabels}
+                                pageComponents={pages}
+                            />
 
-                    {/* Pages Container */}
-                    <div className="w-full flex flex-col items-center flex-1 overflow-auto bg-gray-100 print:bg-white print:overflow-visible">
-                        {/* Wrap pages in a constrained width container for screen view */}
-                        <div className="w-[210mm] bg-white shadow-lg print:shadow-none print:w-full">
-                            {pages.map((page, index) => {
-                                const pageNum = index + 1;
-                                const isCurrent = pageNum === currentPage;
-
-                                return (
-                                    <div
-                                        key={index}
-                                        className={`
-                                            ${isCurrent ? 'block' : 'hidden'} 
-                                            print:block print:w-full print:h-[297mm] print:break-after-page
-                                        `}
-                                    >
-                                        {page}
-                                    </div>
-                                );
-                            })}
+                            {/* Loading Indicator */}
+                            {isLoading && (
+                                <div className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg z-50 animate-pulse">
+                                    <p className="font-bold">Loading...</p>
+                                    <p>Fetching data from server</p>
+                                </div>
+                            )}
                         </div>
+
+                        {/* Pages Container */}
+                        <div className="w-full flex flex-col items-center flex-1 overflow-auto bg-gray-100 print:bg-white print:overflow-visible">
+                            {/* Wrap pages in a constrained width container for screen view */}
+                            <div className="w-[210mm] bg-white shadow-lg print:shadow-none print:w-full">
+                                {pages.map((page, index) => {
+                                    const pageNum = index + 1;
+                                    const isCurrent = pageNum === currentPage;
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`
+                                                ${isCurrent ? 'block' : 'hidden'} 
+                                                print:block print:w-full print:h-[297mm] print:break-after-page
+                                            `}
+                                        >
+                                            {page}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Virtual Keypad */}
+                        <VirtualKeypad />
                     </div>
-                </div>
-            </ChecksheetProvider>
+                </ChecksheetProvider>
+            </KeypadProvider>
         </FormProvider>
     );
 }

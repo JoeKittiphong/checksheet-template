@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from "../../context/AuthContext";
+import { useKeypad } from "../../context/KeypadContext";
 
 /**
  * ProfileBar Component
@@ -12,6 +13,7 @@ import { useAuth } from "../../context/AuthContext";
  */
 function ProfileBar({ onSave, onPrint, isSaving }) {
     const { user } = useAuth();
+    const { isKeypadEnabled, toggleKeypadEnabled } = useKeypad();
 
     if (!user) return null;
 
@@ -63,6 +65,18 @@ function ProfileBar({ onSave, onPrint, isSaving }) {
 
                 {/* Actions */}
                 <div className="flex space-x-3">
+                    <button
+                        onClick={toggleKeypadEnabled}
+                        title={isKeypadEnabled ? "Disable Virtual Keypad" : "Enable Virtual Keypad"}
+                        className={`flex items-center px-3 py-1.5 rounded transition-colors ${isKeypadEnabled
+                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                            : 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+                            }`}
+                    >
+                        <span className="mr-2">⌨️</span>
+                        <span className="text-xs font-bold">{isKeypadEnabled ? 'ON' : 'OFF'}</span>
+                    </button>
+
                     <button
                         onClick={async () => {
                             if (onSave) {

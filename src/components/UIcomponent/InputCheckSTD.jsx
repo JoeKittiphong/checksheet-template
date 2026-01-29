@@ -1,5 +1,6 @@
 import React from 'react';
 import { validateValue } from '../../utils/validationUtils';
+import { useKeypad } from '../../context/KeypadContext';
 
 /**
 * InputCheckSTD Component
@@ -27,8 +28,13 @@ const InputCheckSTD = React.forwardRef(({
     validateStd = true,
     inputWidth = 'w-24',
     showCheckbox = false,
-    checkboxProps = {}
+    checkboxProps = {},
+    name // Received from Controller
 }, ref) => {
+    const { openKeypad, isKeypadEnabled } = useKeypad();
+    // Mobile detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     // Validate value against standard
     const isValid = () => {
         return validateValue(value, {
@@ -59,6 +65,13 @@ const InputCheckSTD = React.forwardRef(({
         onChange(cleanValue);
     };
 
+    const handleInputClick = (e) => {
+        if (isMobile || isKeypadEnabled) {
+            e.target.blur();
+            openKeypad(name, value, { label, mode: (name?.includes('machine_no') || label?.toLowerCase().includes('name')) ? 'text' : 'numeric' });
+        }
+    };
+
     return (
         <div className="flex items-center text-sm">
             {/* Checkbox */}
@@ -77,10 +90,24 @@ const InputCheckSTD = React.forwardRef(({
             <input
                 ref={ref}
                 type="text"
-                inputMode="decimal"
+                inputMode={isMobile ? "none" : "decimal"} // Allow decimal input on PC
                 value={value}
-                onChange={handleChange}
-                className={`border-b border-black outline-none px-1 text-center ${inputWidth} ${!isValid() ? 'bg-red-200' : ''}`}
+                onClick={handleInputClick}
+                onFocus={(e) => {
+                    if (isMobile) {
+                        e.target.blur();
+                        // Force open on mobile focus (in case of tab)
+                        openKeypad(name, value, { label, mode: (name?.includes('machine_no') || label?.toLowerCase().includes('name')) ? 'text' : 'numeric' });
+                    }
+                }}
+                readOnly={isMobile} // Only readOnly on mobile
+                onChange={(e) => {
+                    // PC Typing Logic
+                    if (!isMobile) {
+                        handleChange(e);
+                    }
+                }}
+                className={`border-b border-black outline-none px-1 text-center cursor-pointer ${inputWidth} ${!isValid() ? 'bg-red-200' : ''}`}
             />
 
             {/* Unit */}

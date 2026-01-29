@@ -1,3 +1,5 @@
+import { useKeypad } from '../../context/KeypadContext';
+
 /**
  * InfoInputForm Component
  * ฟอร์มกรอกข้อมูลเครื่องจักร: Model, Spec, Machine No., Controller No., Start/Finish Date, Option
@@ -7,9 +9,18 @@ function InfoInputForm({
     model = "", // Receive model from props
     onChange = () => { }
 }) {
+    const { openKeypad, isKeypadEnabled } = useKeypad();
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         onChange(name, value);
+    };
+
+    const handleInputClick = (name, value, label) => {
+        if (isMobile || isKeypadEnabled) {
+            openKeypad(name, value, { label, mode: 'text' });
+        }
     };
 
     const bgGreenLight = 'bg-green-200';
@@ -42,8 +53,12 @@ function InfoInputForm({
                                 type="text"
                                 name="machineNo"
                                 value={formData.machineNo || ''}
+                                readOnly={isMobile}
+                                inputMode={isMobile ? "none" : "text"}
+                                onClick={(e) => { isMobile && e.target.blur(); handleInputClick('machineNo', formData.machineNo || '', 'MACHINE NO'); }}
+                                onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('machineNo', formData.machineNo || '', 'MACHINE NO'); }}
                                 onChange={handleChange}
-                                className="w-full h-full bg-transparent text-center outline-none font-medium text-sm"
+                                className="w-full h-full bg-transparent text-center outline-none font-medium text-sm cursor-pointer"
                                 placeholder="Enter Machine No."
                             />
                         </td>
@@ -57,8 +72,12 @@ function InfoInputForm({
                                 type="text"
                                 name="controllerNo"
                                 value={formData.controllerNo || ''}
+                                readOnly={isMobile}
+                                inputMode={isMobile ? "none" : "text"}
+                                onClick={(e) => { isMobile && e.target.blur(); handleInputClick('controllerNo', formData.controllerNo || '', 'CONTROLLER NO'); }}
+                                onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('controllerNo', formData.controllerNo || '', 'CONTROLLER NO'); }}
                                 onChange={handleChange}
-                                className="w-full h-full bg-transparent text-center outline-none font-medium text-sm"
+                                className="w-full h-full bg-transparent text-center outline-none font-medium text-sm cursor-pointer"
                                 placeholder="Enter Controller No."
                             />
                         </td>
@@ -99,11 +118,11 @@ function InfoInputForm({
                         <td className="text-right pr-4 py-2 font-medium text-sm align-top pt-2">OPTION:</td>
                         <td className="border-b border-black p-0">
                             <div className="flex flex-col">
-                                <input name="option1" value={formData.option1 || ''} onChange={handleChange} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none" />
-                                <input name="option2" value={formData.option2 || ''} onChange={handleChange} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none" />
-                                <input name="option3" value={formData.option3 || ''} onChange={handleChange} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none" />
-                                <input name="option4" value={formData.option4 || ''} onChange={handleChange} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none" />
-                                <input name="option5" value={formData.option5 || ''} onChange={handleChange} className="w-full bg-yellow-300 h-8 px-2 outline-none" />
+                                <input name="option1" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option1', formData.option1 || '', 'OPTION 1'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option1', formData.option1 || '', 'OPTION 1'); }} value={formData.option1 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option2" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option2', formData.option2 || '', 'OPTION 2'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option2', formData.option2 || '', 'OPTION 2'); }} value={formData.option2 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option3" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option3', formData.option3 || '', 'OPTION 3'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option3', formData.option3 || '', 'OPTION 3'); }} value={formData.option3 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option4" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option4', formData.option4 || '', 'OPTION 4'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option4', formData.option4 || '', 'OPTION 4'); }} value={formData.option4 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option5" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option5', formData.option5 || '', 'OPTION 5'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option5', formData.option5 || '', 'OPTION 5'); }} value={formData.option5 || ''} className="w-full bg-yellow-300 h-8 px-2 outline-none cursor-pointer" />
                             </div>
                         </td>
                     </tr>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { handleInfinityShortcut, getValidationClass } from '../../utils/formUtils';
+import { useKeypad } from '../../context/KeypadContext';
 
 /**
  * FormQuickTable Component
@@ -18,6 +19,7 @@ const FormQuickTable = ({
     className = ""
 }) => {
     const { register, watch, setValue } = useFormContext();
+    const { openKeypad, isKeypadEnabled } = useKeypad();
 
     // -- Helper to calculate row spans for grouping columns --
     const calculateRowSpans = () => {
@@ -155,16 +157,30 @@ const FormQuickTable = ({
                                             />
                                         ) : effectiveType === 'input' ? (
                                             <div className="flex items-center gap-1">
-                                                <input
-                                                    type="text"
-                                                    {...register(cellValue)}
-                                                    onChange={(e) => {
-                                                        register(cellValue).onChange(e);
-                                                        handleInfinityShortcut(e, cellValue, setValue);
-                                                    }}
-                                                    defaultValue={row.defaultValue ?? ''}
-                                                    className="bg-transparent outline-none text-center border-b border-transparent focus:border-blue-500 w-full flex-1"
-                                                />
+                                                {(() => {
+                                                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                                                    return (
+                                                        <input
+                                                            type="text"
+                                                            {...register(cellValue)}
+                                                            inputMode={isMobile ? "none" : "text"}
+                                                            readOnly={isMobile}
+                                                            onClick={() => {
+                                                                if (isMobile || isKeypadEnabled) {
+                                                                    openKeypad(cellValue, watch(cellValue), { label: cellValue, mode: 'numeric' });
+                                                                }
+                                                            }}
+                                                            onFocus={(e) => {
+                                                                if (isMobile) {
+                                                                    e.target.blur();
+                                                                    openKeypad(cellValue, watch(cellValue), { label: cellValue, mode: 'numeric' });
+                                                                }
+                                                            }}
+                                                            defaultValue={row.defaultValue ?? ''}
+                                                            className="bg-transparent outline-none text-center border-b border-transparent focus:border-blue-500 w-full flex-1 cursor-pointer"
+                                                        />
+                                                    );
+                                                })()}
                                                 {row.suffix && <span className="shrink-0">{row.suffix}</span>}
                                             </div>
                                         ) : (
