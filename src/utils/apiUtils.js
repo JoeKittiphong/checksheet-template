@@ -23,7 +23,7 @@ export const saveForm = async ({ apiEndpoint, formId, meta, formData }) => {
         const result = response.data;
 
         if (result.success) {
-            return { success: true, message: "บันทึกข้อมูลเรียบร้อยแล้ว!" };
+            return { success: true, message: "บันทึกข้อมูลเรียบร้อยแล้ว!", data: result.data };
         } else {
             throw new Error(result.error || "Save failed");
         }

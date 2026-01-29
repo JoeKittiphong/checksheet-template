@@ -39,13 +39,13 @@ const TristateCheckbox = ({
     // Render Content based on state
     const renderContent = () => {
         if (value === true) {
-            return <span className="text-green-600 font-bold text-lg">✓</span>; // Green Tick
+            return <span className="text-lg">✓</span>; // Green Tick
         }
         if (value === false) {
-            return <span className="text-red-600 font-bold text-lg">✕</span>; // Red X
+            return <span className="text-sm">✕</span>; // Red X
         }
         if (value === "N/A") {
-            return <span className="text-yellow-600 font-bold text-xs">N/A</span>; // Yellow N/A
+            return <span className="text-xs">N/A</span>; // Yellow N/A
         }
         return null; // Empty
     };

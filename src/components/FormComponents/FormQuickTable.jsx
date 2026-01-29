@@ -149,16 +149,20 @@ const FormQuickTable = ({
                                         {col.render ? (
                                             col.render(cellValue, row, { register, watch })
                                         ) : effectiveType === 'tristate' ? (
-                                            <div
-                                                onClick={() => {
-                                                    const current = watch(cellValue) || '';
-                                                    const next = current === '' ? '✓' : current === '✓' ? '✕' : '';
-                                                    setValue(cellValue, next, { shouldValidate: true, shouldDirty: true });
-                                                }}
-                                                className="w-6 h-6 border border-gray-400 bg-white mx-auto flex items-center justify-center cursor-pointer hover:bg-gray-100 select-none text-sm font-bold shadow-sm rounded-sm"
-                                            >
-                                                {watch(cellValue)}
-                                            </div>
+                                            <Controller
+                                                name={cellValue}
+                                                control={control}
+                                                rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                                                render={({ field, fieldState: { error } }) => (
+                                                    <TristateCheckbox
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        error={!!error}
+                                                        size="w-6 h-6"
+                                                        className="mx-auto"
+                                                    />
+                                                )}
+                                            />
                                         ) : effectiveType === 'checkbox' ? (
                                             <Controller
                                                 name={cellValue}

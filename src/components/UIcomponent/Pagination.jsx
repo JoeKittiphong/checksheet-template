@@ -10,7 +10,9 @@ function Pagination({
     currentPage,
     totalPages,
     onPageChange,
-    pageComponents = []
+    pageComponents = [],
+    pageStatus = {}, // { 1: 'success', 2: 'error' }
+    ...props
 }) {
     const [isExpanded, setIsExpanded] = useState(true);
     const [zoomLevel, setZoomLevel] = useState(1);
@@ -44,6 +46,14 @@ function Pagination({
     }, [isExpanded]);
 
     const counterScale = 1 / zoomLevel;
+
+    // Helper for status color
+    const getStatusColor = (page) => {
+        const status = pageStatus[page];
+        if (status === 'success') return '#22c55e'; // Green-500
+        if (status === 'error') return '#ef4444'; // Red-500
+        return null;
+    };
 
     return (
         <>
@@ -150,75 +160,86 @@ function Pagination({
                                 alignItems: 'center'
                             }}
                         >
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <div
-                                    key={page}
-                                    onClick={() => onPageChange(page)}
-                                    style={{
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        opacity: 1, // Fixed opacity to 1 as requested
-                                        transform: currentPage === page ? 'scale(1.05)' : 'scale(1)',
-                                    }}
-                                >
-                                    {isExpanded ? (
-                                        // Thumbnail View
-                                        <div style={{
-                                            width: '120px',
-                                            height: '170px',
-                                            background: 'white',
-                                            borderRadius: '4px',
-                                            overflow: 'hidden',
-                                            position: 'relative',
-                                            border: currentPage === page ? '3px solid #3b82f6' : '1px solid #6b7280'
-                                        }}>
-                                            <div
-                                                className="pagination-thumbnail"
-                                                style={{
-                                                    transform: 'scale(0.15)',
-                                                    transformOrigin: 'top left',
-                                                    width: '210mm',
-                                                    height: '297mm',
-                                                    pointerEvents: 'none',
-                                                }}
-                                            >
-                                                {pageComponents[page - 1]}
-                                            </div>
-                                            {/* Overlay for Click */}
-                                            <div style={{ position: 'absolute', inset: 0, zIndex: 10 }}></div>
-                                            {/* Page Number Label */}
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                                const logicalPage = page - (props.pageOffset || 0);
+                                const displayLabel = (props.customLabels && props.customLabels[page]) || logicalPage;
+                                const statusColor = getStatusColor(logicalPage > 0 ? logicalPage : null);
+
+                                return (
+                                    <div
+                                        key={page}
+                                        onClick={() => onPageChange(page)}
+                                        style={{
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            opacity: 1, // Fixed opacity to 1 as requested
+                                            transform: currentPage === page ? 'scale(1.05)' : 'scale(1)',
+                                        }}
+                                    >
+                                        {isExpanded ? (
+                                            // Thumbnail View
                                             <div style={{
-                                                position: 'absolute',
-                                                bottom: 0,
-                                                right: 0,
-                                                background: 'rgba(0,0,0,0.6)',
-                                                color: 'white',
-                                                padding: '2px 6px',
-                                                fontSize: '10px',
-                                                borderTopLeftRadius: '4px'
+                                                width: '120px',
+                                                height: '170px',
+                                                background: 'white',
+                                                borderRadius: '4px',
+                                                overflow: 'hidden',
+                                                position: 'relative',
+                                                border: currentPage === page
+                                                    ? '3px solid #3b82f6'
+                                                    : statusColor ? `3px solid ${statusColor}` : '1px solid #6b7280'
                                             }}>
-                                                {page}
+                                                <div
+                                                    className="pagination-thumbnail"
+                                                    style={{
+                                                        transform: 'scale(0.15)',
+                                                        transformOrigin: 'top left',
+                                                        width: '210mm',
+                                                        height: '297mm',
+                                                        pointerEvents: 'none',
+                                                    }}
+                                                >
+                                                    {pageComponents[page - 1]}
+                                                </div>
+                                                {/* Overlay for Click */}
+                                                <div style={{ position: 'absolute', inset: 0, zIndex: 10 }}></div>
+                                                {/* Page Number Label */}
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    bottom: 0,
+                                                    right: 0,
+                                                    background: statusColor || 'rgba(0,0,0,0.6)',
+                                                    color: 'white',
+                                                    padding: '2px 6px',
+                                                    fontSize: '10px',
+                                                    borderTopLeftRadius: '4px',
+                                                    fontWeight: statusColor ? 'bold' : 'normal'
+                                                }}>
+                                                    {displayLabel} {statusColor === '#22c55e' ? '✓' : ''}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        // Number View
-                                        <div style={{
-                                            width: '36px',
-                                            height: '36px',
-                                            borderRadius: '6px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontWeight: 'bold',
-                                            background: currentPage === page ? '#2563eb' : 'rgba(255, 255, 255, 0.5)',
-                                            color: currentPage === page ? 'white' : '#374151',
-                                            border: currentPage === page ? 'none' : '1px solid #9ca3af'
-                                        }}>
-                                            {page}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                        ) : (
+                                            // Number View
+                                            <div style={{
+                                                width: '36px',
+                                                height: '36px',
+                                                borderRadius: '6px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontWeight: 'bold',
+                                                background: currentPage === page
+                                                    ? '#2563eb'
+                                                    : statusColor || 'rgba(255, 255, 255, 0.5)',
+                                                color: currentPage === page || statusColor ? 'white' : '#374151',
+                                                border: currentPage === page ? 'none' : statusColor ? 'none' : '1px solid #9ca3af'
+                                            }}>
+                                                {displayLabel}
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

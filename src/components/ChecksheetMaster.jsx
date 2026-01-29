@@ -35,6 +35,8 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     const [formId, setFormId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
+    const [pageStatus, setPageStatus] = useState({});
+
     // Initialize Global Form State
     const methods = useForm({
         mode: 'all', // Validation triggers on change and blur for immediate feedback
@@ -135,6 +137,10 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
             });
 
             if (result.success) {
+                // Synchronize ID if it's a new record
+                if (result.data && result.data.id) {
+                    setFormId(result.data.id);
+                }
                 clearSavedData(); // Clear auto-save on success
                 alert(result.message); // Existing alert
                 return result; // Return result for ProfileBar to handle modal/redirect
@@ -148,7 +154,36 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     };
 
     const handlePrint = () => {
+        const formData = methods.getValues();
+        const machineNo = formData.machineNo || formData.machine_no || '';
+
+        // Priority logic for naming parts
+        const formName = meta.form_name || '';
+        const version = meta.version || '';
+        const title = meta.title || meta.checksheet_name || meta.model || '';
+
+        // Construct filename: form_name-version-title-machine_no
+        // Remove characters that are problematic for filenames
+        const sanitize = (str) => String(str || '').replace(/[\\/:*?"<>|]/g, '').trim();
+
+        const parts = [
+            sanitize(formName),
+            sanitize(version),
+            sanitize(title),
+            sanitize(machineNo)
+        ].filter(part => part !== ''); // Remove empty parts to avoid double dashes
+
+        const fileName = parts.join('-').replace(/\s+/g, '_');
+
+        const originalTitle = document.title;
+        document.title = fileName;
+
         window.print();
+
+        // Restore original title
+        setTimeout(() => {
+            document.title = originalTitle;
+        }, 1000);
     };
 
     return (
@@ -162,6 +197,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                             onPrint={handlePrint}
                             isSaving={isSaving}
                             onSetPage={setCurrentPage} // Pass page setter
+                            onSetPageStatus={setPageStatus} // NEW: Pass status setter
                         />
 
                         {/* Screen-only elements - Pagination */}
@@ -172,6 +208,9 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                                 onPageChange={setCurrentPage}
                                 pageLabels={pageLabels}
                                 pageComponents={pages}
+                                pageStatus={pageStatus} // NEW: Pass pageStatus
+                                pageOffset={2}
+                                customLabels={{ 1: 'C', 2: 'B' }}
                             />
 
                             {/* Loading Indicator */}

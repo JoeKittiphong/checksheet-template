@@ -17,11 +17,16 @@ const FormInputCheckSTD = ({
 }) => {
     const { control, register } = useFormContext();
 
+    const isRequired = props.required !== false;
+
     return (
         <Controller
             name={name}
             control={control}
             defaultValue={defaultValue}
+            rules={{
+                validate: (value) => !isRequired || (value !== null && value !== undefined && value !== '') || "Required"
+            }}
             render={({ field }) => (
                 <InputCheckSTD
                     {...field}

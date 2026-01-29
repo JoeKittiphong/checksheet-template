@@ -10,6 +10,16 @@ const FormWorkstandCheck = ({ name, defaultValue, ...props }) => {
             name={name}
             control={control}
             defaultValue={defaultValue || {}}
+            rules={{
+                validate: (value) => {
+                    if (!value) return "Required";
+                    // Check if there is any data in any section
+                    const hasData = ['a', 'b', 'c', 'd'].some(section =>
+                        Array.isArray(value[section]) && value[section].some(v => v !== undefined && v !== null && v !== '')
+                    );
+                    return hasData || "Required";
+                }
+            }}
             render={({ field }) => (
                 <WorkstandCheck
                     data={field.value || {}}

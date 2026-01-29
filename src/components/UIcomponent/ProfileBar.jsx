@@ -12,7 +12,7 @@ import { useFormContext } from "react-hook-form";
  * Logic:
  * - Hides Print button if user.role === 'worker'
  */
-function ProfileBar({ onSave, onPrint, isSaving, onSetPage }) {
+function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus }) {
     const { user } = useAuth();
     const { isKeypadEnabled, toggleKeypadEnabled } = useKeypad();
     const methods = useFormContext(); // Get methods to trigger validation
@@ -23,17 +23,68 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage }) {
 
     const [showExitModal, setShowExitModal] = useState(false);
 
-    const handleVerify = methods.handleSubmit(
-        (data) => {
-            // Form is valid
+    const handleVerify = async () => {
+        // Trigger validation for all fields
+        const isValid = await methods.trigger();
+
+        // --- Page Status Calculation Logic ---
+        if (onSetPageStatus) {
+            const allErrors = methods.formState.errors;
+            const allValues = methods.getValues();
+
+            // 1. Identify all pages that have fields (by p{n}_ prefix)
+            const pagesWithFields = new Set();
+            Object.keys(allValues).forEach(key => {
+                const match = key.match(/^p(\d+)_/);
+                if (match) {
+                    pagesWithFields.add(parseInt(match[1], 10));
+                }
+            });
+
+            // 2. Identify pages with errors
+            const pagesWithErrors = new Set();
+
+            // Helper to recurse error object to find keys
+            const findErrorKeys = (errorObj, prefix = '') => {
+                Object.keys(errorObj).forEach(key => {
+                    const currentPath = prefix ? `${prefix}.${key}` : key;
+                    if (errorObj[key]?.message || errorObj[key]?.type) {
+                        // Found a leaf error
+                        const match = currentPath.match(/p(\d+)_/); // Look for p{n}_ anywhere in path
+                        if (match) {
+                            pagesWithErrors.add(parseInt(match[1], 10));
+                        }
+                    } else if (typeof errorObj[key] === 'object') {
+                        findErrorKeys(errorObj[key], currentPath);
+                    }
+                });
+            };
+            findErrorKeys(allErrors);
+
+            // 3. Construct Status Map
+            const newStatus = {};
+            pagesWithFields.forEach(pageNum => {
+                if (pagesWithErrors.has(pageNum)) {
+                    newStatus[pageNum] = 'error'; // Red
+                } else {
+                    newStatus[pageNum] = 'success'; // Green
+                }
+            });
+
+            // Pass to parent
+            onSetPageStatus(newStatus);
+        }
+
+        if (isValid) {
             alert("Data is valid!");
-        },
-        (errors) => {
-            // Form is invalid
-            console.log("Validation Errors:", errors);
+        } else {
+            console.log("Validation Errors:", methods.formState.errors);
+            const errors = methods.formState.errors;
+
+            // Auto-jump logic
             const firstErrorKey = Object.keys(errors)[0];
+
             if (firstErrorKey) {
-                // Try to extract page number (e.g., p12_xxxxx -> Page 12)
                 const match = firstErrorKey.match(/^p(\d+)_/);
                 if (match && match[1]) {
                     const pageNum = parseInt(match[1], 10);
@@ -41,7 +92,6 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage }) {
                         onSetPage(pageNum);
                     }
 
-                    // Delay slightly to allow page switch, then scroll
                     setTimeout(() => {
                         const element = document.getElementsByName(firstErrorKey)[0];
                         if (element) {
@@ -52,7 +102,7 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage }) {
                 }
             }
         }
-    );
+    };
 
     return (
         <>

@@ -1,4 +1,7 @@
 export const meta = {
+    form_name: "FAWI0002",
+    version: "V3",
+    title: "FINAL TEST CUTTING 1",
     department: "EDW",
     model: "AL400G(iG+E)",
     as_group: "FINAL",

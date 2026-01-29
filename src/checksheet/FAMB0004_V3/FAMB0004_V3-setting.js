@@ -1,4 +1,7 @@
 export const meta = {
+    form_name: "FAMB0004",
+    version: "V3",
+    title: "body aasy",
     department: "EDM",
     model: "AL80G Plus",
     as_group: "BODY",

@@ -32,17 +32,17 @@ function Page20() {
                             <div className="flex gap-10">
                                 <div className="flex flex-col items-center gap-1">
                                     <FormItemCheck name="p20_flushing_pump_check" label="Flushing Pump" className="font-bold" />
-                                    <img src={img20_1} alt="Flushing Pump" className="h-20 object-contain" />
+                                    <img src={img20_1} alt="Flushing Pump" className="h-10 object-contain" />
                                     <FormChecknumber name="p20_flushing_pump_dir" label="ทิศของปั๊ม:" labelClass="text-[11px]" inputClass="w-16 text-sm" />
                                 </div>
                                 <div className="flex flex-col items-center gap-1">
                                     <FormItemCheck name="p20_sending_pump_check" label="Sending Pump" className="font-bold" />
-                                    <img src={img20_2} alt="Sending Pump" className="h-20 object-contain" />
+                                    <img src={img20_2} alt="Sending Pump" className="h-10 object-contain" />
                                     <FormChecknumber name="p20_sending_pump_dir" label="ทิศของปั๊ม:" labelClass="text-[11px]" inputClass="w-16 text-sm" />
                                 </div>
                                 <div className="flex flex-col items-center gap-1">
                                     <FormItemCheck name="p20_circulation_pump_check" label="Circulation Pump" className="font-bold" />
-                                    <div className="h-20 flex items-center">
+                                    <div className="h-10 flex items-center">
                                         <img src={img20_3} alt="Circulation Pump" className="h-10 object-contain" />
                                     </div>
                                     <FormChecknumber name="p20_circulation_pump_dir" label="ทิศของปั๊ม:" labelClass="text-[11px]" inputClass="w-16 text-sm" />
