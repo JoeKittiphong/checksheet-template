@@ -6,7 +6,15 @@ import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox'; // Add
 
 /**
  * FormQuickTable Component
- * ...
+ * 
+ * A flexible table component integrated with react-hook-form.
+ * Supports:
+ * - Dynamic columns with headers and widths
+ * - Standard inputs with validation
+ * - Checkboxes and Tristate Checkboxes
+ * - Row grouping via rowSpans
+ * - Custom cell rendering
+ * - Complex headers via headerRows prop
  */
 const FormQuickTable = ({
     columns = [],
@@ -56,7 +64,7 @@ const FormQuickTable = ({
                                         rowSpan={cell.rowSpan || 1}
                                         colSpan={cell.colSpan || 1}
                                         style={{ width: cell.width }}
-                                        className="border border-black text-center font-bold px-1 py-0.5"
+                                        className={`border border-black font-bold px-1 py-0.5 ${cell.className || 'text-center'}`}
                                     >
                                         <div className="flex justify-center items-center gap-2">
                                             {cell.headerCheckbox && (
@@ -73,7 +81,7 @@ const FormQuickTable = ({
                                                     )}
                                                 />
                                             )}
-                                            <span>{cell.header}</span>
+                                            <span className="whitespace-pre-wrap">{cell.header}</span>
                                         </div>
                                     </th>
                                 ))}
@@ -85,7 +93,7 @@ const FormQuickTable = ({
                                 <th
                                     key={idx}
                                     style={{ width: col.width }}
-                                    className="border border-black text-center font-bold"
+                                    className={`border border-black font-bold ${col.className || 'text-center'}`}
                                 >
                                     {col.headerComponent ? col.headerComponent : (
                                         <div className="flex px-1 py-0.5 justify-center items-center gap-2">
@@ -103,7 +111,7 @@ const FormQuickTable = ({
                                                     )}
                                                 />
                                             )}
-                                            <span>{col.header}</span>
+                                            <span className="whitespace-pre-wrap">{col.header}</span>
                                         </div>
                                     )}
                                 </th>
@@ -112,119 +120,127 @@ const FormQuickTable = ({
                     )}
                 </thead>
                 <tbody>
-                    {data.map((row, rIdx) => (
-                        <tr key={rIdx}>
-                            {columns.map((col, cIdx) => {
-                                const span = rowSpans[rIdx][col.key];
-                                if (span === 0) return null; // Skip if spanned by above cell
+                    {data.map((row, rIdx) => {
+                        let skipCols = 0;
+                        return (
+                            <tr key={rIdx} className={row.className || ""}>
+                                {columns.map((col, cIdx) => {
+                                    if (skipCols > 0) {
+                                        skipCols--;
+                                        return null;
+                                    }
 
-                                const cellValue = row[col.key];
+                                    const span = rowSpans[rIdx][col.key];
+                                    if (span === 0) return null; // Skip if spanned by above cell
 
-                                // Determine cell type: row.type can override col.type, but col.isLabel forces label mode
-                                const effectiveType = col.isLabel ? 'label' : (row.type || col.type || 'label');
-                                const isLabel = effectiveType === 'label';
+                                    const cellValue = row[col.key];
+                                    const colSpan = row[`${col.key}_colSpan`] || 1;
+                                    if (colSpan > 1) skipCols = colSpan - 1;
 
-                                // Validation logic for inputs
-                                let validationClass = "";
-                                if (effectiveType === 'input') {
-                                    const val = watch(cellValue);
-                                    const min = row[`${col.key}_min`];
-                                    const max = row[`${col.key}_max`];
-                                    const expectedValue = row.std_val === '∞' ? '∞' : row[`${col.key}_expected`];
+                                    // Determine cell type: row.type can override col.type, but col.isLabel forces label mode
+                                    const effectiveType = col.isLabel ? 'label' : (row.type || col.type || 'label');
+                                    const isLabel = effectiveType === 'label';
 
-                                    validationClass = getValidationClass(val, { min, max, expectedValue });
-                                }
+                                    // Validation logic for inputs
+                                    let validationClass = "";
+                                    if (effectiveType === 'input') {
+                                        const val = watch(cellValue);
+                                        const min = row[`${col.key}_min`];
+                                        const max = row[`${col.key}_max`];
+                                        const expectedValue = row.std_val === '∞' ? '∞' : row[`${col.key}_expected`];
 
-                                return (
-                                    <td
-                                        key={cIdx}
-                                        rowSpan={span || 1}
-                                        className={`
-                                            border border-black px-1 py-0.5 text-center
-                                            ${isLabel ? 'bg-gray-50' : ''}
-                                            ${col.align === 'left' ? 'text-left' : 'text-center'}
-                                            ${validationClass}
-                                        `}
-                                    >
-                                        {col.render ? (
-                                            col.render(cellValue, row, { register, watch })
-                                        ) : effectiveType === 'tristate' ? (
-                                            <Controller
-                                                name={cellValue}
-                                                control={control}
-                                                rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
-                                                render={({ field, fieldState: { error } }) => (
-                                                    <TristateCheckbox
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                        error={!!error}
-                                                        size="w-6 h-6"
-                                                        className="mx-auto"
-                                                    />
-                                                )}
-                                            />
-                                        ) : effectiveType === 'checkbox' ? (
-                                            <Controller
-                                                name={cellValue}
-                                                control={control}
-                                                rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
-                                                render={({ field, fieldState: { error } }) => (
-                                                    <TristateCheckbox
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                        error={!!error}
-                                                        size="w-5 h-5"
-                                                    />
-                                                )}
-                                            />
-                                        ) : effectiveType === 'input' ? (
-                                            <div className="flex items-center gap-1">
-                                                {(() => {
-                                                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                                        validationClass = getValidationClass(val, { min, max, expectedValue });
+                                    }
 
-                                                    // Helper to get nested error
-                                                    const getNestedError = (obj, path) => {
-                                                        return path && path.split('.').reduce((acc, part) => acc && acc[part], obj);
-                                                    };
-                                                    // errors is not defined in this scope, assuming it should come from useFormContext
-                                                    // errors is already defined in the component scope
-                                                    // const { formState: { errors } } = useFormContext();
-                                                    const error = getNestedError(errors, cellValue);
-
-                                                    return (
-                                                        <input
-                                                            type="text"
-                                                            {...register(cellValue, { required: true })} // Default required
-                                                            inputMode={isMobile ? "none" : "text"}
-                                                            readOnly={isMobile}
-                                                            onClick={() => {
-                                                                if (isMobile || isKeypadEnabled) {
-                                                                    openKeypad(cellValue, watch(cellValue), { label: cellValue, mode: 'numeric' });
-                                                                }
-                                                            }}
-                                                            onFocus={(e) => {
-                                                                if (isMobile) {
-                                                                    e.target.blur();
-                                                                    openKeypad(cellValue, watch(cellValue), { label: cellValue, mode: 'numeric' });
-                                                                }
-                                                            }}
-                                                            defaultValue={row.defaultValue ?? ''}
-                                                            className={`bg-transparent outline-none text-center border-b focus:border-blue-500 w-full flex-1 cursor-pointer
-                                                                ${error ? 'border-red-500' : 'border-transparent'}
-                                                            `}
+                                    return (
+                                        <td
+                                            key={cIdx}
+                                            rowSpan={span || 1}
+                                            colSpan={colSpan}
+                                            className={`
+                                                border border-black px-1 py-0.5 text-center
+                                                ${isLabel ? 'bg-gray-50' : ''}
+                                                ${col.align === 'left' ? 'text-left' : 'text-center'}
+                                                ${validationClass}
+                                            `}
+                                        >
+                                            {col.render ? (
+                                                col.render(cellValue, row, { register, watch })
+                                            ) : effectiveType === 'tristate' ? (
+                                                <Controller
+                                                    name={cellValue}
+                                                    control={control}
+                                                    rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                                                    render={({ field, fieldState: { error } }) => (
+                                                        <TristateCheckbox
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            error={!!error}
+                                                            size="w-6 h-6"
+                                                            className="mx-auto"
                                                         />
-                                                    );
-                                                })()}
-                                                {row.suffix && <span className="shrink-0">{row.suffix}</span>}
-                                            </div>
-                                        ) : (
-                                            <span className="whitespace-pre-wrap">{cellValue}</span>
-                                        )}
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    ))}
+                                                    )}
+                                                />
+                                            ) : effectiveType === 'checkbox' ? (
+                                                <Controller
+                                                    name={cellValue}
+                                                    control={control}
+                                                    rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                                                    render={({ field, fieldState: { error } }) => (
+                                                        <TristateCheckbox
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            error={!!error}
+                                                            size="w-5 h-5"
+                                                        />
+                                                    )}
+                                                />
+                                            ) : effectiveType === 'input' ? (
+                                                <div className="flex items-center gap-1">
+                                                    {(() => {
+                                                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+                                                        // Helper to get nested error
+                                                        const getNestedError = (obj, path) => {
+                                                            return path && path.split('.').reduce((acc, part) => acc && acc[part], obj);
+                                                        };
+                                                        const error = getNestedError(errors, cellValue);
+
+                                                        return (
+                                                            <input
+                                                                type="text"
+                                                                {...register(cellValue, { required: true })} // Default required
+                                                                inputMode={isMobile ? "none" : "text"}
+                                                                readOnly={isMobile}
+                                                                onClick={() => {
+                                                                    if (isMobile || isKeypadEnabled) {
+                                                                        openKeypad(cellValue, watch(cellValue), { label: cellValue, mode: 'numeric' });
+                                                                    }
+                                                                }}
+                                                                onFocus={(e) => {
+                                                                    if (isMobile) {
+                                                                        e.target.blur();
+                                                                        openKeypad(cellValue, watch(cellValue), { label: cellValue, mode: 'numeric' });
+                                                                    }
+                                                                }}
+                                                                defaultValue={row.defaultValue ?? ''}
+                                                                className={`bg-transparent outline-none text-center border-b focus:border-blue-500 w-full flex-1 cursor-pointer
+                                                                    ${error ? 'border-red-500' : 'border-transparent'}
+                                                                `}
+                                                            />
+                                                        );
+                                                    })()}
+                                                    {row.suffix && <span className="shrink-0">{row.suffix}</span>}
+                                                </div>
+                                            ) : (
+                                                <span className="whitespace-pre-wrap text-center block w-full">{cellValue}</span>
+                                            )}
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>

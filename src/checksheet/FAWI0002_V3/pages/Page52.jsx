@@ -48,31 +48,30 @@ function Page52() {
                         <img src={image54_1} alt="Air Check Diagrams" className="h-[550px] object-contain" />
 
                         {/* 0504H Section positioning (based on image reference) */}
-                        <div className="absolute top-[410px] left-[-30px] flex flex-col gap-1 bg-white/80 p-1 rounded border border-dashed border-gray-400">
-                            <span className="font-bold ">0504H [#87331] Support Hand Close = 01</span>
-                            <FormItemCheck name="p52_check_air_popup" label="Check Air [POP UP AIR]" />
-                            <FormItemCheck name="p52_after_check_0504h" label="After Check 0504H [#87331]=00" />
+                        <div className="absolute bottom-[215px] left-[40px] flex flex-col gap-3">
+                            <FormItemCheck name="p52_check_air_popup"/>
+                            <FormItemCheck name="p52_after_check_0504h" />
                         </div>
 
                         {/* Interactive Checkboxes on image */}
                         {/* Pipe Up/Down Adjustment cover */}
-                        <div className="absolute top-[525px] right-[245px]">
+                        <div className="absolute bottom-[190px] right-[170px]">
                             <FormItemCheck name="p52_adj_cover_close" label="" showCheckbox={true} className="!p-0" />
                         </div>
-                        <div className="absolute top-[525px] right-[45px]">
+                        <div className="absolute bottom-[190px] right-[-10px]">
                             <FormItemCheck name="p52_adj_cover_open" label="" showCheckbox={true} className="!p-0" />
                         </div>
 
                         {/* Slide Block L */}
-                        <div className="absolute top-[320px] right-[180px]">
+                        <div className="absolute bottom-[55px] right-[170px]">
                             <FormItemCheck name="p52_slide_block_close" label="" showCheckbox={true} className="!p-0" />
                         </div>
-                        <div className="absolute top-[672px] right-[15px]">
+                        <div className="absolute bottom-[55px] right-[-10px]">
                             <FormItemCheck name="p52_slide_block_open" label="" showCheckbox={true} className="!p-0" />
                         </div>
 
                         {/* Bottom Note Checkbox */}
-                        <div className="absolute top-[705px] left-[155px]">
+                        <div className="absolute bottom-[33px] right-[300px]">
                             <FormItemCheck name="p52_bottom_note_check" label="" showCheckbox={true} className="!p-0" />
                         </div>
                     </div>

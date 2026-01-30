@@ -63,6 +63,9 @@ console.log('Created meta.json');
 // 2. Create setting.js
 const settingFileName = `${checksheetName}-setting.js`;
 const settingContent = `export const meta = {
+    form_name: "${checksheetName.split('_')[0]}",
+    version: "${checksheetName.split('_')[1]}",
+    title: "TITLE",
     department: "DEPARTMENT",
     model: "MODEL",
     as_group: "GROUP",
@@ -73,8 +76,8 @@ export const cover = {
     version: "${version}",
     dateOfIssue: new Date().toISOString().split('T')[0],
     approvalDate: new Date().toISOString().split('T')[0],
-    issuedBy: "ISSUED BY",
-    title: "Check Sheet (Title)",
+    issuedBy: "ENGINEERING DIV.",
+    title: meta.title,
     company: "Sodick ( Thailand ) Co., Ltd."
 };
 
@@ -82,12 +85,12 @@ export const content = {
     formNumber: "Form No.XXXX",
     documentNo: '${formName}',
     releaseNo: '${version.replace(/^V/, '')}',
-    controlBy: 'Control Division',
+    controlBy: 'Assembly Division',
     title: 'Check Sheet',
-    subtitle: 'SUBTITLE',
+    subtitle: 'ASSEMBLY',
     company: 'Sodick (Thailand) Co.,Ltd',
-    totalPage: ${totalPages},
-    date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+    totalPage: 58,
+    date: "14 Feb 2025",
     model: 'MODEL',
     group: 'GROUP'
 }
