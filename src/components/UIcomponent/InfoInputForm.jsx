@@ -1,3 +1,4 @@
+import { useAuth } from '../../context/AuthContext';
 import { useKeypad } from '../../context/KeypadContext';
 import { useFormContext } from 'react-hook-form';
 import { useEffect } from 'react';
@@ -12,7 +13,9 @@ function InfoInputForm({
     onChange = () => { }
 }) {
     const { openKeypad, isKeypadEnabled } = useKeypad();
+    const { user } = useAuth(); // Get user
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isWorker = user?.role === 'worker'; // Check if worker
 
     // Add validation
     const { register } = useFormContext();
@@ -29,12 +32,20 @@ function InfoInputForm({
     };
 
     const handleInputClick = (name, value, label) => {
+        if (!isWorker && (isMobile || isKeypadEnabled)) { // Disable keypad for restricted fields if worker
+            openKeypad(name, value, { label, mode: 'text' });
+        }
+    };
+
+    // Keypad handler for allowed fields
+    const handleAllowedInputClick = (name, value, label) => {
         if (isMobile || isKeypadEnabled) {
             openKeypad(name, value, { label, mode: 'text' });
         }
     };
 
     const bgGreenLight = 'bg-green-200';
+    const bgRestricted = isWorker ? 'bg-gray-300' : bgGreenLight; // Visual cue
 
     return (
         <div className="mt-12 flex justify-center">
@@ -59,18 +70,26 @@ function InfoInputForm({
                     {/* Machine No Row */}
                     <tr>
                         <td className="text-right pr-4 py-2 font-medium text-sm">MACHINE NO:</td>
-                        <td className={`border-b border-black ${bgGreenLight} p-0 h-9`}>
+                        <td className={`border-b border-black ${bgRestricted} p-0 h-9`}>
                             <input
                                 type="text"
                                 name="machineNo"
                                 value={formData.machineNo || ''}
-                                readOnly={isMobile}
+                                readOnly={isMobile || isWorker} // Restricted for worker
                                 inputMode={isMobile ? "none" : "text"}
-                                onClick={(e) => { isMobile && e.target.blur(); handleInputClick('machineNo', formData.machineNo || '', 'MACHINE NO'); }}
-                                onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('machineNo', formData.machineNo || '', 'MACHINE NO'); }}
+                                onClick={(e) => {
+                                    if (isWorker) return;
+                                    isMobile && e.target.blur();
+                                    handleInputClick('machineNo', formData.machineNo || '', 'MACHINE NO');
+                                }}
+                                onFocus={(e) => {
+                                    if (isWorker) return;
+                                    isMobile && e.target.blur();
+                                    isMobile && handleInputClick('machineNo', formData.machineNo || '', 'MACHINE NO');
+                                }}
                                 onChange={handleChange}
-                                className="w-full h-full bg-transparent text-center outline-none font-medium text-sm cursor-pointer"
-                                placeholder="Enter Machine No."
+                                className={`w-full h-full bg-transparent text-center outline-none font-medium text-sm ${isWorker ? 'cursor-not-allowed text-gray-600' : 'cursor-pointer'}`}
+                                placeholder={isWorker ? "" : "Enter Machine No."}
                             />
                         </td>
                     </tr>
@@ -78,18 +97,26 @@ function InfoInputForm({
                     {/* Controller No Row */}
                     <tr>
                         <td className="text-right pr-4 py-2 font-medium text-sm">CONTROLLER NO.</td>
-                        <td className={`border-b border-black ${bgGreenLight} p-0 h-9`}>
+                        <td className={`border-b border-black ${bgRestricted} p-0 h-9`}>
                             <input
                                 type="text"
                                 name="controllerNo"
                                 value={formData.controllerNo || ''}
-                                readOnly={isMobile}
+                                readOnly={isMobile || isWorker} // Restricted for worker
                                 inputMode={isMobile ? "none" : "text"}
-                                onClick={(e) => { isMobile && e.target.blur(); handleInputClick('controllerNo', formData.controllerNo || '', 'CONTROLLER NO'); }}
-                                onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('controllerNo', formData.controllerNo || '', 'CONTROLLER NO'); }}
+                                onClick={(e) => {
+                                    if (isWorker) return;
+                                    isMobile && e.target.blur();
+                                    handleInputClick('controllerNo', formData.controllerNo || '', 'CONTROLLER NO');
+                                }}
+                                onFocus={(e) => {
+                                    if (isWorker) return;
+                                    isMobile && e.target.blur();
+                                    isMobile && handleInputClick('controllerNo', formData.controllerNo || '', 'CONTROLLER NO');
+                                }}
                                 onChange={handleChange}
-                                className="w-full h-full bg-transparent text-center outline-none font-medium text-sm cursor-pointer"
-                                placeholder="Enter Controller No."
+                                className={`w-full h-full bg-transparent text-center outline-none font-medium text-sm ${isWorker ? 'cursor-not-allowed text-gray-600' : 'cursor-pointer'}`}
+                                placeholder={isWorker ? "" : "Enter Controller No."}
                             />
                         </td>
                     </tr>
@@ -102,7 +129,7 @@ function InfoInputForm({
                                 type="date"
                                 name="startDate"
                                 style={{ textAlign: 'center', textAlignLast: 'center' }}
-                                className="w-full h-full bg-transparent outline-none font-medium text-sm cursor-pointer text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                                className="w-full h-full bg-transparent outline-none font-medium text-sm cursor-pointer text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-date-and-time-value]:text-center [&::-webkit-datetime-edit]:flex [&::-webkit-datetime-edit]:justify-center"
                                 value={formData.startDate || ''}
                                 onChange={handleChange}
                             />
@@ -117,7 +144,7 @@ function InfoInputForm({
                                 type="date"
                                 name="finishDate"
                                 style={{ textAlign: 'center', textAlignLast: 'center' }}
-                                className="w-full h-full bg-transparent outline-none font-medium text-sm cursor-pointer text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                                className="w-full h-full bg-transparent outline-none font-medium text-sm cursor-pointer text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-date-and-time-value]:text-center [&::-webkit-datetime-edit]:flex [&::-webkit-datetime-edit]:justify-center"
                                 value={formData.finishDate || ''}
                                 onChange={handleChange}
                             />
@@ -129,11 +156,11 @@ function InfoInputForm({
                         <td className="text-right pr-4 py-2 font-medium text-sm align-top pt-2">OPTION:</td>
                         <td className="border-b border-black p-0">
                             <div className="flex flex-col">
-                                <input name="option1" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option1', formData.option1 || '', 'OPTION 1'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option1', formData.option1 || '', 'OPTION 1'); }} value={formData.option1 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option2" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option2', formData.option2 || '', 'OPTION 2'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option2', formData.option2 || '', 'OPTION 2'); }} value={formData.option2 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option3" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option3', formData.option3 || '', 'OPTION 3'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option3', formData.option3 || '', 'OPTION 3'); }} value={formData.option3 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option4" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option4', formData.option4 || '', 'OPTION 4'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option4', formData.option4 || '', 'OPTION 4'); }} value={formData.option4 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option5" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleInputClick('option5', formData.option5 || '', 'OPTION 5'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleInputClick('option5', formData.option5 || '', 'OPTION 5'); }} value={formData.option5 || ''} className="w-full bg-yellow-300 h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option1" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option1', formData.option1 || '', 'OPTION 1'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option1', formData.option1 || '', 'OPTION 1'); }} value={formData.option1 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option2" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option2', formData.option2 || '', 'OPTION 2'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option2', formData.option2 || '', 'OPTION 2'); }} value={formData.option2 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option3" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option3', formData.option3 || '', 'OPTION 3'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option3', formData.option3 || '', 'OPTION 3'); }} value={formData.option3 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option4" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option4', formData.option4 || '', 'OPTION 4'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option4', formData.option4 || '', 'OPTION 4'); }} value={formData.option4 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
+                                <input name="option5" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option5', formData.option5 || '', 'OPTION 5'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option5', formData.option5 || '', 'OPTION 5'); }} value={formData.option5 || ''} className="w-full bg-yellow-300 h-8 px-2 outline-none cursor-pointer" />
                             </div>
                         </td>
                     </tr>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const saveForm = async ({ apiEndpoint, formId, meta, formData }) => {
+export const saveForm = async ({ apiEndpoint, formId, meta, formData, status }) => {
     // Prepare payload
     const payload = {
         id: formId, // Include ID (null if new)
@@ -9,7 +9,8 @@ export const saveForm = async ({ apiEndpoint, formId, meta, formData }) => {
         as_group: meta.as_group,
         checksheet_name: meta.checksheet_name,
         machine_no: formData.machine_no || "UNKNOWN", // Get from Cover Page
-        checksheet_data: formData
+        checksheet_data: formData,
+        status: status || "work_in_progress" // Default to work_in_progress if not specified (e.g. regular save)
     };
 
     try {

@@ -50,7 +50,7 @@ function Page27() {
 
         { desc: "TC UOP PRES WP40", wo_400: "0206", wo_600: "0201", hs_400: "0341", hs_600: "0350", dsm_wo_400: "0341", dsm_wo_600: "0350", dsm_hs_400: "0206", dsm_hs_600: "0201", address: "MANAGE-PARAMETER-CUTTING P.2/6" },
         { desc: "TC UOP PRES WP50", wo_400: "0327", wo_600: "0318", hs_400: "0536", hs_600: "0550", dsm_wo_400: "0536", dsm_wo_600: "0550", dsm_hs_400: "0327", dsm_hs_600: "0318" },
-        { desc: "TC UOP PRES WP60", wo_400: "0460", wo_600: "0461", hs_400: "0772", hs_600: "0788", dsm_wo_400: "0772", dsm_wo_600: "0788", dsm_hs_400: "0460", dsm_hs_400: "0431" },
+        { desc: "TC UOP PRES WP60", wo_400: "0460", wo_600: "0461", hs_400: "0772", hs_600: "0788", dsm_wo_400: "0772", dsm_wo_600: "0788", dsm_hs_400: "0460", dsm_hs_600: "0431" },
         { desc: "TC LOP PRES WP40", wo_400: "0184", wo_600: "0177", hs_400: "0317", hs_600: "0341", dsm_wo_400: "0317", dsm_wo_600: "0341", dsm_hs_400: "0184", dsm_hs_600: "0177" },
         { desc: "TC LOP PRES WP50", wo_400: "0291", wo_600: "0282", hs_400: "0500", hs_600: "0535", dsm_wo_400: "0500", dsm_wo_600: "0535", dsm_hs_400: "0291", dsm_hs_600: "0282" },
         { desc: "TC LOP PRES WP60", wo_400: "0421", wo_600: "0411", hs_400: "0722", hs_600: "0770", dsm_wo_400: "0722", dsm_wo_600: "0770", dsm_hs_400: "0421", dsm_hs_600: "0411" },

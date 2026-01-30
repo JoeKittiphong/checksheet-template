@@ -34,6 +34,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     const [isLoading, setIsLoading] = useState(true);
     const [formId, setFormId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
+    const [status, setStatus] = useState('prepare'); // Status state
 
     const [pageStatus, setPageStatus] = useState({});
 
@@ -81,6 +82,10 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
                 if (data) {
                     let finalData = data.checksheet_data || {};
+                    // Set Status from DB
+                    if (data.status) {
+                        setStatus(data.status);
+                    }
 
                     // Auto-Restore logic: Merge DB data with LocalStorage data
                     const currentUrlParams = new URLSearchParams(window.location.search);
@@ -125,15 +130,23 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     }, [methods, apiEndpoint, meta]);
 
     // Handle Save
-    const handleSave = async () => {
+    const handleSave = async (targetStatus = null) => {
         setIsSaving(true);
         try {
             const formData = methods.getValues();
+
+            // Determine status
+            // If targetStatus is passed (e.g. 'finish'), use it.
+            // Otherwise, if current status is 'prepare', move to 'work_in_progress'. 
+            // If explicit save is called, usually implies work in progress.
+            const nextStatus = targetStatus || (status === 'prepare' ? 'work_in_progress' : status);
+
             const result = await saveForm({
                 apiEndpoint,
                 formId,
                 meta,
-                formData
+                formData,
+                status: nextStatus
             });
 
             if (result.success) {
@@ -141,8 +154,19 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                 if (result.data && result.data.id) {
                     setFormId(result.data.id);
                 }
+
+                // Update local status
+                setStatus(nextStatus);
+
                 clearSavedData(); // Clear auto-save on success
-                alert(result.message); // Existing alert
+
+                // Show specific message for Submit
+                if (targetStatus === 'finish') {
+                    alert("บันทึกจบงานเรียบร้อยแล้ว!");
+                } else {
+                    alert(result.message); // Existing alert
+                }
+
                 return result; // Return result for ProfileBar to handle modal/redirect
             }
         } catch (error) {
@@ -160,15 +184,17 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
         // Priority logic for naming parts
         const formName = meta.form_name || '';
         const version = meta.version || '';
-        const title = meta.title || meta.checksheet_name || meta.model || '';
+        const model = meta.model || '';
+        const title = meta.title || meta.checksheet_name || '';
 
-        // Construct filename: form_name-version-title-machine_no
+        // Construct filename: form_name-version-model-title-machine_no
         // Remove characters that are problematic for filenames
         const sanitize = (str) => String(str || '').replace(/[\\/:*?"<>|]/g, '').trim();
 
         const parts = [
             sanitize(formName),
             sanitize(version),
+            sanitize(model),
             sanitize(title),
             sanitize(machineNo)
         ].filter(part => part !== ''); // Remove empty parts to avoid double dashes
@@ -189,11 +215,13 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     return (
         <FormProvider {...methods}>
             <KeypadProvider>
-                <ChecksheetProvider handleSave={handleSave} isSaving={isSaving}>
+                <ChecksheetProvider handleSave={() => handleSave()} isSaving={isSaving}>
                     <div className="flex flex-col h-screen">
                         {/* Top Profile Bar */}
                         <ProfileBar
-                            onSave={handleSave}
+                            onSave={() => handleSave()} // Default save
+                            onSubmit={() => handleSave('finish')} // Submit action
+                            status={status}
                             onPrint={handlePrint}
                             isSaving={isSaving}
                             onSetPage={setCurrentPage} // Pass page setter

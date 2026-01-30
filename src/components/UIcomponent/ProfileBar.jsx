@@ -12,7 +12,7 @@ import { useFormContext } from "react-hook-form";
  * Logic:
  * - Hides Print button if user.role === 'worker'
  */
-function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus }) {
+function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, status, onSubmit }) {
     const { user } = useAuth();
     const { isKeypadEnabled, toggleKeypadEnabled } = useKeypad();
     const methods = useFormContext(); // Get methods to trigger validation
@@ -175,13 +175,23 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus }) {
 
 
 
+                    {/* Status Badge */}
+                    <div className={`px-2 py-1 rounded text-xs font-bold mr-2 uppercase
+                        ${status === 'finish' ? 'bg-green-200 text-green-800' :
+                            status === 'confirm' ? 'bg-blue-200 text-blue-800' :
+                                status === 'work_in_progress' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-600 text-gray-200'}
+                    `}>
+                        {status || 'PREPARE'}
+                    </div>
+
                     <button
                         onClick={async () => {
                             if (onSave) {
                                 try {
                                     const result = await onSave();
                                     if (result && result.success) {
-                                        setShowExitModal(true);
+                                        // setShowExitModal(true); // Don't show exit modal for temp save, or maybe yes?
+                                        // User usually keeps working.
                                     }
                                 } catch (error) {
                                     console.error("Save failed:", error);
@@ -191,7 +201,7 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus }) {
                         disabled={isSaving}
                         className={`flex items-center px-4 py-1.5 rounded transition-colors ${isSaving
                             ? 'bg-gray-500 cursor-not-allowed'
-                            : 'bg-green-600 hover:bg-green-700 text-white'
+                            : 'bg-yellow-600 hover:bg-yellow-700 text-white'
                             }`}
                     >
                         {isSaving ? (
@@ -207,6 +217,56 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus }) {
                                 <span className="mr-2">💾</span> Save DB
                             </>
                         )}
+                    </button>
+
+                    {/* Submit Button (Finish) */}
+                    <button
+                        onClick={async () => {
+                            if (onSubmit) {
+                                // 1. Validate Form First
+                                const isValid = await methods.trigger();
+
+                                if (!isValid) {
+                                    alert("กรุณากรอกข้อมูลให้ครบถ้วนก่อนจบงาน (Please complete all required fields)");
+
+                                    // Optional: Auto-jump to first error
+                                    const errors = methods.formState.errors;
+                                    const firstErrorKey = Object.keys(errors)[0];
+                                    if (firstErrorKey) {
+                                        const match = firstErrorKey.match(/^p(\d+)_/);
+                                        if (match && match[1]) {
+                                            if (onSetPage) onSetPage(parseInt(match[1], 10));
+                                            setTimeout(() => {
+                                                const element = document.getElementsByName(firstErrorKey)[0];
+                                                if (element) {
+                                                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                    element.focus();
+                                                }
+                                            }, 300);
+                                        }
+                                    }
+                                    return; // Stop here
+                                }
+
+                                if (confirm("ยืนยันการจบงาน? หลังจบงานจะไม่สามารถแก้ไขได้จนกว่า Admin จะปลดล็อค (ถ้ามี)")) {
+                                    try {
+                                        const result = await onSubmit();
+                                        if (result && result.success) {
+                                            setShowExitModal(true);
+                                        }
+                                    } catch (error) {
+                                        console.error("Submit failed:", error);
+                                    }
+                                }
+                            }
+                        }}
+                        disabled={isSaving}
+                        className={`flex items-center px-4 py-1.5 rounded transition-colors ml-2 ${isSaving
+                            ? 'bg-gray-500 cursor-not-allowed'
+                            : 'bg-green-600 hover:bg-green-700 text-white'
+                            }`}
+                    >
+                        <span className="mr-2">✅</span> Submit
                     </button>
 
                     {!isWorker && (

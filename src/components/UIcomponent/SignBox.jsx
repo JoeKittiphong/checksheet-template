@@ -32,6 +32,11 @@ function SignBox({
 
     const handleSignClick = (roleType) => {
         if (user) {
+            // Restriction: Workers cannot sign Approved By
+            if (roleType === 'approve' && user.role === 'worker') {
+                alert("Only Leaders or higher can sign 'Approved By'.");
+                return;
+            }
             setModalState({ isOpen: true, roleType });
         }
     };
