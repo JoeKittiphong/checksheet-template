@@ -122,7 +122,8 @@ function Page27() {
                                                         <FormItemCheck
                                                             name={cell.headerCheckbox}
                                                             label={cell.header}
-                                                            className="text-[4px] flex-row-reverse"
+                                                            className="flex-row-reverse gap-1 [&_span]:!text-[5px] [&_span]:!leading-tight"
+                                                            checkboxSize="w-3 h-3"
                                                         />
                                                     )}
                                                     {!cell.headerCheckbox && cell.header}
@@ -136,23 +137,23 @@ function Page27() {
                         <tbody>
                             {data.map((row, rIdx) => (
                                 <tr key={rIdx}>
-                                    <td style={{ width: "12%" }} className="border border-black pl-1 font-bold text-left py-0.5 overflow-hidden break-words text-[5px]">{row.desc}</td>
-                                    <td style={{ width: "8%" }} className="border border-black text-center py-0.5 text-[6px]">{row.wo_400}</td>
-                                    <td style={{ width: "8%" }} className="border border-black text-center py-0.5 text-[6px]">{row.wo_600}</td>
-                                    <td style={{ width: "8%" }} className="border border-black text-center py-0.5 text-[6px]">{row.hs_400}</td>
-                                    <td style={{ width: "8%" }} className="border border-black text-center py-0.5 text-[6px]">{row.hs_600}</td>
-                                    <td className="border border-black text-center py-0.5">{row.dsm_wo_400}</td>
-                                    <td className="border border-black text-center py-0.5">{row.dsm_wo_600}</td>
-                                    <td className="border border-black text-center py-0.5">{row.dsm_hs_400}</td>
-                                    <td className="border border-black text-center py-0.5">{row.dsm_hs_600}</td>
+                                    <td style={{ width: "12%" }} className="border border-black pl-1 font-bold text-left py-0 overflow-hidden break-words text-[6px]">{row.desc}</td>
+                                    <td style={{ width: "8%" }} className="border border-black text-center py-0 text-[8px]">{row.wo_400}</td>
+                                    <td style={{ width: "8%" }} className="border border-black text-center py-0 text-[8px]">{row.wo_600}</td>
+                                    <td style={{ width: "8%" }} className="border border-black text-center py-0 text-[8px]">{row.hs_400}</td>
+                                    <td style={{ width: "8%" }} className="border border-black text-center py-0 text-[8px]">{row.hs_600}</td>
+                                    <td className="border border-black text-center py-0 text-[8px]">{row.dsm_wo_400}</td>
+                                    <td className="border border-black text-center py-0 text-[8px]">{row.dsm_wo_600}</td>
+                                    <td className="border border-black text-center py-0 text-[8px]">{row.dsm_hs_400}</td>
+                                    <td className="border border-black text-center py-0 text-[8px]">{row.dsm_hs_600}</td>
 
                                     {rowSpans[rIdx].address !== 0 && (
                                         <td
                                             rowSpan={rowSpans[rIdx].address}
-                                            className="border border-black text-center font-bold p-1 bg-white relative overflow-hidden"
+                                            className="border border-black text-center font-bold p-0 bg-white relative overflow-hidden"
                                         >
                                             <div
-                                                className="absolute inset-0 flex items-center justify-center p-2"
+                                                className="absolute inset-0 flex items-center justify-center p-1"
                                                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                                             >
                                                 {row.address}
@@ -164,7 +165,9 @@ function Page27() {
                         </tbody>
                     </table>
                 </div>
-
+                <div className="mt-2 flex w-full justify-end">
+                    <p className="font-bold text-[13px]">Refer Drawing TS32-0270</p>
+                </div>
             </div>
         </A4Paper>
     );

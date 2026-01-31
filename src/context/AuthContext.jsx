@@ -4,9 +4,9 @@ import axios from 'axios';
 const AuthContext = createContext(null);
 
 // Determine API Base URL
-// In development, we might be on port 5173 but server is 3000.
+// In development, we use proxy in vite.config.js to handle CORS and cookies
 // In production, we are on the same origin.
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin;
+const API_BASE = import.meta.env.DEV ? '' : window.location.origin;
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);

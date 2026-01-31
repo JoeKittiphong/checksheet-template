@@ -198,3 +198,23 @@ _2026-01-29_
 - **GitHub Sync**:
   - Push Code ทั้ง **Frontend** และ **Backend** ขึ้น GitHub Repository เรียบร้อยแล้ว
   - แยก Repo ชัดเจนระหว่าง `checksheet-template` และ `checksheet-template-server`
+
+### 21. ระบบ Workflow สถานะ, การตรวจสอบสิทธิ์ และการจัดการไฟล์ PDF
+_2026-01-30_
+
+ปรับปรุงการทำงานหลักของระบบให้รองรับ Flow การทำงานจริง และจำกัดสิทธิ์ผู้ใช้ให้ถูกต้อง:
+
+- **Status Workflow Enforcement**:
+  - Implement Logic **100% Completion Rule** ใน `ProfileBar.jsx`: บังคับว่าต้องกรอกครบทุกช่อง (ผ่าน Validation ทั้งหมด) เท่านั้นถึงจะสามารถเปลี่ยนสถานะเป็น **Finish** ได้
+  - ใช้ `methods.trigger()` เพื่อสั่ง Validate ทั้งฟอร์มก่อน Submit
+
+- **Permissions & Security**:
+  - **Cover Page Restriction**: จำกัดสิทธิ์หน้าปกใหม่ โดยผู้ใช้ระดับ **Worker** จะแก้ไขได้เฉพาะวันที่ (Start/Finish), Option และลงชื่อ "Checked By" เท่านั้น ส่วน "Machine No", "Controller No" และ "Approved By" จะถูกล็อกแก้ยากและแจ้งเตือนถ้าพยายามเซ็น
+  - **Admin View Filtering**: ปรับหน้า Admin Panel ให้ผู้ใช้ระดับ Worker เห็นเฉพาะงานที่มีสถานะ `work_in_progress` เท่านั้น เพื่อไม่ให้สับสนกับงานเก่าหรือ Template
+
+- **PDF Automation**:
+  - ปรับ Format การตั้งชื่อไฟล์ PDF ใหม่เป็น `Form-Version-Model-Title-MachineNo.pdf` โดยดึงค่า Model มาแทรกให้อัตโนมัติตามความต้องการ
+
+- **Bug Fixes**:
+  - แก้บั๊ก `InfoInputForm` เด้ง (Crash) โดยเพิ่ม `KeypadProvider` ใน `main.jsx`
+  - แก้บั๊ก CSS ของช่องวันที่ (`input type="date"`) ให้ตัวหนังสืออยู่กึ่งกลางจริงๆ ด้วย `webkit-datetime-edit` selector

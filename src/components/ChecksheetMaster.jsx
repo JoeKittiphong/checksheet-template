@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm, FormProvider } from "react-hook-form";
 import ProfileBar from "@/components/UIcomponent/ProfileBar";
 import Pagination from "@/components/UIcomponent/Pagination";
-import { saveForm, loadForm } from "@/utils/apiUtils";
+import { saveForm, loadForm, uploadPendingFiles } from "@/utils/apiUtils";
 import { ChecksheetProvider } from "@/context/ChecksheetContext";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { KeypadProvider } from "@/context/KeypadContext";
@@ -133,7 +133,23 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     const handleSave = async (targetStatus = null) => {
         setIsSaving(true);
         try {
-            const formData = methods.getValues();
+            let formData = methods.getValues();
+
+            // Handling Deferred Uploads
+            try {
+                const { updatedData, hasChanges } = await uploadPendingFiles(formData, apiEndpoint);
+                if (hasChanges) {
+                    formData = updatedData;
+                    // Update form state with uploaded strings so we don't re-upload
+                    Object.keys(updatedData).forEach(key => {
+                        methods.setValue(key, updatedData[key], { shouldValidate: true, shouldDirty: false });
+                    });
+                }
+            } catch (uploadErr) {
+                alert("Upload Error: " + uploadErr.message);
+                setIsSaving(false);
+                return;
+            }
 
             // Determine status
             // If targetStatus is passed (e.g. 'finish'), use it.

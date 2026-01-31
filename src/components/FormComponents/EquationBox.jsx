@@ -32,8 +32,13 @@ const EquationBox = ({
             let result = '';
             if (operator === '-') {
                 result = (numLeft - numRight);
+            } else if (operator === '+') {
+                result = (numLeft + numRight);
+            } else if (operator === '*' || operator === 'x' || operator === 'X') {
+                result = (numLeft * numRight);
+                if (!Number.isInteger(result)) result = result.toFixed(2); // Auto limit decimals for float
             } else if (operator === '÷' && numRight !== 0) {
-                result = (numLeft / numRight).toFixed(3); // Standard precision 3 decimals for division 0.60 ~ 1.40
+                result = (numLeft / numRight).toFixed(2); // Changed to 2 decimals based on Page 43 needs
             }
 
             // Update result field

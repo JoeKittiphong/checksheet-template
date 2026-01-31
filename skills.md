@@ -126,3 +126,130 @@ import MyImage from '@/assets/FAWIxxxx_Vx/my_image.png';
 ```
 
 > **Note**: พยายามใช้รูปภาพจากต้นฉบับเพื่อให้ User เข้าใจได้ง่ายที่สุด
+
+---
+
+## 6. Advanced Technical Patterns (เทคนิคขั้นสูง)
+
+### 6.1 Date Input Styling (จัดตัวหนังสือใน Input Date)
+การจัด `text-center` ใน `input[type="date"]` มักมีปัญหากับ WebKit Browsers (Chrome/Edge/Safari) ให้ใช้ CSS Selector พิเศษดังนี้:
+
+```css
+/* Tailwind Class Equivalent */
+[&::-webkit-date-and-time-value]:text-center 
+[&::-webkit-datetime-edit]:flex 
+[&::-webkit-datetime-edit]:justify-center
+```
+**ตัวอย่างการใช้ใน JSX**:
+```jsx
+<input 
+    type="date" 
+    className="... text-center [&::-webkit-date-and-time-value]:text-center [&::-webkit-datetime-edit]:flex [&::-webkit-datetime-edit]:justify-center"
+/>
+```
+*เหตุผล: Browser จะสร้าง Shadow DOM ซ้อนทับ Input Date ปกติ เราต้องเจาะจงไปที่ `datetime-edit` element เพื่อจัดตำแหน่งข้อความ*
+
+### 6.2 Keypad Architecture (ระบบ Keypad)
+หากพบ Error `useKeypad is not defined` หรือแอป Crash เมื่อเข้าหน้า Form:
+- **Root Cause**: ลืมใส่ `<KeypadProvider>` ในจุดสูงสุดของ App
+- **Solution**: ตรวจสอบ `main.jsx` (หรือ `App.jsx`) ว่ามีการหุ้ม Provider ไว้หรือไม่:
+
+```jsx
+// main.jsx
+<AuthProvider>
+  <KeypadProvider> {/* ต้องอยู่ภายใน Auth แต่ภายนอก App */}
+    <App />
+  </KeypadProvider>
+</AuthProvider>
+```
+
+### 6.3 PDF Naming Customization (ตั้งชื่อไฟล์ PDF)
+การตั้งชื่อไฟล์ PDF ที่ได้จากการสั่ง Print (Ctrl+P) ขึ้นอยู่กับ `document.title` ณ ขณะนั้น:
+
+**Pattern ใน `ChecksheetMaster.jsx`**:
+```javascript
+const handlePrint = () => {
+    // 1. เก็บชื่อเดิม
+    const originalTitle = document.title;
+    
+    // 2. สร้างชื่อใหม่ (Form-Ver-Model-Title-Machine)
+    const newTitle = `FAWI0002-V3-AL40G-CheckSheet-MC001`;
+    document.title = newTitle;
+
+    // 3. สั่ง Print
+    window.print();
+
+    // 4. คืนค่าชื่อเดิม (Delay นิดหน่อยเพื่อให้ Browser จับชื่อทัน)
+    setTimeout(() => document.title = originalTitle, 1000);
+};
+```
+
+### 6.4 Role-Based Permissions Pattern (การจำกัดสิทธิ์ตาม Role)
+สำหรับการจำกัดสิทธิ์ใน Component ส่วนกลาง (เช่น Cover Page) ให้ใช้ Pattern นี้:
+
+```jsx
+const { user } = useAuth();
+const isWorker = user?.role === 'worker';
+
+<input 
+    name="machineNo"
+    // 1. Worker แก้ไม่ได้
+    readOnly={isWorker} 
+    // 2. Disable Keypad Interaction
+    onClick={(e) => !isWorker && handleInputClick(...)}
+    // 3. Visual Feedback
+    className={isWorker ? "bg-gray-300 cursor-not-allowed" : "bg-white"}
+/>
+```
+
+---
+
+## 7. Status Workflow & Enforcement
+
+ระบบบังคับ Workflow การทำงานดังนี้:
+1.  **Prepare**: สถานะเริ่มต้น (Draft)
+2.  **Work in Progress**: เมื่อเริ่มมีการ Save หรือกรอกข้อมูล
+3.  **Finish**: *ต้องกรอกครบ 100% เท่านั้น*
+
+**Code Pattern สำหรับปุ่ม Finish**:
+```javascript
+// ProfileBar.jsx หรือจุดที่เรียก Save
+const handleSubmit = async () => {
+    // 1. Trigger Validation ทั้งหมดก่อน
+    const isValid = await methods.trigger(); 
+    
+    if (!isValid) {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน (ตรวจสอบช่องสีแดง)");
+        return; // ห้ามไปต่อ
+    }
+    
+    // 2. ถ้าผ่าน ค่อยส่ง status 'finish'
+    onSave('finish');
+};
+```
+
+---
+
+## 8. Counter-Intuitive Spec Symbols (สัญลักษณ์เกณฑ์ตรวจสอบแบบพิเศษ)
+
+ใน Checksheet นี้ มีการตีความเครื่องหมายทางคณิตศาสตร์ในคอลัมน์ Spec ที่แตกต่างจากปกติ (Project Specific Rule):
+
+### 8.1 Symbol `< X` (Less Than)
+- **ความหมายปกติ**: น้อยกว่า X
+- **ความหมายในโปรเจกต์นี้**: **ต้องมีค่าตั้งแต่ X ขึ้นไป** (Minimum Limit)
+- **Validation Logic**: `min = X`, `max = 99999` (Infinite)
+- **ตัวอย่าง**: Spec `< 4040` => ค่าที่ยอมรับได้คือ `4040` ถึง `99999`
+
+### 8.2 Symbol `> X` (Greater Than)
+- **ความหมายปกติ**: มากกว่า X
+- **ความหมายในโปรเจกต์นี้**: **ห้ามเกิน X** (Maximum Limit)
+- **Validation Logic**: `min = -9999` (Infinite), `max = X`
+- **ตัวอย่าง**: Spec `> 9.0` => ค่าที่ยอมรับได้คือ `-9999` ถึง `9.0`
+
+### 8.3 Symbol `Exact Value` (Fixed Target)
+- **ลักษณะ**: ระบุค่าเลขโดดๆ (เช่น `040`, `0`, `500`)
+- **ความหมาย**: **ต้องเท่ากับค่านั้นเป๊ะๆ** (Exact Match)
+- **Validation Logic**: `min = X`, `max = X`
+- **ตัวอย่าง**: Spec `040` => ค่าที่ยอมรับได้คือ `040` เท่านั้น
+
+> **Note**: ตรรกะนี้ใช้เฉพาะกับช่องที่มีสัญลักษณ์กำกับใน Header หรือ Spec เท่านั้น หากเป็นช่องปกติให้ใช้ตรรกะตามจริง

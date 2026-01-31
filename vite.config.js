@@ -6,12 +6,32 @@ import path from 'path'
 import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
-const formName = process.env.FORM_NAME || 'FAWI0005_V3';
+const formName = process.env.FORM_NAME || 'ASSY_PROBLEM';
 
 // https://vite.dev/config/
 export default defineConfig({
   define: {
     'import.meta.env.VITE_FORM_NAME': JSON.stringify(formName),
+  },
+  server: {
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/auth': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/uploads': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
   plugins: [
     react(),

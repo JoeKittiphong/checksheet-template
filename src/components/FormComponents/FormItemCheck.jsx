@@ -25,7 +25,9 @@ const FormItemCheck = ({
     input,
     items,
     className = "",
-    showCheckbox = true
+    showCheckbox = true,
+    checkboxSize = "w-5 h-5",
+    onCheckedChange // Optional callback
 }) => {
     const { register, watch, setValue, control, formState: { errors } } = useFormContext();
 
@@ -89,10 +91,13 @@ const FormItemCheck = ({
                     render={({ field, fieldState: { error } }) => (
                         <TristateCheckbox
                             value={field.value}
-                            onChange={field.onChange}
+                            onChange={(val) => {
+                                field.onChange(val);
+                                if (onCheckedChange) onCheckedChange(val);
+                            }}
                             error={!!error}
                             className="mr-2 shrink-0 mt-0.5"
-                            size="w-5 h-5"
+                            size={checkboxSize}
                         />
                     )}
                 />

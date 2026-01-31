@@ -1,0 +1,10 @@
+{
+    "checksheet_name": "ASSY PROBLEM FORM",
+    "form_name": "ASSY_PROBLEM",
+    "version": "VER.0",
+    "model": "ALL",
+    "title": "Assy Problem Report",
+    "header": "ASS'Y PROBLEM FORM",
+    "department": "ASSEMBLY",
+    "as_group": "ASSY"
+}

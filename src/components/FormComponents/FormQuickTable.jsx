@@ -138,7 +138,15 @@ const FormQuickTable = ({
                                     if (colSpan > 1) skipCols = colSpan - 1;
 
                                     // Determine cell type: row.type can override col.type, but col.isLabel forces label mode
-                                    const effectiveType = col.isLabel ? 'label' : (row.type || col.type || 'label');
+                                    let effectiveType = col.isLabel ? 'label' : (row.type || col.type || 'label');
+
+                                    // Safeguard: If input type, but value is empty or contains spaces/invalid chars, fallback to label
+                                    if (effectiveType === 'input') {
+                                        if (!cellValue || (typeof cellValue === 'string' && (cellValue.trim() === '' || cellValue.includes(' ')))) {
+                                            effectiveType = 'label';
+                                        }
+                                    }
+
                                     const isLabel = effectiveType === 'label';
 
                                     // Validation logic for inputs

@@ -24,7 +24,9 @@ const CheckedBox = React.forwardRef(({
     onDateChange,
     onChange, // New unified handler
     label = 'CHECKED BY / DATE',
-    error = false
+    error = false,
+    className = '',
+    secondaryField = 'date' // 'date' or 'code'
 }, ref) => {
     const { user, logout } = useAuth();
     const { handleSave } = useChecksheet(); // Global save
@@ -55,24 +57,27 @@ const CheckedBox = React.forwardRef(({
 
     const handleConfirm = () => {
         if (user) {
-            // DEBUG ALERTS - TEMPORARY
-            // alert(`Current User: ${JSON.stringify(user)}`);
-
             const updates = {};
             updates.name = user.username;
 
-            // Create a date in local timezone DD/MM/YYYY
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const today = `${day}/${month}/${year}`;
+            if (secondaryField === 'code') {
+                // Populate Code
+                if (!date) {
+                    updates.date = user.code || '-'; // Store code in 'date' field
+                }
+            } else {
+                // Populate Date
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const today = `${day}/${month}/${year}`;
 
-            if (!date) {
-                updates.date = today;
+                if (!date) {
+                    updates.date = today;
+                }
             }
 
-            // alert(`Dispatching Updates: ${JSON.stringify(updates)}`);
             dispatchUpdate(updates);
         }
         setIsModalOpen(false);
@@ -91,14 +96,14 @@ const CheckedBox = React.forwardRef(({
 
     return (
         <>
-            <div className={`border w-[150px] h-[120px] relative group ${error ? 'border-red-500' : 'border-black'}`}>
+            <div className={`border relative group flex flex-col ${error ? 'border-red-500' : 'border-black'} ${className || 'w-[150px] h-[120px]'}`}>
                 {/* Header */}
-                <div className="border-b border-black px-2 py-1 text-xs font-medium bg-white flex justify-between items-center">
+                <div className="border-b border-black px-2 py-1 text-xs font-medium bg-white flex justify-between items-center shrink-0">
                     <span>{label}</span>
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-col h-[calc(100%-25px)]">
+                <div className="flex flex-col flex-1 min-h-0">
                     {/* Name - 70% */}
                     <div className="h-[70%] border-b border-black relative">
                         <input
@@ -118,13 +123,24 @@ const CheckedBox = React.forwardRef(({
                         />
                     </div>
 
-                    {/* Date - 30% */}
+                    {/* Date/Code - 30% */}
                     <div className="h-[30%] relative">
-                        <DateInput
-                            value={date}
-                            onChange={(newValue) => dispatchUpdate({ date: newValue })}
-                            className="w-full h-full px-2 text-center text-xs bg-transparent outline-none cursor-pointer"
-                        />
+                        {secondaryField === 'code' ? (
+                            <input
+                                type="text"
+                                value={date} // Stores code
+                                onChange={(e) => dispatchUpdate({ date: e.target.value })}
+                                readOnly
+                                className="w-full h-full px-2 text-center text-xs bg-transparent outline-none cursor-default text-gray-600"
+                                placeholder="Code"
+                            />
+                        ) : (
+                            <DateInput
+                                value={date}
+                                onChange={(newValue) => dispatchUpdate({ date: newValue })}
+                                className="w-full h-full px-2 text-center text-xs bg-transparent outline-none cursor-pointer"
+                            />
+                        )}
                     </div>
                 </div>
             </div>
