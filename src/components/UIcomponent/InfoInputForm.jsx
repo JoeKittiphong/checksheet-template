@@ -58,10 +58,34 @@ function InfoInputForm({
                     {/* Model Row */}
                     <tr>
                         <td className="text-right pr-4 py-2 font-medium text-sm">MODEL:</td>
-                        <td className={`border-b border-black ${bgGreenLight} p-0 h-9 relative`}>
-                            <div className="w-full h-full flex items-center justify-center font-medium text-sm">
-                                {model || formData.model || ''}
-                            </div>
+                        <td className={`border-b border-black ${bgGreenLight} p-0 min-h-9 relative`}>
+                            {/* Check if model contains & */}
+                            {model && model.includes('&') ? (
+                                // Multiple models - show radio selection
+                                <div className="w-full h-full flex items-center justify-center gap-6 py-1">
+                                    {model.split('&').map((m, idx) => {
+                                        const trimmedModel = m.trim();
+                                        return (
+                                            <label key={idx} className="flex items-center gap-1 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="model"
+                                                    value={trimmedModel}
+                                                    checked={formData.model === trimmedModel}
+                                                    onChange={(e) => onChange('model', e.target.value)}
+                                                    className="w-4 h-4"
+                                                />
+                                                <span className="font-medium text-sm">{trimmedModel}</span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                // Single model - show as text
+                                <div className="w-full h-full flex items-center justify-center font-medium text-sm">
+                                    {model || formData.model || ''}
+                                </div>
+                            )}
                         </td>
                     </tr>
 
@@ -151,17 +175,17 @@ function InfoInputForm({
                         </td>
                     </tr>
 
-                    {/* Options (Multiple Rows) */}
+                    {/* Options (Single Textarea) */}
                     <tr>
                         <td className="text-right pr-4 py-2 font-medium text-sm align-top pt-2">OPTION:</td>
-                        <td className="border-b border-black p-0">
-                            <div className="flex flex-col">
-                                <input name="option1" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option1', formData.option1 || '', 'OPTION 1'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option1', formData.option1 || '', 'OPTION 1'); }} value={formData.option1 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option2" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option2', formData.option2 || '', 'OPTION 2'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option2', formData.option2 || '', 'OPTION 2'); }} value={formData.option2 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option3" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option3', formData.option3 || '', 'OPTION 3'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option3', formData.option3 || '', 'OPTION 3'); }} value={formData.option3 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option4" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option4', formData.option4 || '', 'OPTION 4'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option4', formData.option4 || '', 'OPTION 4'); }} value={formData.option4 || ''} className="w-full bg-yellow-300 border-b border-black border-dotted h-8 px-2 outline-none cursor-pointer" />
-                                <input name="option5" readOnly={isMobile} inputMode={isMobile ? "none" : "text"} onChange={handleChange} onClick={(e) => { isMobile && e.target.blur(); handleAllowedInputClick('option5', formData.option5 || '', 'OPTION 5'); }} onFocus={(e) => { isMobile && e.target.blur(); isMobile && handleAllowedInputClick('option5', formData.option5 || '', 'OPTION 5'); }} value={formData.option5 || ''} className="w-full bg-yellow-300 h-8 px-2 outline-none cursor-pointer" />
-                            </div>
+                        <td className="p-0">
+                            <textarea
+                                name="options"
+                                value={formData.options || ''}
+                                onChange={handleChange}
+                                placeholder="Enter options..."
+                                className="w-full h-40 bg-yellow-300 px-2 py-1 outline-none resize-none text-sm"
+                            />
                         </td>
                     </tr>
                 </tbody>

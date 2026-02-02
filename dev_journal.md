@@ -218,3 +218,40 @@ _2026-01-30_
 - **Bug Fixes**:
   - แก้บั๊ก `InfoInputForm` เด้ง (Crash) โดยเพิ่ม `KeypadProvider` ใน `main.jsx`
   - แก้บั๊ก CSS ของช่องวันที่ (`input type="date"`) ให้ตัวหนังสืออยู่กึ่งกลางจริงๆ ด้วย `webkit-datetime-edit` selector
+
+### 22. การปรับปรุงระบบอัพโหลดรูปภาพและการเลือก Model (Image Upload & Multi-Model Selection)
+_2026-02-02_
+
+ปรับปรุงประสบการณ์ผู้ใช้ในการอัพโหลดรูปภาพและเพิ่มความยืดหยุ่นในการเลือก Model สำหรับ Checksheet:
+
+- **Client-Side Image Compression**:
+  - Implement `resizeImage()` function ใน `CompactImageUpload.jsx`
+  - ใช้ Canvas API ย่อภาพก่อนอัพโหลด (max 1200px, JPEG 85%)
+  - แก้ไข Bug `Image` constructor conflict โดยใช้ `window.Image()`
+
+- **Server-Side Image Deletion**:
+  - เพิ่ม `DELETE /api/upload/delete` endpoint ใน `upload.js`
+  - รองรับการลบไฟล์จาก `double_check` และ `assy_problem_images` folders
+  - เพิ่ม Security: folder validation และ filename sanitization
+
+- **OPTIONS Input Consolidation**:
+  - เปลี่ยน `InfoInputForm.jsx` จาก 5 input fields เป็น 1 textarea
+  - ให้ผู้ใช้กรอก Options ได้อิสระมากขึ้น
+
+- **Multi-Model Selection (Radio Buttons)**:
+  - เมื่อ Model มี `&` (เช่น `ALN400G&ALN600G`) แสดงเป็น Radio buttons ให้เลือก
+  - Logic ใน `InfoInputForm.jsx` ตรวจจับและ split model string อัตโนมัติ
+
+- **Admin Panel - available_models Support**:
+  - เพิ่ม `available_models` array ใน `meta.json` สำหรับ forms ที่รองรับหลาย models
+  - แก้ไข `formRoutes.js` ให้ส่ง `available_models` ใน API response
+  - ปรับ `AddModal.jsx` ให้ใช้ case-insensitive matching และ flexible model comparison
+  - แก้ไข Bug dropdown value matching ให้ match เฉพาะ `name` (ไม่ต้อง match `machine_no`)
+
+**ไฟล์ที่แก้ไข**:
+- `CompactImageUpload.jsx` - resize + delete integration
+- `InfoInputForm.jsx` - textarea + model radio
+- `upload.js` - DELETE endpoint
+- `formRoutes.js` - available_models in response
+- `AddModal.jsx` - flexible model matching
+- `meta.json` (FAWI0006_V3) - available_models array

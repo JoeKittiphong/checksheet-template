@@ -135,6 +135,27 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
         try {
             let formData = methods.getValues();
 
+            // --- Validation Logic ---
+            // Extract values using various possible field names
+            const model = formData.mc_model_input || formData.mc_model || formData.model || meta.model;
+            const machineNo = formData.mc_no_input || formData.mc_no || formData.machine_no;
+
+            // Determine if at least one division/group is selected
+            const DIV_FIELDS = ['div_semi', 'div_body', 'div_mc', 'div_insp', 'div_acc', 'div_other'];
+            const hasGroup = DIV_FIELDS.some(field => formData[field]) || meta.as_group;
+
+            let missingFields = [];
+            if (!model || model === "ALL") missingFields.push("MACHINE MODEL");
+            if (!machineNo) missingFields.push("MACHINE NO.");
+            if (!hasGroup) missingFields.push("DIVISION / GROUP");
+
+            if (missingFields.length > 0) {
+                alert(`กรุณากรอกข้อมูลให้ครบถ้วนก่อนบันทึก:\n- ${missingFields.join("\n- ")}`);
+                setIsSaving(false);
+                return;
+            }
+            // --- End Validation Logic ---
+
             // Handling Deferred Uploads
             try {
                 const { updatedData, hasChanges } = await uploadPendingFiles(formData, apiEndpoint);

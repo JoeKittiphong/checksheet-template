@@ -9,7 +9,9 @@ const forms = [
     // "FAMB0004_V3",
     // "FAWI0002_V3",
     // "FAWI0005_V3",
-    "ASSY_PROBLEM"
+    "ASSY_PROBLEM",
+    "FAWI0006_V3"
+
 ];
 
 console.log("🚀 Starting Bulk Build Process...\n");

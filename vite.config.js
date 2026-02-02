@@ -6,7 +6,7 @@ import path from 'path'
 import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
-const formName = process.env.FORM_NAME || 'ASSY_PROBLEM';
+const formName = process.env.FORM_NAME || 'FAWI0006_V3';
 
 // https://vite.dev/config/
 export default defineConfig({

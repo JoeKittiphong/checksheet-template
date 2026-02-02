@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import FormItemCheck from '@/components/FormComponents/FormItemCheck';
 import FormCheckedBox from '@/components/FormComponents/FormCheckedBox';
@@ -9,6 +9,12 @@ import { content } from "../ASSY_PROBLEM-setting";
 
 function Page1({ apiEndpoint }) {
     const { register, setValue, control } = useFormContext();
+
+    const problemDetailVal = useWatch({
+        control,
+        name: "problem_detail",
+        defaultValue: ""
+    });
 
     const DIV_FIELDS = ['div_semi', 'div_body', 'div_mc', 'div_insp', 'div_acc', 'div_other'];
     const FIX_FIELDS = ['fix_semi', 'fix_body', 'fix_mc', 'fix_insp', 'fix_acc', 'fix_other'];
@@ -23,6 +29,21 @@ function Page1({ apiEndpoint }) {
         }
     };
 
+    const CustomCheckbox = ({ field, label, group }) => (
+        <label className="flex items-center gap-1 cursor-pointer">
+            <input
+                type="checkbox"
+                {...register(field)}
+                onChange={(e) => {
+                    register(field).onChange(e);
+                    handleExclusive(field, e.target.checked, group);
+                }}
+                className="appearance-none w-4 h-4 border border-black bg-transparent checked:bg-black checked:relative checked:after:content-['✓'] checked:after:absolute checked:after:text-white checked:after:text-[10px] checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 flex items-center justify-center transition-colors"
+            />
+            <span>{label}</span>
+        </label>
+    );
+
     return (
         <A4Paper className="!bg-yellow-200">
             {/* Header Section */}
@@ -36,18 +57,7 @@ function Page1({ apiEndpoint }) {
                         {DIV_FIELDS.map((field, index) => {
                             const labels = ["Semi", "Body", "M/C Check", "Inspection", "Accuracy", "Other"];
                             return (
-                                <label key={field} className="flex items-center gap-1 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        {...register(field)}
-                                        onChange={(e) => {
-                                            register(field).onChange(e); // Let RHF handle its internal state update first
-                                            handleExclusive(field, e.target.checked, DIV_FIELDS);
-                                        }}
-                                        className="w-4 h-4 border border-black"
-                                    />
-                                    <span>{labels[index]}</span>
-                                </label>
+                                <CustomCheckbox key={field} field={field} label={labels[index]} group={DIV_FIELDS} />
                             );
                         })}
                     </div>
@@ -63,21 +73,25 @@ function Page1({ apiEndpoint }) {
                 {/* Problem Detail */}
                 <div className="mb-2">
                     <p className="font-bold text-sm mb-1">PROBLEM DETAIL ( รายละเอียดปัญหางาน ) :</p>
-                    <div className='flex gap-4'>
+                    <div className='flex gap-4 items-stretch'>
                         {/* Image Attachment Area */}
-                        <div className="w-1/2 h-full">
+                        <div className="shrink-0 h-[150px]">
                             <ImageUploadBox
                                 name="problem_image"
                                 apiEndpoint={apiEndpoint}
                                 uploadPath="/api/upload/assy"
-                                label="Attach Problem Image"
+                                label="แนบภาพปัญหาที่พบ"
                                 deferred={true}
+                                className="h-[150px] w-auto min-w-[250px] border-2 border-dashed border-gray-400"
                             />
                         </div>
-                        <div className="space-y-2 flex-1">
-                            <textarea {...register("problem_detail")} className="w-full h-full bg-transparent border border-gray-600 outline-none" />
+                        <div className="flex-1 flex pb-1">
+                            <textarea
+                                {...register("problem_detail")}
+                                className={`w-full h-full bg-transparent border ${problemDetailVal ? 'border-transparent' : 'border-gray-600'} outline-none p-2 resize-none`}
+                                placeholder="รายละเอียดปัญหางาน..."
+                            />
                         </div>
-
                     </div>
                 </div>
 
@@ -87,13 +101,13 @@ function Page1({ apiEndpoint }) {
                         <FormCheckedBox
                             name="record_sign"
                             label="Record by / Date"
-                            className="w-1/2 h-30"
+                            className="w-1/2 h-30 !text-black !bg-transparent [&_div]:!bg-transparent [&_input]:!text-black"
                             secondaryField="code"
                         />
                         <FormCheckedBox
                             name="check_sign"
                             label="Checked by / Date"
-                            className="w-1/2 h-30"
+                            className="w-1/2 h-30 !text-black !bg-transparent [&_div]:!bg-transparent [&_input]:!text-black"
                             secondaryField="code"
                         />
                     </div>
@@ -116,18 +130,7 @@ function Page1({ apiEndpoint }) {
                         {FIX_FIELDS.map((field, index) => {
                             const labels = ["Semi", "Body", "M/C Check", "Inspection", "Accuracy", "Other ( EL , SM , MA , CE , VENDER )"];
                             return (
-                                <label key={field} className="flex items-center gap-1 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        {...register(field)}
-                                        onChange={(e) => {
-                                            register(field).onChange(e); // Let RHF handle its internal state update first
-                                            handleExclusive(field, e.target.checked, FIX_FIELDS);
-                                        }}
-                                        className="w-4 h-4 border border-black"
-                                    />
-                                    <span>{labels[index]}</span>
-                                </label>
+                                <CustomCheckbox key={field} field={field} label={labels[index]} group={FIX_FIELDS} />
                             );
                         })}
                     </div>
@@ -138,7 +141,7 @@ function Page1({ apiEndpoint }) {
                 {/* Table */}
                 <table className="w-full border border-black border-collapse text-sm">
                     <thead>
-                        <tr className="bg-yellow-300">
+                        <tr>
                             <th className="border border-black p-1 w-8">No.</th>
                             <th className="border border-black p-1">Repaired Position (ตำแหน่งที่แก้ไขปัญหา)</th>
                             <th className="border border-black p-1">Method (วิธีการแก้ไขปัญหา)</th>
@@ -162,6 +165,7 @@ function Page1({ apiEndpoint }) {
                                             <TristateCheckbox
                                                 value={field.value}
                                                 onChange={field.onChange}
+                                                className="!border-black !bg-transparent"
                                             />
                                         )}
                                     />
@@ -180,34 +184,34 @@ function Page1({ apiEndpoint }) {
                 </div>
 
                 <div className="ml-4 mb-4 space-y-1">
-                    <FormItemCheck name="confirm_resolved" label="Confirmed this problem was resolved. (ยืนยันปัญหานี้ได้ผ่านการแก้ไขเรียบร้อยแล้ว)" />
-                    <FormItemCheck name="confirm_tools" label="All screws and Tools remove from repair area. (นำสกรูและเครื่องมือทั้งหมดออกจากบริเวณที่แก้ไขปัญหา)" />
-                    <FormItemCheck name="confirm_clean" label="Cleaning Grease, Tap, Silicone, etc. in repair area. (ทำความสะอาด จารบี, เทปกาว, ซิลิโคน และอื่นๆ ในบริเวณที่แก้ไขปัญหา)" />
+                    <FormItemCheck name="confirm_resolved" label="Confirmed this problem was resolved. (ยืนยันปัญหานี้ได้ผ่านการแก้ไขเรียบร้อยแล้ว)" checkboxSize="w-5 h-5 !border-black !bg-transparent" />
+                    <FormItemCheck name="confirm_tools" label="All screws and Tools remove from repair area. (นำสกรูและเครื่องมือทั้งหมดออกจากบริเวณที่แก้ไขปัญหา)" checkboxSize="w-5 h-5 !border-black !bg-transparent" />
+                    <FormItemCheck name="confirm_clean" label="Cleaning Grease, Tap, Silicone, etc. in repair area. (ทำความสะอาด จารบี, เทปกาว, ซิลิโคน และอื่นๆ ในบริเวณที่แก้ไขปัญหา)" checkboxSize="w-5 h-5 !border-black !bg-transparent" />
                 </div>
 
                 <div className="flex">
                     <FormCheckedBox
                         name="sign_repaired"
                         label={<div className="text-center w-full">Repaired by / Date<br />(พนักงานที่แก้ไขปัญหา)</div>}
-                        className="flex-1 h-32"
+                        className="flex-1 h-32 !text-black !bg-transparent [&_div]:!bg-transparent [&_input]:!text-black"
                         secondaryField="code"
                     />
                     <FormCheckedBox
                         name="sign_checked"
                         label={<div className="text-center w-full">Checked by / Date<br />(Leader Up ของกลุ่มที่แก้ไขปัญหา)</div>}
-                        className="flex-1 h-32 -ml-[1px]"
+                        className="flex-1 h-32 -ml-[1px] !text-black !bg-transparent [&_div]:!bg-transparent [&_input]:!text-black"
                         secondaryField="code"
                     />
                     <FormCheckedBox
                         name="sign_confirmed"
                         label={<div className="text-center w-full">Confirmed by / Date<br />(Leader Up ของกลุ่มที่แจ้งซ่อม)</div>}
-                        className="flex-1 h-32 -ml-[1px]"
+                        className="flex-1 h-32 -ml-[1px] !text-black !bg-transparent [&_div]:!bg-transparent [&_input]:!text-black"
                         secondaryField="code"
                     />
                     <FormCheckedBox
                         name="sign_approved"
                         label={<div className="text-center w-full">Approved by / Date<br />(Sup. Up ของกลุ่มที่แจ้งซ่อม)</div>}
-                        className="flex-1 h-32 -ml-[1px]"
+                        className="flex-1 h-32 -ml-[1px] !text-black !bg-transparent [&_div]:!bg-transparent [&_input]:!text-black"
                         secondaryField="code"
                     />
                     <div className="w-40 p-2 flex flex-col gap-4 justify-center">

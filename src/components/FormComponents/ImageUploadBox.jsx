@@ -12,7 +12,7 @@ import { Camera, Loader2, X } from 'lucide-react';
  * @param {string} props.uploadPath - Upload route path (default: '/upload/assy')
  * @param {string} props.label - Label text
  */
-const ImageUploadBox = ({ name, apiEndpoint, uploadPath = '/upload/assy', label = "Attach Image", deferred = false }) => {
+const ImageUploadBox = ({ name, apiEndpoint, uploadPath = '/upload/assy', label = "Attach Image", deferred = false, className = "" }) => {
     const { register, setValue, control } = useFormContext();
     const [uploading, setUploading] = useState(false);
     const inputRef = useRef(null);
@@ -106,14 +106,13 @@ const ImageUploadBox = ({ name, apiEndpoint, uploadPath = '/upload/assy', label 
                 className={`
                     group
                     flex flex-col items-center justify-center 
-                    h-40 w-full min-w-[200px]
-                    border-2 border-dashed
                     transition-all duration-200 cursor-pointer
                     ${currentFile
                         ? 'border-transparent bg-transparent hover:border-blue-500 hover:bg-blue-50'
-                        : 'border-gray-400 hover:bg-white/50 bg-white/30'
+                        : 'border-gray-400 hover:bg-white/50 bg-white/30 border-2 border-dashed'
                     }
                     rounded-md overflow-hidden relative
+                    ${className || 'h-40 w-full min-w-[200px]'}
                 `}
             >
                 {uploading ? (
@@ -126,7 +125,7 @@ const ImageUploadBox = ({ name, apiEndpoint, uploadPath = '/upload/assy', label 
                         <img
                             src={imageUrl}
                             alt="Preview"
-                            className="w-full h-full object-contain"
+                            className="h-full w-auto object-contain"
                         />
                         {/* Remove Button - Show only on hover */}
                         <div
@@ -140,7 +139,7 @@ const ImageUploadBox = ({ name, apiEndpoint, uploadPath = '/upload/assy', label 
                     <div className="text-center text-gray-600">
                         <Camera className="w-8 h-8 mx-auto mb-2 opacity-50" />
                         <p className="font-bold text-sm">{label}</p>
-                        <p className="text-[10px] opacity-75">(Click to upload)</p>
+                        <p className="text-[10px] opacity-75">(คลิกเพื่อแนบ)</p>
                     </div>
                 )}
 
