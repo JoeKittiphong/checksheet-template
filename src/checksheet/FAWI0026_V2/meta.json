@@ -1,0 +1,12 @@
+{
+    "form_name": "FAWI0026",
+    "version": "2",
+    "department": "EDW",
+    "model": "ALN400Q&ALN600Q(iG+E)",
+    "available_models": [
+        "ALN400Q(iG+E)",
+        "ALN600Q(iG+E)"
+    ],
+    "as_group": "FINAL",
+    "checksheet_name": "FAWI0026_V2"
+}

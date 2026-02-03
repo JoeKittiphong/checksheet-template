@@ -43,8 +43,11 @@ const CompactImageUpload = ({
     if (currentFile) {
         if (currentFile instanceof File) {
             imageUrl = URL.createObjectURL(currentFile);
-        } else if (typeof currentFile === 'string') {
-            const staticBase = apiEndpoint.replace(/\/api\/?$/, '');
+        } else if (typeof currentFile === 'string' && apiEndpoint) {
+            // Remove trailing /api/ and ensure it's a string
+            const safeEndpoint = String(apiEndpoint);
+            const staticBase = safeEndpoint.replace(/\/api\/?$/, '');
+
             if (currentFile.startsWith('http')) {
                 imageUrl = currentFile;
             } else {
@@ -93,9 +96,32 @@ const CompactImageUpload = ({
         });
     };
 
+    // Helper to delete old file from server
+    const deleteOldFile = async (filename) => {
+        if (filename && typeof filename === 'string') {
+            try {
+                await axios.delete(`${apiEndpoint}/api/upload/delete`, {
+                    data: {
+                        filename: filename,
+                        folder: uploadFolder
+                    },
+                    withCredentials: true
+                });
+                console.log('File deleted from server:', filename);
+            } catch (err) {
+                console.warn('Could not delete file from server:', err.message);
+            }
+        }
+    };
+
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // Delete old file if it exists on server
+        if (currentFile && typeof currentFile === 'string') {
+            await deleteOldFile(currentFile);
+        }
 
         // Resize image before processing
         const resizedFile = await resizeImage(file, 1200);
@@ -138,30 +164,22 @@ const CompactImageUpload = ({
 
     const handleRemove = async (e) => {
         e.stopPropagation();
-
-        // If file is already uploaded (string path), delete from server
-        if (currentFile && typeof currentFile === 'string') {
-            try {
-                await axios.delete(`${apiEndpoint}/upload/delete`, {
-                    data: {
-                        filename: currentFile,
-                        folder: uploadFolder
-                    },
-                    withCredentials: true
-                });
-                console.log('File deleted from server:', currentFile);
-            } catch (err) {
-                console.warn('Could not delete file from server:', err.message);
-                // Continue with local removal even if server delete fails
-            }
+        if (!window.confirm("คุณต้องการลบภาพนี้ใช่หรือไม่?")) {
+            return;
         }
-
+        await deleteOldFile(currentFile);
         setValue(name, null, { shouldDirty: true });
         setShowModal(false);
     };
 
     const handleUploadClick = () => {
         if (!uploading && inputRef.current) {
+            // If image already exists, ask for confirmation before changing
+            if (currentFile) {
+                if (!window.confirm("คุณต้องการเปลี่ยนภาพใช่หรือไม่? (ภาพเก่าจะถูกลบออกจากระบบทันที)")) {
+                    return;
+                }
+            }
             inputRef.current.click();
         }
     };

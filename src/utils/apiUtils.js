@@ -148,8 +148,8 @@ export const uploadPendingFiles = async (formData, apiEndpoint) => {
             const uploadFormData = new FormData();
 
             // Append Metadata for Filename
-            const model = updatedData.mc_model || updatedData.mc_model_input || 'UNKNOWN';
-            const machine = updatedData.mc_no || updatedData.mc_no_input || 'UNKNOWN';
+            const model = updatedData.mc_model || updatedData.mc_model_input || updatedData.model || 'UNKNOWN';
+            const machine = updatedData.mc_no || updatedData.mc_no_input || updatedData.machine_no || updatedData.machineNo || 'UNKNOWN';
 
             // Determine AS Group from div fields
             let asGroup = 'OTHER';
@@ -177,10 +177,33 @@ export const uploadPendingFiles = async (formData, apiEndpoint) => {
             // Append Image LAST
             uploadFormData.append('image', compressedFile);
 
+            // Determine Upload Route based on Field Name
+            // Double Check fields usually contain '_dc_' and '_image'
+            const isDoubleCheck = key.includes('_dc_') && key.includes('_image');
+            const uploadPath = isDoubleCheck ? '/api/upload/double-check' : '/api/upload/assy';
+
+            if (isDoubleCheck) {
+                // Key format: pXX_dc_ROWID_cSTEP_image
+                const keyParts = key.split('_');
+                if (keyParts.length >= 4) {
+                    const rowId = keyParts[2];
+                    const stepMatch = keyParts[3].match(/c(\d+)/);
+                    if (stepMatch) uploadFormData.append('step', stepMatch[1]);
+
+                    // Retrieve Part Name from hidden field if available
+                    // Hidden field format: pXX_dc_ROWID_partName
+                    // Note: We need the original prefix which is the same as the image key's first two parts
+                    const prefix = `${keyParts[0]}_${keyParts[1]}`;
+                    const partNameField = `${prefix}_${rowId}_partName`;
+                    const partName = updatedData[partNameField];
+
+                    if (partName) uploadFormData.append('part_name', partName);
+                    uploadFormData.append('row_id', rowId);
+                }
+            }
+
             try {
-                // NOTE: Hardcoded to /api/upload/assy for this specific requirement.
-                // In a wider system, we might need a map of fieldName -> uploadPath
-                const res = await axios.post(`${apiEndpoint}/api/upload/assy`, uploadFormData, {
+                const res = await axios.post(`${apiEndpoint}${uploadPath}`, uploadFormData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                     withCredentials: true
                 });

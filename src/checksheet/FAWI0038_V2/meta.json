@@ -1,0 +1,12 @@
+{
+    "form_name": "FAWI0038",
+    "version": "2",
+    "department": "EDW",
+    "model": "ALC400G&ALC600G",
+    "available_models": [
+        "ALC400G",
+        "ALC600G"
+    ],
+    "as_group": "FINAL",
+    "checksheet_name": "FAWI0038_V2"
+}

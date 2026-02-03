@@ -10,8 +10,8 @@ export const meta = {
 export const cover = {
     docNumber: "FAWI0006",
     version: "V3",
-    dateOfIssue: new Date().toISOString().split('T')[0],
-    approvalDate: new Date().toISOString().split('T')[0],
+    dateOfIssue: "05/01/2026",
+    approvalDate: "26/01/2026",
     issuedBy: "ENGINEERING DIV.",
     title: meta.title,
     company: "Sodick ( Thailand ) Co., Ltd."
@@ -25,8 +25,8 @@ export const content = {
     title: 'Check Sheet',
     subtitle: 'ASSEMBLY',
     company: 'Sodick (Thailand) Co.,Ltd',
-    totalPage: 26,
-    date: "14 Feb 2025",
+    totalPage: 16,
+    date: "5 Jan 2026",
     model: 'ALN400G&ALN600G (iG+E)',
     group: 'FINAL'
 }

@@ -6,7 +6,10 @@ import path from 'path'
 import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
-const formName = process.env.FORM_NAME || 'FAWI0006_V3';
+const formName = process.env.FORM_NAME || 'FAWI0038_V2';
+
+// ปิด PWA ตอน dev mode เพื่อป้องกัน caching issues
+const isDev = process.env.NODE_ENV !== 'production';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -36,7 +39,8 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
+    // เปิด PWA เฉพาะตอน production build เท่านั้น
+    ...(!isDev ? [VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
@@ -67,8 +71,8 @@ export default defineConfig({
         ]
       },
       workbox: {
-        // Exclude index.html from precaching to ensure NetworkFirst handles it
-        globPatterns: ['**/*.{js,css,ico,png,svg,jpg,jpeg,json}'],
+        // Include index.html in precaching to prevent Workbox crash on navigation
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,json}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         cleanupOutdatedCaches: true,
         runtimeCaching: [
@@ -96,7 +100,7 @@ export default defineConfig({
           }
         ]
       }
-    }),
+    })] : []),
     {
       name: 'copy-meta-json',
       closeBundle() {

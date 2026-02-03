@@ -173,7 +173,7 @@ const FormQuickTable = ({
                                             `}
                                         >
                                             {col.render ? (
-                                                col.render(cellValue, row, { register, watch })
+                                                col.render(cellValue, row, { register, watch, setValue })
                                             ) : effectiveType === 'tristate' ? (
                                                 <Controller
                                                     name={cellValue}

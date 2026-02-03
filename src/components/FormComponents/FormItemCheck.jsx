@@ -27,6 +27,7 @@ const FormItemCheck = ({
     className = "",
     showCheckbox = true,
     checkboxSize = "w-5 h-5",
+    labelClassName = "text-sm",
     onCheckedChange // Optional callback
 }) => {
     const { register, watch, setValue, control, formState: { errors } } = useFormContext();
@@ -39,7 +40,7 @@ const FormItemCheck = ({
     const renderItem = (item, index) => {
         if (item.label) {
             return (
-                <span key={`label-${index}`} className="text-sm whitespace-pre-wrap">
+                <span key={`label-${index}`} className={`${labelClassName} whitespace-pre-wrap`}>
                     {item.label}
                 </span>
             );
@@ -113,7 +114,7 @@ const FormItemCheck = ({
                 <div className="flex flex-col gap-1 flex-1">
                     <div className="flex items-start gap-2 flex-wrap">
                         {/* Label */}
-                        <span className="text-sm whitespace-pre-wrap">
+                        <span className={`${labelClassName} whitespace-pre-wrap`}>
                             {label}
                         </span>
 
