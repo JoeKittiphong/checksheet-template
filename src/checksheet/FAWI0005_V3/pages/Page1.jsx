@@ -31,8 +31,8 @@ function Page1() {
                             <p>Machine-P1-MAX RESISTIVITY1= 52000 <span className="ml-8 text-[10px] text-gray-600">After resistivity circuit change (AC)</span></p>
                             <p className="font-bold">Machine-P1-MIN RESISTIVITY1= 50000</p>
                             <p>Machine-P8-HI LIMIT RESISTIVITY1= 5000 <span className="ml-10 text-[10px] text-gray-600">Prior to resistivity change (DC)</span></p>
-                            <p className="font-bold mt-1">Secret-P3-MACHINE FANCION 3 = 000111<br/><p>= 100111 (With CMPH-05, in a non-operating CMPH-05</p></p>
-                            <p className="ml-24"></p>
+                            <div className="font-bold mt-1">Secret-P3-MACHINE FANCION 3 = 000111<br /><span>= 100111 (With CMPH-05, in a non-operating CMPH-05</span></div>
+                            <div className="ml-24"></div>
                         </div>
                         <div className="bg-green-500 border border-black p-2 h-max text-xs font-bold leading-relaxed">
                             <p>Machine-P3-RESISTIVITY ADJUSTMENT= 1 (Initial value)</p>
@@ -47,7 +47,10 @@ function Page1() {
 
                     <div className="pl-4 flex flex-col gap-2 mt-2">
                         <p>2.1.1 Enter the resistivity of LCD as follows: =={'>'} (a)</p>
-                        <p>2.1.2 Measure the resistivity value in the intermediate tank of the service tank and fill in the following. <p>=={'>'} (b) (using a portable water quality measuring instrument)</p> </p>
+                        <div className="flex flex-col">
+                            <span>2.1.2 Measure the resistivity value in the intermediate tank of the service tank and fill in the following.</span>
+                            <span>=={'>'} (b) (using a portable water quality measuring instrument)</span>
+                        </div>
 
                         {/* Calculation 1: (a) - (b) */}
                         <div>

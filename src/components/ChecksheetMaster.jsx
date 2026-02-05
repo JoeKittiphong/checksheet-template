@@ -230,11 +230,12 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     };
 
     // State for printing
-    const [isPrinting, setIsPrinting] = useState(false);
+    const [isPrinting, setIsPrinting] = useState(false); // Controls Page Mounting (Heavy)
+    const [isPrintLoading, setIsPrintLoading] = useState(false); // Controls Overlay (Light)
     const [isVerifyMode, setIsVerifyMode] = useState(false); // Force render all pages
     const [isValidating, setIsValidating] = useState(false); // Show loading overlay
 
-    const handlePrint = () => {
+    const handlePrint = async () => {
         const formData = methods.getValues();
         const machineNo = formData.machineNo || formData.machine_no || '';
 
@@ -261,18 +262,26 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
         const originalTitle = document.title;
         document.title = fileName;
 
-        // Enable print mode (mounts all pages)
+        // 1. Show Overlay IMMEDIATELY (Lightweight render)
+        setIsPrintLoading(true);
+
+        // 2. Yield to allow browser to paint the overlay
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        // 3. Enable print mode (Mounts all pages - Heavy operation)
         setIsPrinting(true);
 
-        // Allow React to render the DOM then print
+        // 4. Allow React to render the DOM then print
+        // Increase delay slightly to ensure overlay renders first if needed
         setTimeout(() => {
             window.print();
 
             // Restore state after print dialog closes (or immediately if background print)
             // Note: window.print() blocks JS execution in many browsers until dialog closes
             setIsPrinting(false);
+            setIsPrintLoading(false);
             document.title = originalTitle;
-        }, 500);
+        }, 800);
     };
 
     return (
@@ -281,14 +290,14 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                 <ChecksheetProvider handleSave={() => handleSave()} isSaving={isSaving} apiEndpoint={apiEndpoint}>
                     <div className="flex flex-col h-screen relative">
                         {/* Validation Loading Overlay */}
-                        {isValidating && (
-                            <div className="fixed inset-0 bg-black/70 z-[100] flex flex-col items-center justify-center text-white">
+                        {(isValidating || isPrintLoading) && (
+                            <div className="fixed inset-0 bg-black/70 z-[100] flex flex-col items-center justify-center text-white print:hidden">
                                 <svg className="animate-spin h-16 w-16 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                                 <h2 className="text-2xl font-bold animate-pulse">
-                                    {isSaving ? "Finalizing Data..." : "Checking Documents..."}
+                                    {isPrintLoading ? "Preparing for Print..." : isSaving ? "Finalizing Data..." : "Checking Documents..."}
                                 </h2>
                                 <p className="text-gray-300 mt-2">Please wait while we verify all pages.</p>
                             </div>

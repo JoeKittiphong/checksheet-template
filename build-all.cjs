@@ -15,11 +15,6 @@ const forms = [
     // "FAWI0025_V2",
     // "FAWI0026_V2",
     // "FAWI0038_V2"
-
-
-
-
-
 ];
 
 console.log("🚀 Starting Bulk Build Process...\n");

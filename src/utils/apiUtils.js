@@ -140,6 +140,30 @@ export const loadForm = async ({ apiEndpoint, searchParams, meta }) => {
     return null;
 };
 
+export const deleteForm = async ({ apiEndpoint, formId }) => {
+    try {
+        const response = await axios.delete(`${apiEndpoint}/api/delete-form/${formId}`, {
+            withCredentials: true
+        });
+
+        const result = response.data;
+        if (result.success) {
+            return { success: true, message: "ลบฟอร์มเรียบร้อยแล้ว (Deleted successfully)" };
+        } else {
+            throw new Error(result.error || "Delete failed");
+        }
+    } catch (error) {
+        console.error("Error deleting form:", error);
+        // Extract error message
+        const errorMessage = error.response?.data?.error || error.message || "เกิดข้อผิดพลาดในการลบ";
+
+        // Pass status code for specialized handling (e.g. 403 Forbidden)
+        const status = error.response?.status;
+
+        throw { message: errorMessage, status };
+    }
+};
+
 export const uploadPendingFiles = async (formData, apiEndpoint) => {
     const updatedData = { ...formData };
     let hasChanges = false;
