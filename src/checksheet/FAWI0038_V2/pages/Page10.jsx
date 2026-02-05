@@ -27,18 +27,28 @@ const Page10 = () => {
     const checkAreas = [
         // Top section
         { id: 1, name: "p10_c1", top: "16%", left: "39%", label: "P10_C1" },
-        { id: 2, name: "p10_c2", top: "15%", left: "79%", label: "P10_C2" },
-        { id: 3, name: "p10_c3", top: "23%", left: "83%", label: "P10_C3" },        
-        { id: 5, name: "p10_c5", top: "60%", left: "3%", label: "P10_C5" },
-        { id: 6, name: "p10_c6", top: "81%", left: "3%", label: "P10_C6" },
-        { id: 7, name: "p10_c7", top: "94%", left: "13%", label: "P10_C7" },
-        { id: 8, name: "p10_c8", top: "94%", left: "39%", label: "P10_C8" },
-        { id: 9, name: "p10_c9", top: "85%", left: "78%", label: "P10_C9" },
-        { id: 10, name: "p10_c10", top: "60%", left: "90%", label: "P10_C10" },
+        { id: 2, name: "p10_c2", top: "16%", left: "83%", label: "P10_C2" },
+        { id: 3, name: "p10_c3", top: "25%", left: "91%", label: "P10_C3" },
+        { id: 4, name: "p10_c4", top: "38%", left: "71%", label: "P10_C4" },
+        { id: 5, name: "p10_c5", top: "27%", left: "40%", label: "P10_C5" },
+        { id: 6, name: "p10_c6", top: "31%", left: "22%", label: "P10_C6" },
+        { id: 7, name: "p10_c7", top: "67%", left: "-2%", label: "P10_C7" },
+        { id: 8, name: "p10_c8", top: "76%", left: "4%", label: "P10_C8" },
+        { id: 9, name: "p10_c9", top: "85%", left: "4%", label: "P10_C9" },
+        { id: 10, name: "p10_c10", top: "93%", left: "35%", label: "P10_C10" },
+        { id: 11, name: "p10_c11", top: "96%", left: "64%", label: "P10_C11" },
     ];
     const checkAreas2 = [
         //---
-        { id: 4, name: "p10_c4", top: "45%", left: "6%", label: "P10_C4" },
+        { id: 12, name: "p10_c12", top: "73%", left: "84%", label: "P10_C12" },
+        //---
+    ]
+    const checkAreas3 = [
+        //---
+        { id: 13, name: "p10_c13", top: "55%", left: "87%", label: "P10_C13" },
+        { id: 14, name: "p10_c14", top: "55%", left: "72%", label: "P10_C14" },
+        { id: 15, name: "p10_c15", top: "76%", left: "56%", label: "P10_C15" },
+        { id: 16, name: "p10_c16", top: "76%", left: "67%", label: "P10_C16" },
         //---
     ]
 
@@ -84,6 +94,22 @@ const Page10 = () => {
                                 extraData={{ ...extraData, part_name: area.label }}
                                 required={true}
                                 visibleShapes={[1, 2, 3]}
+                            />
+                        </div>
+                    ))}
+                    {checkAreas3.map((area) => (
+                        <div
+                            key={area.id}
+                            className="absolute bg-white/90 rounded px-0.5 shadow-sm"
+                            style={{ top: area.top, left: area.left }}
+                        >
+                            <ShapedCheckGroup
+                                name={`${prefix}_${area.name}`}
+                                apiEndpoint={apiEndpoint}
+                                extraData={{ ...extraData, part_name: area.label }}
+                                required={true}
+                                visibleShapes={[1]}
+                                showCamera={false}
                             />
                         </div>
                     ))}

@@ -177,45 +177,29 @@ function Pagination({
                                         }}
                                     >
                                         {isExpanded ? (
-                                            // Thumbnail View
+                                            // Thumbnail View (SIMPLIFIED - NO RENDER)
                                             <div style={{
                                                 width: '120px',
-                                                height: '170px',
+                                                height: '40px', // Reduced height since no preview
                                                 background: 'white',
                                                 borderRadius: '4px',
                                                 overflow: 'hidden',
                                                 position: 'relative',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
                                                 border: currentPage === page
                                                     ? '3px solid #3b82f6'
                                                     : statusColor ? `3px solid ${statusColor}` : '1px solid #6b7280'
                                             }}>
-                                                <div
-                                                    className="pagination-thumbnail"
-                                                    style={{
-                                                        transform: 'scale(0.15)',
-                                                        transformOrigin: 'top left',
-                                                        width: '210mm',
-                                                        height: '297mm',
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                >
-                                                    {pageComponents[page - 1]}
-                                                </div>
-                                                {/* Overlay for Click */}
-                                                <div style={{ position: 'absolute', inset: 0, zIndex: 10 }}></div>
-                                                {/* Page Number Label */}
+                                                {/* REMOVED HEAVY PAGE COMPONENT RENDER */}
+
                                                 <div style={{
-                                                    position: 'absolute',
-                                                    bottom: 0,
-                                                    right: 0,
-                                                    background: statusColor || 'rgba(0,0,0,0.6)',
-                                                    color: 'white',
-                                                    padding: '2px 6px',
-                                                    fontSize: '10px',
-                                                    borderTopLeftRadius: '4px',
-                                                    fontWeight: statusColor ? 'bold' : 'normal'
+                                                    fontSize: '14px',
+                                                    fontWeight: 'bold',
+                                                    color: '#374151'
                                                 }}>
-                                                    {displayLabel} {statusColor === '#22c55e' ? '✓' : ''}
+                                                    Page {displayLabel} {statusColor === '#22c55e' ? '✓' : ''}
                                                 </div>
                                             </div>
                                         ) : (

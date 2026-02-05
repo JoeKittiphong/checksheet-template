@@ -170,6 +170,7 @@ const FormQuickTable = ({
                                                 ${isLabel ? 'bg-gray-50' : ''}
                                                 ${col.align === 'left' ? 'text-left' : 'text-center'}
                                                 ${validationClass}
+                                                ${col.bodyClassName || ''}
                                             `}
                                         >
                                             {col.render ? (

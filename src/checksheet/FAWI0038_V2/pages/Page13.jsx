@@ -26,13 +26,13 @@ const Page13 = () => {
     // Check areas - Screw Filter Plate (2PC) ○△
     const checkAreas = [
         // Top left - 2 PC Screw Filter Plate
-        { id: 1, name: "screw_filter_top", top: "-1%", left: "28%", label: "2 PC Screw Filter Plate (Top)" },
+        { id: 1, name: "screw_filter_top", top: "-2%", left: "32%", label: "2 PC Screw Filter Plate (Top)" },
 
         // Right side - 2 PC Screw Filter Plate
-        { id: 2, name: "screw_filter_right", top: "36%", left: "79%", label: "2 PC Screw Filter Plate (Right)" },
+        { id: 2, name: "screw_filter_right", top: "38%", left: "85%", label: "2 PC Screw Filter Plate (Right)" },
 
         // Bottom left - 3 PC Screw Panel
-        { id: 3, name: "screw_panel_3pc", top: "94%", left: "27%", label: "3 PC Screw Panel" },
+        { id: 3, name: "screw_panel_3pc", top: "94%", left: "23%", label: "3 PC Screw Panel" },
     ];
 
     return (
@@ -40,7 +40,7 @@ const Page13 = () => {
             <div className="p-1 flex flex-col h-full bg-white text-[10px]">
                 {/* Header */}
                 <div className="text-center font-bold text-[14px] mb-1 underline">
-                    Check Lock Screw ALN400G/ALN600G(iG+E)
+                    Check Lock Screw ALC400G/ALC600G (iG+E)
                 </div>
                 <SectionTitle>1. ด้านซ้ายของเครื่องจักร</SectionTitle>
 

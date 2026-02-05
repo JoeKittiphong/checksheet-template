@@ -4,112 +4,16 @@ import A4Paper from "@/components/UIcomponent/A4Paper";
 import SectionTitle from '@/components/UIcomponent/SectionTitle';
 import FormQuickTable from '@/components/FormComponents/FormQuickTable';
 import FormItemCheck from '@/components/FormComponents/FormItemCheck';
-import FormInputCheckSTD from '@/components/FormComponents/FormInputCheckSTD';
-import mainImage from "@/assets/FAWI0005_V3/page37_main.png";
 import topDiagram from "@/assets/FAWI0005_V3/page37_top_diagram.png";
 import sideDiagram from "@/assets/FAWI0005_V3/page37_side_diagram.png";
 
+// New Components
+import FinalEDWwireCheck from '@/components/FormComponents/FinalEDWwireCheck';
+import EDWFinalRecordCutting from '@/components/FormComponents/EDWFinalRecordCutting';
+import EDWFinalRoughnessCheck from '@/components/FormComponents/EDWFinalRoughnessCheck';
+import EDWFinalSizeRecord from '@/components/FormComponents/EDWFinalSizeRecord';
+
 function Page40() {
-
-    // 1. Cutting Data Table
-    const columnsRecord = [
-        { header: "", key: "point", width: "15%", className: "text-center bg-gray-300 font-bold", isLabel: true },
-        { header: "Voltage(LCD)\n(V)", key: "voltage", width: "20%", className: "text-center bg-gray-300" },
-        { header: "Current(LCD)\n(A)", key: "current", width: "20%", className: "text-center bg-gray-300" },
-        { header: "Cutting Speed\n(mm/min)", key: "speed", width: "20%", className: "text-center bg-gray-300" },
-        { header: "Cutting Time", key: "time", width: "25%", className: "text-center bg-gray-300" },
-    ];
-
-    const dataRecord = [
-        {
-            point: "C0001", type: "input",
-            voltage: "p40_c0001_volt", voltage_min: 26, voltage_max: 34,
-            current: "p40_c0001_curr", current_min: 10, current_max: 13,
-            speed: "p40_c0001_speed", speed_min: 0.95, speed_max: 1.25,
-            time: "p40_c0001_time_label", label: "H071="
-        },
-        {
-            point: "C0002", type: "input",
-            voltage: "p40_c0002_volt", voltage_min: 47, voltage_max: 55,
-            current: "p40_c0002_curr", current_min: 1.0, current_max: 2.4,
-            speed: "p40_c0002_speed", speed_min: 2.0, speed_max: 3.0,
-            time: "p40_c0002_time_label", label: "H072="
-        },
-        {
-            point: "C0903", type: "input",
-            voltage: "p40_c0903_volt", voltage_min: 30, voltage_max: 38,
-            current: "p40_c0903_curr", current_disabled: true,
-            speed: "p40_c0903_speed", speed_min: 4.5, speed_max: 5.5,
-            time: "p40_c0903_time_label", label: "H073="
-        }
-    ];
-
-    // Standard Table (Right Side)
-    const columnsStandard = [
-        { header: "Voltage(LCD)\n(V)", key: "voltage", width: "25%", className: "text-center bg-gray-400 font-bold" },
-        { header: "Current(LCD)\n(A)", key: "current", width: "25%", className: "text-center bg-gray-400 font-bold" },
-        { header: "Cutting Speed\n(mm/min)", key: "speed", width: "25%", className: "text-center bg-gray-400 font-bold" },
-        { header: "Cutting Time", key: "time", width: "25%", className: "text-center bg-gray-400 font-bold" },
-    ];
-
-    const dataStandard = [
-        { voltage: "26~34", current: "10~13", speed: "0.95~1.25", time: "H071= 38:40~43:00", className: "bg-green-100" },
-        { voltage: "47~55", current: "1.0~2.4", speed: "2.0~3.0", time: "H072= 12:00~15:00" },
-        { voltage: "30~38", current: "-", speed: "4.5~5.5", time: "H073= 06:30~08:00" },
-        { voltage: "", current: "", speed: "", time: "H081= 57:20~1:09:20", className: "text-right pr-2" },
-    ];
-
-    // Roughness/Size Tables
-    const columnsCheck = [
-        { header: "Roughness", key: "row_label", width: "25%", className: "font-bold pl-2", isLabel: true },
-        { header: "X- (3rd)", key: "x_minus", width: "25%", className: "text-center" },
-        { header: "Y- (3rd)", key: "y_minus", width: "25%", className: "text-center" },
-        { header: "X+ (3rd)", key: "x_plus", width: "25%", className: "text-center" },
-    ];
-
-    const dataRa = [
-        { row_label: "Up", x_minus: "p40_ra_up_xm", type: "input", y_minus: "No need", x_plus: "No need" },
-        { row_label: "Mid", x_minus: "p40_ra_mid_xm", type: "input", y_minus: "No need", x_plus: "No need" },
-        { row_label: "Low", x_minus: "p40_ra_low_xm", type: "input", y_minus: "No need", x_plus: "" },
-        {
-            row_label: "STD(μm)",
-            x_minus: "0.530~0.630",
-            y_minus: "No need",
-            x_plus: "0.530~0.630",
-            className: "text-xs"
-        },
-    ];
-
-    const dataRz = [
-        { row_label: "Up", x_minus: "p40_rz_up_xm", type: "input", y_minus: "No need", x_plus: "No need" },
-        { row_label: "Mid", x_minus: "p40_rz_mid_xm", type: "input", y_minus: "No need", x_plus: "No need" },
-        { row_label: "Low", x_minus: "p40_rz_low_xm", type: "input", y_minus: "No need", x_plus: "" },
-        {
-            row_label: "STD(μm)",
-            x_minus: "3.70~4.80",
-            y_minus: "No need",
-            x_plus: "3.70~4.80",
-            className: "text-xs"
-        },
-    ];
-
-    const columnsSize = [
-        { header: "Size", key: "row_label", width: "33%", className: "font-bold pl-2 bg-gray-200", isLabel: true },
-        { header: "X- (3rd)", key: "x_minus", width: "33%", className: "text-center bg-gray-200" },
-        { header: "Y (3rd)", key: "y_val", width: "33%", className: "text-center bg-gray-200" },
-    ];
-
-    const dataSize = [
-        { row_label: "Up", x_minus: "p40_size_up_xm", type: "input", y_val: "p40_size_up_y" },
-        { row_label: "Mid", x_minus: "p40_size_mid_xm", type: "input", y_val: "p40_size_mid_y" },
-        { row_label: "Low", x_minus: "p40_size_low_xm", type: "input", y_val: "p40_size_low_y" },
-        {
-            row_label: "STD(mm)",
-            x_minus: "7.9970~8.0030",
-            y_val: "7.9970~8.0030",
-            className: "text-red-500 font-bold"
-        },
-    ];
 
     // IO Retry Table
     const columnsIORetry = [
@@ -122,6 +26,14 @@ function Page40() {
     const dataIORetry = [
         { code: "#80061", desc: "IO Retry", std: "0", act: "p40_io_retry_act", type: "input" }
     ];
+
+    // Cutting Standards for Page 40
+    const cuttingStandards = {
+        c0001: { v: "26~34", a: "10~13", speed: "0.95~1.25", time: "H071= 38:40~43:00" },
+        c0002: { v: "47~55", a: "1.0~2.4", speed: "2.0~3.0", time: "H072= 12:00~15:00" },
+        c0003: { v: "30~38", a: "-", speed: "4.5~5.5", time: "H073= 06:30~08:00" },
+        totalTime: "H081= 57:20~1:09:20"
+    };
 
     return (
         <A4Paper content={content} currentPage={40}>
@@ -138,127 +50,62 @@ function Page40() {
                     <p>Disch-Page12-[[477] DPW PC32 SIG OFFSET]= 280</p>
                 </div>
 
-                <div className="w-1.5/3 border border-black p-2 text-xs">
-                    <div className="flex items-center gap-1">
-                        <span className="font-bold w-10">Judge</span>
-                        <FormItemCheck name="p40_judge_ok" label="OK" showCheckbox />
-                        <FormItemCheck name="p40_judge_ng" label="NG" showCheckbox />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold w-10">Line</span>
-                        <FormItemCheck name="p40_line_ok" label="OK" showCheckbox />
-                        <FormItemCheck name="p40_line_ng" label="NG / XY-Size" showCheckbox />
-                        <FormItemCheck name="p40_line_size_ok" label="OK" showCheckbox />
-                        <FormItemCheck name="p40_line_size_ng" label="NG" showCheckbox />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold w-10">Ra/Rz</span>
-                        <FormItemCheck name="p40_rarz_ok" label="OK" showCheckbox />
-                        <FormItemCheck name="p40_rarz_ng" label="NG / Size" showCheckbox />
-                        <FormItemCheck name="p40_rarz_size_ok" label="OK" showCheckbox />
-                        <FormItemCheck name="p40_rarz_size_ng" label="NG" showCheckbox />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold w-10">Barrel</span>
-                        <FormItemCheck name="p40_barrel_ok" label="OK" showCheckbox />
-                        <FormItemCheck name="p40_barrel_ng" label="NG" showCheckbox />
-                    </div>
-                    <div className="flex justify-between mt-2 gap-2">
-                        <FormItemCheck
-                            name="p40_date_check"
-                            label="Date:"
-                            input={{ name: "p40_date", width: "80px" }}
-                            showCheckbox={false}
-                        />
-                        <FormItemCheck
-                            name="p40_name_check"
-                            label="Name:"
-                            input={{ name: "p40_name", width: "80px" }}
-                            showCheckbox={false}
-                        />
-                    </div>
+                <div className='flex flex-col items-end gap-2'>
+                    <FinalEDWwireCheck prefix="p40_" />
+                    <img src={topDiagram} alt="Top Diagram" className="h-16" />
                 </div>
             </div>
 
-            <div className="flex gap-4 px-4 mt-4">
-                <div className="w-1/2 mt-11">
-                    <p className="font-bold text-sm mb-1">Record Cutting Data to fallowing.</p>
-                    <FormQuickTable
-                        columns={columnsRecord}
-                        data={dataRecord}
-                        headerClass="bg-gray-300"
-                        bordered
-                    />
-                    <div className="flex items-center gap-4 mt-2 text-xs">
-                        <FormItemCheck
-                            name="p40_wb_check"
-                            label="Wire Broken ="
-                            input={{ name: "p40_wb_val", width: "30px" }}
-                            showCheckbox={false}
-                        />
-                        <FormItemCheck
-                            name="p40_time_check"
-                            label="Time(s)"
-                            input={{ name: "p40_time_val", width: "30px" }}
-                            showCheckbox={false}
-                        />
-                        <FormItemCheck
-                            name="p40_h081_check"
-                            label="H081="
-                            input={{ name: "p40_h081_val", width: "30px" }}
-                            showCheckbox={false}
-                        />
+            <div className="flex gap-4 px-4">
+                <div className="w-full">
+                    <div className="flex items-end justify-between">
+                        <p className="font-bold text-sm">Record Cutting Data to fallowing.</p>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px]">Check point of Cutting Data</span>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-2 text-xs">
+                    {/* Using EDWFinalRecordCutting */}
+                    <EDWFinalRecordCutting prefix="p40_" standards={cuttingStandards} />
+
+                    <div className="flex items-center gap-2 text-xs">
                         <span>Wire Broken Point=</span>
                         <FormItemCheck checkboxSize="w-3 h-3" name="p40_wb_upper" label="Upper Guide" showCheckbox />
                         <FormItemCheck checkboxSize="w-3 h-3" name="p40_wb_lower" label="Lower Guide" showCheckbox />
                         <FormItemCheck checkboxSize="w-3 h-3" name="p40_wb_work" label="Work Piece" showCheckbox />
                     </div>
                 </div>
-
-                <div className="w-1/2">
-                    <div className="flex justify-between items-end mb-1">
-                        <p className="font-bold text-sm">Standard</p>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px]">Check point of Cutting Data</span>
-                            <img src={topDiagram} alt="Top Diagram" className="h-16" />
-                        </div>
-                    </div>
-                    <FormQuickTable
-                        columns={columnsStandard}
-                        data={dataStandard}
-                        headerClass="bg-gray-400"
-                        bordered
-                    />
-                    {/* <div className="text-[10px] text-right mt-1">H081= 57:20~1:09:20</div> */}
-
-                </div>
             </div>
 
-            <div className="flex gap-4 px-4">
+            <div className="flex gap-4 px-4 mt-4">
                 <div className="w-1/2">
-                    <p className="font-bold text-sm mb-1 mt-5">Roughness (Ra μm) (Record measured data to fallowing)</p>
-                    <FormQuickTable
-                        columns={columnsCheck}
-                        data={dataRa}
-                        headerClass="bg-white"
-                        bordered
+                    {/* Roughness Ra */}
+                    <h3 className="font-bold text-xs">Roughness (Ra μm) (Record measured data to fallowing)</h3>
+
+                    <EDWFinalRoughnessCheck
+                        prefix="p40_ra_"
+                        variant="3rd"
+                        standards={{ range: "0.530~0.630" }}
                     />
-                    <p className="font-bold text-sm mb-1 mt-5">Roughness (Rz Din μm) (Record measured data to fallowing)</p>
-                    <FormQuickTable
-                        columns={columnsCheck}
-                        data={dataRz}
-                        headerClass="bg-white"
-                        bordered
-                    />
-                    <p className="font-bold text-sm mb-1 mt-5">Size (Record measured data to fallowing)</p>
-                    <FormQuickTable
-                        columns={columnsSize}
-                        data={dataSize}
-                        headerClass="bg-white"
-                        bordered
-                    />
+
+                    {/* Roughness Rz */}
+                    <div className="">
+                        <h3 className="font-bold text-xs">Roughness (Rz Din μm) (Record measured data to fallowing)</h3>
+                        <EDWFinalRoughnessCheck
+                            prefix="p40_rz_"
+                            variant="3rd"
+                            standards={{ range: "3.70~4.80" }}
+                        />
+                    </div>
+
+                    {/* Size Record */}
+                    <div className="">
+                        <h3 className="font-bold text-xs">Size (Record measured data to fallowing)</h3>
+                        <EDWFinalSizeRecord
+                            prefix="p40_"
+                            variant="3rd"
+                            standards={{ x: "7.9970~8.0030", y: "7.9970~8.0030" }}
+                        />
+                    </div>
                 </div>
 
                 <div className="w-1/2 pl-4">
@@ -291,15 +138,13 @@ function Page40() {
                         />
                     </div>
 
-                    <div className="font-bold text-sm mb-2">(Have priority "Ra " value over "RzDIN")</div>
+                    <div className="font-bold text-sm mb-2 mt-4">(Have priority "Ra " value over "RzDIN")</div>
 
                     <div className="flex justify-center">
-                        <img src={sideDiagram} alt="Side Diagram" className="h-48 object-contain" />
+                        <img src={sideDiagram} alt="Side Diagram" className="h-43 object-contain" />
                     </div>
                 </div>
             </div>
-
-
         </A4Paper>
     );
 }

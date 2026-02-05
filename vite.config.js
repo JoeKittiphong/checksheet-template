@@ -6,7 +6,8 @@ import path from 'path'
 import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
-const formName = process.env.FORM_NAME || 'FAWI0038_V2';
+// const formName = process.env.FORM_NAME || 'Test';
+const formName = process.env.FORM_NAME || 'FAWI0005_V3';
 
 // ปิด PWA ตอน dev mode เพื่อป้องกัน caching issues
 const isDev = process.env.NODE_ENV !== 'production';
@@ -138,5 +139,21 @@ export default defineConfig({
   build: {
     outDir: `../server-checksheet/checksheet_form/${formName}`,
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1600, // เพิ่ม limit เพื่อลด warning
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('@mui') || id.includes('@emotion')) {
+              return 'vendor-mui';
+            }
+            return 'vendor'; // lib อื่นๆ รวมกัน
+          }
+        },
+      },
+    },
   },
 })

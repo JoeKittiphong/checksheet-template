@@ -18,7 +18,7 @@ const Page15 = () => {
             <div className="p-1 flex flex-col h-full bg-white text-[11px]">
                 {/* Header */}
                 <div className="text-center font-bold text-[14px] mb-2 underline">
-                    Check Nut and Leveling Bolt ALN400G/ALN600G(iG+E)
+                    Check Nut and Leveling Bolt ALC400G/ALC600G (iG+E)
                 </div>
 
                 {/* Section 1: ด้านหน้าของเครื่องจักร */}

@@ -26,25 +26,19 @@ const Page8 = () => {
 
     // Check areas based on the image - positioned by approximate percentage
     const checkAreas = [
-        // Top row
-        { id: 1, name: "j44593b", top: "8%", left: "10%", label: "J44593B" },
-        { id: 2, name: "j44593c", top: "-1%", left: "43%", label: "J44593C" },
-        { id: 3, name: "j44593d", top: "0%", left: "78%", label: "J44593D" },
-        { id: 4, name: "j44593e", top: "11%", left: "86%", label: "J44593E" },
-        { id: 5, name: "j44593f", top: "22%", left: "23%", label: "J44593F" },
-        { id: 6, name: "j44593g", top: "29%", left: "5%", label: "J44593G" },
-        { id: 7, name: "j44593h", top: "37%", left: "24%", label: "J44593H" },
-        { id: 8, name: "j44593i", top: "41%", left: "80%", label: "J44593I" },
-        { id: 9, name: "j44593j", top: "58%", left: "79%", label: "J44593J" },
-        { id: 10, name: "j44593k", top: "65%", left: "79%", label: "J44593K" },
-        { id: 11, name: "j44593l", top: "83%", left: "65%", label: "J44593L" },
-        //--
-        
+        { id: 1, name: "p8_c1", top: "2%", left: "9%", label: "P8_C1" },
+        { id: 2, name: "p8_c2", top: "1%", left: "86%", label: "P8_C2" },
+        { id: 3, name: "p8_c3", top: "10%", left: "92%", label: "P8_C3" },
+        { id: 4, name: "p8_c4", top: "22%", left: "87%", label: "P8_C4" },
+        { id: 5, name: "p8_c5", top: "21%", left: "-2%", label: "P8_C5" },
+        { id: 6, name: "p8_c6", top: "11%", left: "-1%", label: "P8_C6" },
+        { id: 7, name: "p8_c7", top: "30%", left: "-2%", label: "P8_C7" },
+        { id: 11, name: "p8_c11", top: "81%", left: "72%", label: "P8_C11" },
     ];
     const checkAreas2 = [
-        { id: 12, name: "j44593m", top: "93%", left: "9%", label: "J44593M" },
-        { id: 13, name: "j44593n", top: "93%", left: "28%", label: "J44593N" },
-        { id: 14, name: "j44593o", top: "93%", left: "46%", label: "J44593O" },
+        { id: 8, name: "p8_c8", top: "94%", left: "9%", label: "P8_C8" },        
+        { id: 9, name: "p8_c9", top: "94%", left: "29%", label: "P8_C9" },        
+        { id: 10, name: "p8_c10", top: "94%", left: "47%", label: "P8_C10" },        
     ]
         
     
@@ -66,9 +60,9 @@ const Page8 = () => {
     return (
         <A4Paper content={content} currentPage={8}>
             <div className="p-1 flex flex-col h-full bg-white">
-                <h2 className='font-bold text-center mb-2'>Check  List  Sticker AL400G/AL600G (iG+E)</h2>
+                <h2 className='font-bold text-center mb-2'>Check  List  Sticker ALC400G/ALC600G (iG+E)</h2>
                 <SectionTitle>1. ด้านหน้าของเครื่องจักร</SectionTitle>
-                <SectionTitle>1.1 หน้าเครื่อง AL400G/AL600G (iG+E)</SectionTitle>
+                <SectionTitle>1.1 หน้าเครื่อง ALC400G/ALC600G (iG+E)</SectionTitle>
                 {/* Main Image with Positioned ShapedCheckGroups */}
                 <div className="flex-1 relative">
                     <img
@@ -110,7 +104,7 @@ const Page8 = () => {
                     ))}
 
                     {/* FINISH GOOD CARD MACHINE Section */}
-                    <div className="absolute p-1 text-[10px]" style={{ top: "40%", left: "90%", width: "18%" }}>
+                    <div className="absolute p-1 text-[10px]" style={{ top: "35%", left: "85%", width: "18%" }}>
                         
                         <FormItemCheck
                             name={`${prefix}_machine_no_check`}
@@ -175,7 +169,7 @@ const Page8 = () => {
                     </div>
                 </div>
                 {/* Remark Section */}
-                <div className="mt-10 p-1 text-[12px]">
+                <div className="mt-5 p-1 text-[12px]">
                     <div className="font-bold mb-0.5">หมายเหตุ</div>
                     <div className="flex flex-wrap gap-x-4 gap-y-0.5">
                         <div className="flex items-center gap-1">

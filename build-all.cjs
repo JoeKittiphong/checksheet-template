@@ -8,13 +8,13 @@ const forms = [
     // "FAMB0003_V2",
     // "FAMB0004_V3",
     // "FAWI0002_V3",
-    // "FAWI0005_V3",
+    "FAWI0005_V3",
     // "ASSY_PROBLEM",
     // "FAWI0006_V3",
     // "FAWI0008_V3",
     // "FAWI0025_V2",
     // "FAWI0026_V2",
-    "FAWI0038_V2"
+    // "FAWI0038_V2"
 
 
 

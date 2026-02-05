@@ -214,6 +214,9 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
         }
     };
 
+    // State for printing
+    const [isPrinting, setIsPrinting] = useState(false);
+
     const handlePrint = () => {
         const formData = methods.getValues();
         const machineNo = formData.machineNo || formData.machine_no || '';
@@ -241,12 +244,18 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
         const originalTitle = document.title;
         document.title = fileName;
 
-        window.print();
+        // Enable print mode (mounts all pages)
+        setIsPrinting(true);
 
-        // Restore original title
+        // Allow React to render the DOM then print
         setTimeout(() => {
+            window.print();
+
+            // Restore state after print dialog closes (or immediately if background print)
+            // Note: window.print() blocks JS execution in many browsers until dialog closes
+            setIsPrinting(false);
             document.title = originalTitle;
-        }, 1000);
+        }, 500);
     };
 
     return (
@@ -290,10 +299,18 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                         {/* Pages Container */}
                         <div className="w-full flex flex-col items-center flex-1 overflow-auto bg-gray-100 print:bg-white print:overflow-visible">
                             {/* Wrap pages in a constrained width container for screen view */}
+                            {/* During print, we need full width and no shadow */}
                             <div className="w-[210mm] bg-white shadow-lg print:shadow-none print:w-full">
                                 {pages.map((page, index) => {
                                     const pageNum = index + 1;
                                     const isCurrent = pageNum === currentPage;
+
+                                    // Optimization: Only render the current page to the DOM, unless printing.
+                                    // Unmounting pages removes thousands of DOM nodes, solving the lag issue.
+                                    // React Hook Form preserves values even when unmounted (default behavior).
+                                    if (!isPrinting && !isCurrent) {
+                                        return null;
+                                    }
 
                                     return (
                                         <div

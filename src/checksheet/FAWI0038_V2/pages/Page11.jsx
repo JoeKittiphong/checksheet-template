@@ -27,33 +27,33 @@ const Page11 = () => {
 
     // Section 3: ที่หน้าจอของเครื่องจักร (top half)
     const section3Areas = [
-        { id: 1, name: "p11_c1", top: "25%", left: "-2%", label: "P11_C1" },
-        { id: 2, name: "p11_c2", top: "9%", left: "87%", label: "P11_C2" },
-        { id: 3, name: "p11_c3", top: "49%", left: "2%", label: "P11_C3" },
-        { id: 4, name: "p11_c4", top: "85%", left: "7%", label: "P11_C4" },
-        { id: 5, name: "p11_c5", top: "90%", left: "25%", label: "P11_C5" },
-        { id: 6, name: "p11_c6", top: "90%", left: "43%", label: "P11_C6" },
-        { id: 7, name: "p11_c7", top: "81%", left: "62%", label: "P11_C7" },
-        { id: 8, name: "p11_c8", top: "55%", left: "87%", label: "P11_C8" },
-        { id: 9, name: "p11_c9", top: "92%", left: "87%", label: "P11_C9" },
+        { id: 1, name: "p11_c1", top: "15%", left: "-2%", label: "P11_C1" },        
+        { id: 2, name: "p11_c2", top: "39%", left: "3%", label: "P11_C2" },        
+        { id: 3, name: "p11_c3", top: "75%", left: "3%", label: "P11_C3" },        
+        { id: 4, name: "p11_c4", top: "75%", left: "50%", label: "P11_C4" },        
+        { id: 5, name: "p11_c5", top: "95%", left: "85%", label: "P11_C5" },        
+        { id: 6, name: "p11_c6", top: "40%", left: "91%", label: "P11_C6" },        
+        { id: 7, name: "p11_c7", top: "6%", left: "91%", label: "P11_C7" },        
+        { id: 8, name: "p11_c8", top: "82%", left: "61%", label: "P11_C8" },        
     ];
 
     // Section 4: ด้านขวาของเครื่องจักร (bottom half)
     const section4Areas = [
-        { id: 10, name: "p11_c10", top: "1%", left: "12%", label: "P11_C10" },
-        { id: 11, name: "p11_c11", top: "0%", left: "32%", label: "P11_C11" },
-        { id: 12, name: "p11_c12", top: "0%", left: "48%", label: "P11_C12" },
-        { id: 13, name: "p11_c13", top: "-2%", left: "69%", label: "P11_C13" },
-        { id: 14, name: "p11_c14", top: "10%", left: "88%", label: "P11_C14" },
-        { id: 15, name: "p11_c15", top: "28%", left: "69%", label: "P11_C15" },
-        { id: 16, name: "p11_c16", top: "41%", left: "5%", label: "P11_C16" },
-        { id: 17, name: "p11_c17", top: "45%", left: "93%", label: "P11_C17" },
-        { id: 18, name: "p11_c18", top: "72%", left: "7%", label: "P11_C18" },
-        { id: 19, name: "p11_c19", top: "93%", left: "25%", label: "P11_C19" },
+        { id: 9, name: "p11_c9", top: "0%", left: "15%", label: "P11_C9" },  
+        { id: 10, name: "p11_c10", top: "15%", left: "-2%", label: "P11_C10" },  
+        { id: 11, name: "p11_c11", top: "57%", left: "2%", label: "P11_C11" },  
+        { id: 12, name: "p11_c12", top: "89%", left: "12%", label: "P11_C12" },  
+        { id: 13, name: "p11_c13", top: "90%", left: "66%", label: "P11_C13" },  
+        { id: 14, name: "p11_c14", top: "90%", left: "87%", label: "P11_C14" },  
+        { id: 15, name: "p11_c15", top: "42%", left: "85%", label: "P11_C15" },  
+        { id: 16, name: "p11_c16", top: "25%", left: "79%", label: "P11_C16" },  
+        { id: 17, name: "p11_c17", top: "12%", left: "91%", label: "P11_C17" },  
+        { id: 18, name: "p11_c18", top: "3%", left: "67%", label: "P11_C18" },  
+        { id: 19, name: "p11_c19", top: "-3%", left: "42%", label: "P11_C19" },  
+        { id: 20, name: "p11_c20", top: "-3%", left: "30%", label: "P11_C20" },  
     ];
     const section5Areas = [
-        { id: 20, name: "p11_c20", top: "93%", left: "65%", label: "P11_C20" },
-        { id: 21, name: "p11_c21", top: "93%", left: "84%", label: "P11_C21" },
+        
     ];
 
 

@@ -25,7 +25,7 @@ export const content = {
     title: 'Check Sheet',
     subtitle: 'ASSEMBLY',
     company: 'Sodick (Thailand) Co.,Ltd',
-    totalPage: 58,
+    totalPage: 138,
     date: "14 Feb 2025",
     model: 'AL400G',
     group: 'FINAL'

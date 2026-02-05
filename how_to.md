@@ -214,3 +214,114 @@ double_check/{year}/{month}/{model}/{machine_no}/image/{filename}
 ```
 
 ตัวอย่าง: `double_check/2026/02/AL400G/NO.1/image/AL400G-NO.1-Controller_Area1-Check1-1234.jpg`
+
+---
+
+# How to use Generic Table Components
+
+เราได้สร้าง Generic Component ขึ้นมา 2 ตัวหลักๆ เพื่อลด Code Duplication และจัดการ Logic การเดิน Focus (UseGridNavigation) ให้ง่ายขึ้น
+
+## 1. PitchingTable
+
+ใช้สำหรับ Pitching Table และ Rolling Table แบบมาตรฐาน (ที่มีโครงสร้างซับซ้อน เช่น Top/Bottom, Rows/Cols)
+
+### Props
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `axis` | `'x' \| 'y'` | **Layout Axis**: `'x'` = Horizontal, `'y'` = Vertical |
+| `arrowAxis` | `'x' \| 'y'` | **Arrow Direction**: ใช้บังคับทิศทางลูกศร. เช่น RollingX เป็น Layout X แต่ใช้ลูกศรขึ้นลง (Y) ให้ส่ง `'y'` |
+| `config` | `Object` | การตั้งค่า Row/Column และ Data Mapping |
+| `data` | `Object` | Data object จาก RHF (เช่น `{ b: [], t: [] }`) |
+| `standard` | `Object` | `{ min: -10, max: 10 }` |
+
+### Config Structure
+
+```js
+const config = {
+    // Array ของ Row ที่จะ Map กับ Data Key (เช่น 'b' หรือ 't')
+    rows: [
+        { key: 'b', label: 'B (Before)' }, 
+        { key: 't', label: 'T (Top)' }
+    ],
+    // Array ของ Column Header
+    cols: [
+        { label: 'X+' }, 
+        { label: 'X0', isRef: true }, // isRef = คอลัมน์อ้างอิง (สีเทา/ข้าม)
+        { label: 'X-' }
+    ],
+    // Label ของ Diff Row
+    diffLabel: 'DIFF',
+    // Header หลัก
+    dataLabel: 'PITCHING' 
+}
+```
+
+### Examples
+
+#### Pitching X (Layout X, Arrow X)
+```jsx
+<PitchingTable
+    axis="x"     // แนวนอน
+    arrowAxis="x" // ลูกศรซ้ายขวา
+    config={{ ... }}
+    data={data}
+    ...
+/>
+```
+
+#### Rolling X (Layout X, Arrow Y) *Special Case*
+Rolling X วางแนวนอน แต่ลูกศรที่ใช้กรอกเป็น ขึ้น/ลง
+```jsx
+<PitchingTable
+    axis="x"     // แนวนอน
+    arrowAxis="y" // **สำคัญ**: บังคับใช้ arrow ขึ้นลง
+    config={{ ... }}
+    data={data}
+    ...
+/>
+```
+
+---
+
+## 2. EDMTable
+
+ใช้สำหรับตาราง EDM เช่น EDM Pitching, EDM Rolling ซึ่งมีโครงสร้างเรียบง่ายกว่า (Row/Col แบบ 1, 2, 3...) แต่มี Standard แยกรายช่อง
+
+### Props
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `axis` | `'x' \| 'y'` | **Layout Axis**: `'x'` = Horizontal, `'y'` = Vertical |
+| `arrowAxis` | `'x' \| 'y'` | **Arrow Direction**: บังคับทิศทางลูกศร (เหมือน PitchingTable) |
+| `count` | `number` | จำนวน Row หรือ Column |
+| `standards` | `Array` | Array ของ Standard object `[{ min, max, arrow }, ...]` |
+
+### Examples
+
+#### EDM Pitching X (Layout X, Arrow X)
+```jsx
+<EDMTable
+    axis="x"
+    arrowAxis="x"
+    count={5}
+    standards={[
+        { min: 0, max: 5, arrow: '+' },
+        { min: 0, max: 2, arrow: '-' }
+    ]}
+    data={data}
+    ...
+/>
+```
+
+#### EDM Rolling X (Layout X, Arrow Y)
+```jsx
+<EDMTable
+    axis="x"
+    arrowAxis="y" // **สำคัญ**: Rolling X ใช้ arrow ขึ้นลง
+    count={5}
+    standards={{ ... }}
+    data={data}
+    ...
+/>
+```
