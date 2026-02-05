@@ -58,7 +58,7 @@ function Page102() {
                     <div className="mb-1">22.5.1 Enter the value of the setting value [DPW PC02-22 V8] "No.14 Page" (9.3) prior to machining adjustment in (7).</div>
                     <div className="flex items-center gap-2 pl-4">
                         <span>[DPW PC02-22 V8] &gt;&gt; [</span>
-                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_7")} />
+                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_7", { required: true })} />
                         <span>] --&gt; (7)</span>
                     </div>
                 </div>
@@ -68,7 +68,7 @@ function Page102() {
                     <div className="mb-1">22.5.2 Write the value of the setting value [DPW PC02-22 V13] "No.15 Page" (9.5) before installation in (8).</div>
                     <div className="flex items-center gap-2 pl-4">
                         <span>[DPW PC02-22 V13] &gt;&gt; [</span>
-                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_8")} />
+                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_8", { required: true })} />
                         <span>] --&gt; (8)</span>
                     </div>
                 </div>
@@ -78,7 +78,7 @@ function Page102() {
                     <div className="mb-1">22.5.3 Set value determined after machining adjustment</div>
                     <div className="flex items-center gap-2 pl-4">
                         <span>Enter "Disch-Page4-[DPW PC02-22 V8]" &gt;&gt; [</span>
-                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_9")} />
+                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_9", { required: true })} />
                         <span>] --&gt; (9)</span>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ function Page102() {
                     <div className="mb-1">22.5.4 Set value determined after machining adjustment</div>
                     <div className="flex items-center gap-2 pl-4">
                         <span>Enter "Disch-Page7-[DPW PC02-22 V13]" &gt;&gt; [</span>
-                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_10")} />
+                        <input className="border-b border-black w-20 text-center outline-none" {...register("p102_val_10", { required: true })} />
                         <span>] --&gt; (10)</span>
                     </div>
                 </div>

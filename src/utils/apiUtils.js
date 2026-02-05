@@ -100,7 +100,17 @@ export const saveForm = async ({ apiEndpoint, formId, meta, formData, status }) 
 
 export const loadForm = async ({ apiEndpoint, searchParams, meta }) => {
     const params = new URLSearchParams(searchParams);
-    const id = params.get("id");
+    let id = params.get("id");
+
+    if (!id) {
+        // More robust fallback: Check full URL and Pathname for id= pattern
+        const fullUrl = window.location.href;
+        const idMatch = fullUrl.match(/[?&/]id=([^&?/]+)/);
+        if (idMatch) {
+            id = idMatch[1];
+        }
+    }
+
     const machine_no = params.get("machine_no");
 
     let url = null;

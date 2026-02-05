@@ -41,6 +41,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     // Initialize Global Form State
     const methods = useForm({
         mode: 'all', // Validation triggers on change and blur for immediate feedback
+        shouldUnregister: false, // CRITICAL: Preserve values when pages unmount
         defaultValues: {
             model: meta.model,
             machine_no: '',
@@ -50,8 +51,16 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
     // Auto-Save Hook
     // Derive ID from URL to scope the auto-save (separate drafts for separate records)
+    // Drive ID from URL (Handle both ?id= and /id= formats)
     const searchParams = new URLSearchParams(window.location.search);
-    const urlId = searchParams.get('id');
+    let urlId = searchParams.get('id');
+
+    if (!urlId) {
+        // Robust regex extraction for /id=74 or ?id=74
+        const fullUrl = window.location.href;
+        const idMatch = fullUrl.match(/[?&/]id=([^&?/]+)/);
+        if (idMatch) urlId = idMatch[1];
+    }
     const autoSaveKey = currentUser ? `autosave_${currentUser.code}_${meta.checksheet_name}_${urlId || 'new'}` : null;
     const { clearSavedData } = useAutoSave(methods, autoSaveKey);
 
@@ -89,14 +98,20 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
                     // Auto-Restore logic: Merge DB data with LocalStorage data
                     const currentUrlParams = new URLSearchParams(window.location.search);
-                    const currentId = currentUrlParams.get('id');
+                    let currentId = currentUrlParams.get('id');
+
+                    if (!currentId) {
+                        const fullUrl = window.location.href;
+                        const idMatch = fullUrl.match(/[?&/]id=([^&?/]+)/);
+                        if (idMatch) currentId = idMatch[1];
+                    }
+
                     const key = `autosave_${user.code}_${meta.checksheet_name}_${currentId || 'new'}`;
 
                     try {
                         const savedLocal = localStorage.getItem(key);
                         if (savedLocal) {
                             const parsedLocal = JSON.parse(savedLocal);
-                            console.log("Restoring data from AutoSave...", key);
                             // Merge: LocalStorage takes priority for draft changes
                             finalData = { ...finalData, ...parsedLocal };
                         }
@@ -216,6 +231,8 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
     // State for printing
     const [isPrinting, setIsPrinting] = useState(false);
+    const [isVerifyMode, setIsVerifyMode] = useState(false); // Force render all pages
+    const [isValidating, setIsValidating] = useState(false); // Show loading overlay
 
     const handlePrint = () => {
         const formData = methods.getValues();
@@ -261,8 +278,22 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     return (
         <FormProvider {...methods}>
             <KeypadProvider>
-                <ChecksheetProvider handleSave={() => handleSave()} isSaving={isSaving}>
-                    <div className="flex flex-col h-screen">
+                <ChecksheetProvider handleSave={() => handleSave()} isSaving={isSaving} apiEndpoint={apiEndpoint}>
+                    <div className="flex flex-col h-screen relative">
+                        {/* Validation Loading Overlay */}
+                        {isValidating && (
+                            <div className="fixed inset-0 bg-black/70 z-[100] flex flex-col items-center justify-center text-white">
+                                <svg className="animate-spin h-16 w-16 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <h2 className="text-2xl font-bold animate-pulse">
+                                    {isSaving ? "Finalizing Data..." : "Checking Documents..."}
+                                </h2>
+                                <p className="text-gray-300 mt-2">Please wait while we verify all pages.</p>
+                            </div>
+                        )}
+
                         {/* Top Profile Bar */}
                         <ProfileBar
                             onSave={() => handleSave()} // Default save
@@ -272,6 +303,10 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                             isSaving={isSaving}
                             onSetPage={setCurrentPage} // Pass page setter
                             onSetPageStatus={setPageStatus} // NEW: Pass status setter
+                            // Validation Props
+                            isVerifyMode={isVerifyMode}
+                            setIsVerifyMode={setIsVerifyMode}
+                            setIsValidating={setIsValidating}
                         />
 
                         {/* Screen-only elements - Pagination */}
@@ -308,7 +343,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                                     // Optimization: Only render the current page to the DOM, unless printing.
                                     // Unmounting pages removes thousands of DOM nodes, solving the lag issue.
                                     // React Hook Form preserves values even when unmounted (default behavior).
-                                    if (!isPrinting && !isCurrent) {
+                                    if (!isPrinting && !isCurrent && !isVerifyMode) {
                                         return null;
                                     }
 

@@ -1,4 +1,6 @@
 import PageHeader from "@/components/UIcomponent/PageHeader";
+import ProblemDirect from "@/components/UtilComponent/ProblemDirect";
+import { useChecksheet } from "@/context/ChecksheetContext";
 
 /**
  * A4Paper Component
@@ -17,11 +19,12 @@ function A4Paper({
     currentPage = 1,
     showHeader = true
 }) {
+    const { apiEndpoint } = useChecksheet();
     // ใช้ formNumber จาก props หรือจาก content
     const displayFormNumber = formNumber || (content?.formNumber || '');
 
     return (
-        <div className="min-h-screen py-8 px-4 flex justify-center overflow-auto print:p-0 print:bg-white print:overflow-visible print:block print:min-h-0">
+        <div className="min-h-screen py-8 px-4 flex justify-center overflow-auto print:p-0 print:bg-white print:overflow-visible print:block print:min-h-0 relative">
             <style>{`
                 @media print {
                     @page {
@@ -64,6 +67,14 @@ function A4Paper({
                     pageBreakAfter: 'always'
                 }}
             >
+                {/* ProblemDirect - Positioning at Top-Right of paper content */}
+                <div className="absolute top-2 right-2 z-50">
+                    <ProblemDirect
+                        name={`p${currentPage}_problem_id`}
+                        apiEndpoint={apiEndpoint}
+                    />
+                </div>
+
                 {/* Inner content border */}
                 <div className="w-full h-full border-2 border-black relative overflow-hidden flex flex-col">
 

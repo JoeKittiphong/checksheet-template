@@ -4,10 +4,12 @@ import FinalEDWwireCheck from '../../components/FormComponents/FinalEDWwireCheck
 import EDWFinalRecordCutting from '../../components/FormComponents/EDWFinalRecordCutting';
 import EDWFinalRoughnessCheck from '../../components/FormComponents/EDWFinalRoughnessCheck';
 import EDWFinalSizeRecord from '../../components/FormComponents/EDWFinalSizeRecord';
+import ProblemDirect from '../../components/UtilComponent/ProblemDirect';
+import { apiEndpoint } from './Test-setting';
 
 
 
-const apiEndpoint = import.meta.env.VITE_API_ENDPOINT || 'http://localhost:3000/api';
+
 
 const Test = () => {
     const methods = useForm({
@@ -110,6 +112,8 @@ const Test = () => {
                                 />
                             </div>
                         </section>
+
+
 
                         {/* Submit Button */}
 

@@ -12,7 +12,7 @@ import { useFormContext } from "react-hook-form";
  * Logic:
  * - Hides Print button if user.role === 'worker'
  */
-function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, status, onSubmit }) {
+function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, status, onSubmit, isVerifyMode, setIsVerifyMode, setIsValidating }) {
     const { user } = useAuth();
     const { isKeypadEnabled, toggleKeypadEnabled } = useKeypad();
     const methods = useFormContext(); // Get methods to trigger validation
@@ -23,16 +23,27 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, sta
 
     const [showExitModal, setShowExitModal] = useState(false);
 
-    const handleVerify = async () => {
-        // Trigger validation for all fields
+    // Generic Global Validation Runner
+    const runGlobalValidation = async (actionType = 'verify') => {
+        if (setIsValidating) setIsValidating(true);
+
+        // Yield to allow browser to paint the overlay BEFORE heavy mounting starts
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        if (setIsVerifyMode) setIsVerifyMode(true); // Mount all pages (Heavy operation)
+
+        // Wait for React to mount all pages (Increase to 1.2s for 138 pages)
+        await new Promise(resolve => setTimeout(resolve, 1200));
+
+        // Trigger Validation
         const isValid = await methods.trigger();
 
-        // --- Page Status Calculation Logic ---
+        // Update Status Sidebar (Global Check)
         if (onSetPageStatus) {
             const allErrors = methods.formState.errors;
             const allValues = methods.getValues();
 
-            // 1. Identify all pages that have fields (by p{n}_ prefix)
+            // 1. Identify all pages
             const pagesWithFields = new Set();
             Object.keys(allValues).forEach(key => {
                 const match = key.match(/^p(\d+)_/);
@@ -41,16 +52,13 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, sta
                 }
             });
 
-            // 2. Identify pages with errors
+            // 2. Identify pages with errors (Global search)
             const pagesWithErrors = new Set();
-
-            // Helper to recurse error object to find keys
             const findErrorKeys = (errorObj, prefix = '') => {
                 Object.keys(errorObj).forEach(key => {
                     const currentPath = prefix ? `${prefix}.${key}` : key;
                     if (errorObj[key]?.message || errorObj[key]?.type) {
-                        // Found a leaf error
-                        const match = currentPath.match(/p(\d+)_/); // Look for p{n}_ anywhere in path
+                        const match = currentPath.match(/p(\d+)_/);
                         if (match) {
                             pagesWithErrors.add(parseInt(match[1], 10));
                         }
@@ -64,45 +72,56 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, sta
             // 3. Construct Status Map
             const newStatus = {};
             pagesWithFields.forEach(pageNum => {
-                if (pagesWithErrors.has(pageNum)) {
-                    newStatus[pageNum] = 'error'; // Red
-                } else {
-                    newStatus[pageNum] = 'success'; // Green
-                }
+                newStatus[pageNum] = pagesWithErrors.has(pageNum) ? 'error' : 'success';
             });
-
-            // Pass to parent
             onSetPageStatus(newStatus);
         }
 
-        if (isValid) {
-            alert("Data is valid!");
-        } else {
-            console.log("Validation Errors:", methods.formState.errors);
-            const errors = methods.formState.errors;
+        // Handle Result
+        if (actionType === 'verify') {
+            if (setIsValidating) setIsValidating(false);
+            if (isValid) {
+                alert("Data is valid!");
+                // Optional: Unmount after success? User might want to keep looking.
+                // For now, let's keep it mounted if they want to scroll through
+                // But to allow unmount, maybe clicking verify again toggles it off?
+                // Let's just turn off verify mode to restore performance
+                if (setIsVerifyMode) setIsVerifyMode(false);
+            } else {
+                // If invalid, keep VerifyMode ON so user can see errors (pages mounted)
+                // Actually, if we turn off VerifyMode, RHF keeps values but unmounts DOM.
+                // If user clicks error link, we need to Mount that page.
+                // Our auto-jump logic handles mounting "current page".
+                // So safe to turn off VerifyMode? 
+                // NO: If we turn off, red inputs in other pages disappear from DOM.
+                // BUT sidebar status remains.
+                // Let's Turn OFF VerifyMode to save RAM. When user clicks sidebar, that page mounts individually.
+                if (setIsVerifyMode) setIsVerifyMode(false);
 
-            // Auto-jump logic
-            const firstErrorKey = Object.keys(errors)[0];
-
-            if (firstErrorKey) {
-                const match = firstErrorKey.match(/^p(\d+)_/);
-                if (match && match[1]) {
-                    const pageNum = parseInt(match[1], 10);
-                    if (onSetPage) {
-                        onSetPage(pageNum);
+                // Auto-jump to first error
+                const errors = methods.formState.errors;
+                const firstErrorKey = Object.keys(errors)[0];
+                if (firstErrorKey) {
+                    const match = firstErrorKey.match(/^p(\d+)_/);
+                    if (match && match[1]) {
+                        const pageNum = parseInt(match[1], 10);
+                        if (onSetPage) onSetPage(pageNum);
+                        setTimeout(() => {
+                            const element = document.getElementsByName(firstErrorKey)[0];
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                element.focus();
+                            }
+                        }, 500);
                     }
-
-                    setTimeout(() => {
-                        const element = document.getElementsByName(firstErrorKey)[0];
-                        if (element) {
-                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            element.focus();
-                        }
-                    }, 300);
                 }
             }
         }
+
+        return isValid;
     };
+
+    const handleVerify = () => runGlobalValidation('verify');
 
     return (
         <>
