@@ -68,7 +68,7 @@ function A4Paper({
                 }}
             >
                 {/* ProblemDirect - Positioning at Top-Right of paper content */}
-                <div className="absolute top-2 right-2 z-50">
+                <div className="absolute top-0 right-0 z-50">
                     <ProblemDirect
                         name={`p${currentPage}_problem_id`}
                         apiEndpoint={apiEndpoint}

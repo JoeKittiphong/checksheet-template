@@ -3,7 +3,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import FormQuickTable from './FormQuickTable';
 import { getValidationClass as getFormValidationClass } from '../../utils/formUtils';
 
-const EDWFinalSizeRecord = ({ prefix = "", standards = {}, variant = "3rd" }) => {
+const EDWFinalSizeRecord = ({ prefix = "", standards = {}, variant = "3rd", headerSuffix = "(4th)" }) => {
     const { register, control, formState: { errors } } = useFormContext();
     const allValues = useWatch({ control });
 
@@ -34,7 +34,12 @@ const EDWFinalSizeRecord = ({ prefix = "", standards = {}, variant = "3rd" }) =>
         const commonRender = (colKey, defaultStdKey) => (val, row) => {
             if (row.isStd) {
                 const key = row.stdKeys ? (row.stdKeys[colKey] || defaultStdKey) : defaultStdKey;
-                return <span className={`font-bold ${variant === "3rd" ? "text-red-500" : "text-red-500"}`}>{standards[key] || "-"}</span>;
+                // Allow fallback to standards.range if key lookup fails, or explicit keys
+                const stdValue = standards[key] || standards.range || "-";
+                // If standards has x/y specifically, use those
+                const specificStd = standards[colKey] || stdValue;
+
+                return <span className={`font-bold ${variant === "3rd" ? "text-red-500" : "text-red-500"}`}>{specificStd}</span>;
             }
 
             const name = `${prefix}size_${row.id.toLowerCase()}_${colKey}`;
@@ -42,7 +47,9 @@ const EDWFinalSizeRecord = ({ prefix = "", standards = {}, variant = "3rd" }) =>
             // Find standard for this column
             // For validation, use 'valid' key if present (for dual std), otherwise use defaultStdKey
             const validKey = standards.valid ? 'valid' : defaultStdKey;
-            const range = parseRange(standards[validKey]);
+            // Use range from standards if direct lookup works, else fallback
+            const stdStringForValidation = standards[validKey] || standards.range;
+            const range = parseRange(stdStringForValidation);
             const isError = errors[name];
             const validationClass = getUIVallidationClass(currentVal, range);
 
@@ -67,8 +74,8 @@ const EDWFinalSizeRecord = ({ prefix = "", standards = {}, variant = "3rd" }) =>
         if (variant === "4th") {
             return [
                 { header: "Size", key: "label", width: "34%", className: "font-bold bg-white" },
-                { header: "X- (4th)", key: "x_minus", width: "33%", render: commonRender("x_minus", "x") },
-                { header: "Y (4th)", key: "y", width: "33%", render: commonRender("y", "y") },
+                { header: `X- ${headerSuffix}`, key: "x_minus", width: "33%", render: commonRender("x_minus", "x") },
+                { header: `Y ${headerSuffix}`, key: "y", width: "33%", render: commonRender("y", "y") },
             ];
         }
 

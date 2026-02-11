@@ -1,25 +1,27 @@
 import { useState, useRef, useEffect } from 'react';
 
 /**
- * Pagination Component with Page Preview
- * Sidebar ขวา
- * - Expanded: แสดง Thumbnail รายการหน้า
- * - Collapsed: แสดงตัวเลขหน้า
+ * Pagination Component - Connected Vertical Strip
+ * Design:
+ * - Vertical Stack
+ * - Connected Borders (No gaps)
+ * - Larger Touch Area (48px width x 60px height)
+ * - Teal Active State
+ * - Supports Status Indicators (Green/Red) + Problem Indicator (Yellow)
  */
 function Pagination({
     currentPage,
     totalPages,
     onPageChange,
     pageComponents = [],
-    pageStatus = {}, // { 1: 'success', 2: 'error' }
+    pageStatus = {}, // { 1: { status: 'success', hasProblem: true }, 2: 'error' }
     ...props
 }) {
-    const [isExpanded, setIsExpanded] = useState(true);
     const [zoomLevel, setZoomLevel] = useState(1);
     const initialZoom = useRef(window.devicePixelRatio);
     const sidebarRef = useRef(null);
 
-    // ตรวจจับ zoom level
+    // Detect zoom level
     useEffect(() => {
         const detectZoom = () => {
             const currentDPR = window.devicePixelRatio;
@@ -31,33 +33,27 @@ function Pagination({
         return () => window.removeEventListener('resize', detectZoom);
     }, []);
 
-    // Handle click outside to collapse
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (sidebarRef.current && !sidebarRef.current.contains(event.target) && isExpanded) {
-                setIsExpanded(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isExpanded]);
-
     const counterScale = 1 / zoomLevel;
 
-    // Helper for status color
+    // Helper for status color (Validation: Green/Red)
     const getStatusColor = (page) => {
-        const status = pageStatus[page];
+        const statusData = pageStatus[page];
+        // Support both old string format and new object format
+        const status = typeof statusData === 'object' ? statusData?.status : statusData;
+
         if (status === 'success') return '#22c55e'; // Green-500
         if (status === 'error') return '#ef4444'; // Red-500
         return null;
     };
 
+    // Helper for problem indicator (Yellow)
+    const hasProblem = (page) => {
+        const statusData = pageStatus[page];
+        return typeof statusData === 'object' && statusData?.hasProblem;
+    };
+
     return (
         <>
-            {/* Hide scrollbar CSS and Thumbnail overrides */}
             <style>{`
                 .pagination-scroll::-webkit-scrollbar {
                     display: none;
@@ -66,35 +62,13 @@ function Pagination({
                     scrollbar-width: none;
                     -ms-overflow-style: none;
                 }
-                
-                /* Override A4Paper styles in thumbnails */
-                /* Outer Wrapper (Gray Bg) -> Make Transparent */
-                .pagination-thumbnail > div {
-                    min-height: 0 !important;
-                    background-color: transparent !important;
-                    padding: 0 !important;
-                    display: block !important;
-                    width: auto !important;
-                    height: auto !important;
-                    overflow: visible !important;
-                    border: none !important;
-                }
-                
-                /* Inner Paper (White Bg) -> Keep White */
-                .pagination-thumbnail > div > div {
-                    background-color: white !important;
-                    box-shadow: none !important;
-                    border: 1px solid #e5e7eb !important; /* Light border for paper definition */
-                    margin: 0 !important;
-                }
             `}</style>
 
-            {/* Right Sidebar */}
             <div
                 ref={sidebarRef}
                 style={{
                     position: 'fixed',
-                    right: 0,
+                    right: '20px', // Adjusted to not block content too much
                     top: '50%',
                     transform: `translateY(-50%) scale(${counterScale})`,
                     transformOrigin: 'right center',
@@ -102,130 +76,105 @@ function Pagination({
                     height: 'auto',
                     maxHeight: '90vh',
                     display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center'
+                    flexDirection: 'column',
+                    // Drop Shadow for the whole strip
+                    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))'
                 }}
             >
-                {/* Toggle Button (Left of sidebar) */}
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    style={{
-                        padding: '12px 4px',
-                        background: '#9ca3af', // Gray-400
-                        border: '1px solid #d1d5db',
-                        borderRight: 'none',
-                        borderRadius: '8px 0 0 8px',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        boxShadow: '-4px 0 10px rgba(0,0,0,0.1)'
-                    }}
-                    title={isExpanded ? 'ย่อ' : 'ขยาย'}
-                >
-                    <span style={{
-                        display: 'inline-block',
-                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.3s'
-                    }}>
-                        ◀
-                    </span>
-                </button>
-
-                {/* Sidebar Content */}
                 <div style={{
-                    background: '#9ca3af', // Gray-400
-                    border: '1px solid #d1d5db',
-                    borderLeft: 'none',
-                    borderTopLeftRadius: '0',
-                    borderBottomLeftRadius: '0',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                    overflow: 'hidden',
-                    width: isExpanded ? '160px' : '60px',
-                    transition: 'width 0.3s ease-out',
                     display: 'flex',
-                    flexDirection: 'column'
-                }}>
-                    <div style={{ padding: '8px', flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        {/* Scrollable Area */}
-                        <div
-                            className="pagination-scroll"
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '8px',
-                                maxHeight: '80vh',
-                                overflowY: 'auto',
-                                overflowX: 'hidden',
-                                alignItems: 'center'
-                            }}
-                        >
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                                const logicalPage = page - (props.pageOffset || 0);
-                                const displayLabel = (props.customLabels && props.customLabels[page]) || logicalPage;
-                                const statusColor = getStatusColor(logicalPage > 0 ? logicalPage : null);
+                    flexDirection: 'column',
+                    // No Gap
+                    gap: '0',
+                    // Transparent Container, No Padding
+                    background: 'transparent',
+                    maxHeight: '80vh',
+                    overflowY: 'auto'
+                }} className="pagination-scroll">
 
-                                return (
-                                    <div
-                                        key={page}
-                                        onClick={() => onPageChange(page)}
-                                        style={{
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            opacity: 1, // Fixed opacity to 1 as requested
-                                            transform: currentPage === page ? 'scale(1.05)' : 'scale(1)',
-                                        }}
-                                    >
-                                        {isExpanded ? (
-                                            // Thumbnail View (SIMPLIFIED - NO RENDER)
-                                            <div style={{
-                                                width: '120px',
-                                                height: '40px', // Reduced height since no preview
-                                                background: 'white',
-                                                borderRadius: '4px',
-                                                overflow: 'hidden',
-                                                position: 'relative',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                border: currentPage === page
-                                                    ? '3px solid #3b82f6'
-                                                    : statusColor ? `3px solid ${statusColor}` : '1px solid #6b7280'
-                                            }}>
-                                                {/* REMOVED HEAVY PAGE COMPONENT RENDER */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page, index, arr) => {
+                        const logicalPage = page - (props.pageOffset || 0);
+                        const displayLabel = (props.customLabels && props.customLabels[page]) || logicalPage;
 
-                                                <div style={{
-                                                    fontSize: '14px',
-                                                    fontWeight: 'bold',
-                                                    color: '#374151'
-                                                }}>
-                                                    Page {displayLabel} {statusColor === '#22c55e' ? '✓' : ''}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            // Number View
-                                            <div style={{
-                                                width: '36px',
-                                                height: '36px',
-                                                borderRadius: '6px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontWeight: 'bold',
-                                                background: currentPage === page
-                                                    ? '#2563eb'
-                                                    : statusColor || 'rgba(255, 255, 255, 0.5)',
-                                                color: currentPage === page || statusColor ? 'white' : '#374151',
-                                                border: currentPage === page ? 'none' : statusColor ? 'none' : '1px solid #9ca3af'
-                                            }}>
-                                                {displayLabel}
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
+                        const statusColor = getStatusColor(logicalPage > 0 ? logicalPage : null);
+                        const isProblem = hasProblem(logicalPage > 0 ? logicalPage : null);
+                        const isActive = currentPage === page;
+
+                        // Border Radius Logic: First Top, Last Bottom
+                        const isFirst = index === 0;
+                        const isLast = index === arr.length - 1;
+                        let borderRadius = '0';
+                        if (isFirst && isLast) borderRadius = '8px';
+                        else if (isFirst) borderRadius = '8px 8px 0 0';
+                        else if (isLast) borderRadius = '0 0 8px 8px';
+
+                        return (
+                            <div
+                                key={page}
+                                onClick={() => onPageChange(page)}
+                                style={{
+                                    width: '48px', // Larger Size
+                                    height: '60px', // Tall vertical buttons
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                    background: isActive ? '#14b8a6' : 'white', // Teal or White
+                                    color: isActive ? 'white' : '#374151',
+
+                                    // Connected Borders Logic
+                                    border: '1px solid #d1d5db',
+                                    borderBottom: isLast ? '1px solid #d1d5db' : 'none', // Overlap bottom
+
+                                    fontWeight: isActive ? 'bold' : 'normal',
+                                    fontSize: '16px',
+                                    position: 'relative',
+                                    borderRadius: borderRadius,
+                                    zIndex: isActive ? 10 : 1 // Active sits on top
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.background = '#f3f4f6'; // Hover Gray
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.background = 'white';
+                                    }
+                                }}
+                            >
+                                {displayLabel}
+
+                                {/* Status Dot (Green/Red) - Shifted left if Problem dot exists */}
+                                {statusColor && !isActive && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '4px',
+                                        right: isProblem ? '12px' : '4px', // Shift left to make room
+                                        width: '6px',
+                                        height: '6px',
+                                        borderRadius: '50%',
+                                        backgroundColor: statusColor,
+                                    }} />
+                                )}
+
+                                {/* Problem Indicator Dot (Yellow) */}
+                                {isProblem && !isActive && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '2px',
+                                        right: '2px', // Rightmost position
+                                        width: '10px',
+                                        height: '10px',
+                                        borderRadius: '50%',
+                                        backgroundColor: '#eab308', // Yellow-500
+                                        border: '1px solid white' // Separation border
+                                    }} />
+                                )}
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </>

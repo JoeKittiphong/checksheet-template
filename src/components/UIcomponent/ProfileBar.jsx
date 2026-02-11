@@ -43,12 +43,20 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, sta
             const allErrors = methods.formState.errors;
             const allValues = methods.getValues();
 
-            // 1. Identify all pages
+            // 1. Identify all pages and scan for problems
             const pagesWithFields = new Set();
+            const pagesWithProblems = new Set();
+
             Object.keys(allValues).forEach(key => {
                 const match = key.match(/^p(\d+)_/);
                 if (match) {
-                    pagesWithFields.add(parseInt(match[1], 10));
+                    const pageNum = parseInt(match[1], 10);
+                    pagesWithFields.add(pageNum);
+
+                    // Detect Problem ID
+                    if (key.endsWith('_problem_id') && allValues[key]) {
+                        pagesWithProblems.add(pageNum);
+                    }
                 }
             });
 
@@ -69,10 +77,13 @@ function ProfileBar({ onSave, onPrint, isSaving, onSetPage, onSetPageStatus, sta
             };
             findErrorKeys(allErrors);
 
-            // 3. Construct Status Map
+            // 3. Construct Status Map (Object structure)
             const newStatus = {};
             pagesWithFields.forEach(pageNum => {
-                newStatus[pageNum] = pagesWithErrors.has(pageNum) ? 'error' : 'success';
+                newStatus[pageNum] = {
+                    status: pagesWithErrors.has(pageNum) ? 'error' : 'success',
+                    hasProblem: pagesWithProblems.has(pageNum)
+                };
             });
             onSetPageStatus(newStatus);
         }

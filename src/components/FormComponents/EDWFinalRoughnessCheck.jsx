@@ -2,11 +2,12 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import FormQuickTable from './FormQuickTable';
 
-const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd" }) => {
+const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd", className = "", headerSuffix = "(4th)" }) => {
     const { register, formState: { errors } } = useFormContext();
     const stdRange = standards.range || (variant === "4th" ? "0.330~0.430" : "0.430~0.640");
 
     const renderCell = (row, colKey, name) => {
+        // ... (renderCell logic unchanged)
         // If it's a standard row, check if we should show the range or "No Need"
         if (row.isStd) {
             // For 3rd variant
@@ -62,15 +63,15 @@ const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd" }
             return [
                 { header: "Roughness", key: "label", width: "25%", className: "font-bold text-[10px] bg-gray-100 pl-2", isLabel: true },
                 {
-                    header: "X- (4th)", key: "x_minus", width: "25%",
+                    header: `X- ${headerSuffix}`, key: "x_minus", width: "25%",
                     render: commonRender('x_minus')
                 },
                 {
-                    header: "Y- (4th)", key: "y_minus", width: "25%",
+                    header: `Y- ${headerSuffix}`, key: "y_minus", width: "25%",
                     render: commonRender('y_minus')
                 },
                 {
-                    header: "X+ (4th)", key: "x_plus", width: "25%",
+                    header: `X+ ${headerSuffix}`, key: "x_plus", width: "25%",
                     render: commonRender('x_plus')
                 }
             ];
@@ -108,10 +109,13 @@ const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd" }
         }
 
         if (variant === "4th") {
+            // Allow overriding inputs via standards.inputs
+            const customInputs = standards.inputs || {};
+
             return [
-                { id: "Up", label: "Up", inputs: { x_minus: true }, className: "text-[9px]" },
-                { id: "Mid", label: "Mid", inputs: { x_minus: true }, className: "text-[9px]" },
-                { id: "Low", label: "Low", inputs: { x_minus: true, x_plus: true }, className: "text-[9px]" },
+                { id: "Up", label: "Up", inputs: customInputs.Up || { x_minus: true }, className: "text-[9px]" },
+                { id: "Mid", label: "Mid", inputs: customInputs.Mid || { x_minus: true }, className: "text-[9px]" },
+                { id: "Low", label: "Low", inputs: customInputs.Low || { x_minus: true, x_plus: true }, className: "text-[9px]" },
                 { id: "STD", label: "STD(μm)", isStd: true, className: "text-[9px]" }
             ];
         }
@@ -126,7 +130,7 @@ const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd" }
     };
 
     return (
-        <div className={`w-full ${variant === "4th-7points" ? "max-w-[500px]" : (variant === "4th" ? "max-w-[400px]" : "max-w-[290px]")}`}>
+        <div className={`w-full ${className} ${!className ? (variant === "4th-7points" ? "max-w-[500px]" : (variant === "4th" ? "max-w-[400px]" : "max-w-[290px]")) : ""}`}>
             <FormQuickTable
                 columns={getColumns()}
                 data={getData()}

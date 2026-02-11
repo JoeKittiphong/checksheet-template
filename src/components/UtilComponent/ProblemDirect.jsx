@@ -140,16 +140,16 @@ const ProblemDirect = ({ name, apiEndpoint }) => {
                 };
 
                 return (
-                    <div className="p-4 flex flex-col items-center print:hidden">
+                    <div className="relative p-4 flex flex-col items-center print:hidden">
                         {!problemId ? (
                             // Initial State: + Button opens Modal
                             <>
                                 <button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-md transition-all active:scale-95"
+                                    className="absolute top-13 right-[-18px] w-25 h-10 bg-yellow-300 hover:bg-yellow-400 text-black rounded-full flex items-center justify-start px-4 shadow-md transition-all active:scale-95"
                                     title="Create New Assy Problem"
                                 >
-                                    <span className="text-2xl font-bold">+</span>
+                                    <span className="text-xs font-bold">+ ASS'Y PROBLEM</span>
                                 </button>
 
                                 <CreateProblemModal
@@ -174,7 +174,7 @@ const ProblemDirect = ({ name, apiEndpoint }) => {
                                 <button
                                     onClick={handleJump}
                                     disabled={isValidating}
-                                    className={`text-gray-800 font-bold text-sm underline hover:text-blue-700 decoration-2 transition-colors cursor-pointer flex items-center gap-1 ${isValidating ? 'opacity-50 cursor-wait' : ''}`}
+                                    className={`text-gray-800 font-bold text-sm hover:text-blue-700 decoration-2 transition-colors cursor-pointer flex items-center gap-1 ${isValidating ? 'opacity-50 cursor-wait' : ''}`}
                                 >
                                     {isValidating && (
                                         <svg className="animate-spin h-3 w-3 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -182,10 +182,10 @@ const ProblemDirect = ({ name, apiEndpoint }) => {
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     )}
-                                    Problem
+                                    Problem<br/>Report
                                 </button>
 
-                                <span className="absolute bottom-1 right-1 text-[8px] text-gray-500 italic opacity-50">#{problemId}</span>
+                                <span className="absolute bottom-1 right-1 text-[8px] italic opacity-90">ID {problemId}</span>
                             </div>
                         )}
                     </div>
