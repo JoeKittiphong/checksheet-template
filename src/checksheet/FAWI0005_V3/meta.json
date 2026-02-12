@@ -2,7 +2,11 @@
     "form_name": "FAWI0005",
     "version": "3",
     "department": "EDW",
-    "model": "AL400G",
+    "model": "AL400G (iG+E) & AL600G (iG+E)",
+    "available_models": [
+        "AL400G (iG+E)",
+        "AL600G (iG+E)"
+    ],
     "as_group": "FINAL",
     "checksheet_name": "FAWI0005_V3"
 }

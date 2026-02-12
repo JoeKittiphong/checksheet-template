@@ -1,115 +1,22 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import { content } from "../FAWI0005_V3-setting";
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import SectionTitle from '@/components/UIcomponent/SectionTitle';
-import FormQuickTable from '@/components/FormComponents/FormQuickTable';
+import FinalConditionTable from '@/components/FormComponents/FinalConditionTable';
 import diagramTop from "@/assets/FAWI0005_V3/page121_diagram_top.png";
 
 function Page121() {
-    const { register } = useFormContext();
 
-    // Data definition based on image
-    // Headers: Code, ON, OFF, IP, HRP, MAO, SV, V, SF, C, PIK, CTRL, WK, WT, WS, WP, PC, SK, BSA
-    const headerLabels = ["ON", "OFF", "IP", "HRP", "MAO", "SV", "V", "SF", "C", "PIK", "CTRL", "WK", "WT", "WS", "WP", "PC", "SK", "BSA"];
-
-    // Rows Data
-    const rowData = [
-        { code: "C0000", vals: ["0013", "014", "2215", "000", "252", "+35.0", "9.0", "0035", "0", "000", "0000", "020", "120", "080", "043", "000009", "000000", "100000"] },
-        { code: "C0001", vals: ["0013", "014", "2215", "000", "264", "+020.0", "9.0", "0025", "0", "000", "0000", "020", "120", "110", "063", "000009", "000000", "200000"] },
-        { code: "C0002", vals: ["0002", "011", "2215", "000", "000", "+079.0", "5.0", "0300", "0", "000", "0000", "020", "170", "114", "140", "000000", "000001", "300020"] },
-        { code: "C0003", vals: ["0001", "016", "2210", "000", "000", "+098.0", "2.0", "0300", "0", "000", "0000", "020", "170", "114", "240", "000000", "000001", "400020"] },
-        { code: "H0001", desc: "+000000.1964 (1ST)" }, // Special rows? Wait, image shows explicit values for C0000-C0003. H0001-H0003 might be simple text or same format?
-        // Looking at image: H0001 = +000000.1964 (1ST) is listed BELOW the table as text, not inside the table.
-        // Ah, the table ends at C0003? 
-        // Image: "H0001 = ...", "H0002 = ...", "H0003 = ..." are listed as text lines after the table.
-        // Wait, line "H0003 = +000000.0100" is aligned with "C0003"? No.
-        // The text listing H0001.. is separate.
-        // So table rows are only C0000, C0001, C0002, C0003.
+    const headers = [
+        "ON", "OFF", "IP", "HRP", "MAO", "SV", "V", "SF", "C", "PIK", "CTRL", "WK", "WT", "WS", "WP", "PC", "SK", "BSA"
     ];
 
-    // Actually, check image carefully.
-    // 25. Check frequency...
-    // Table Headers...
-    // Rows: C0000, C0001, C0002, C0003.
-    // BELOW table:
-    // H0001 = ...
-    // H0002 = ...
-    // H0003 = ...
-    // Data Setting Check section...
-
-    // I will implement Table for C0000-C0003.
-    // And Text for H0001-H0003.
-
-    // Table Columns Config
-    const columns = [
-        {
-            header: "Code",
-            key: "code",
-            width: "8%",
-            className: "font-bold bg-gray-200 !p-0 !py-0 text-[9px]",
-            bodyClassName: "font-bold bg-gray-200 !p-0 !py-0 text-[9px] h-4 leading-none"
-        },
-        ...headerLabels.map((label, idx) => ({
-            header: label,
-            key: `v${idx}`,
-            width: "4.8%", // Remaining 92% / 18 columns ~= 5.1%. Using 4.8% to be safe.
-            className: "bg-white !p-0 !py-0 text-[8px]",
-            bodyClassName: "!p-0 !py-0 text-[8px] h-4 leading-none",
-            type: "input"
-        }))
+    const tableRows = [
+        { label: "C0000 =", values: ["0013", "014", "2215", "000", "252", "+35.0", "9.0", "0035", "0", "000", "0000", "020", "120", "080", "043", "000009", "000000", "100000"] },
+        { label: "C0001 =", values: ["0013", "014", "2215", "000", "264", "+020.0", "9.0", "0025", "0", "000", "0000", "020", "120", "110", "063", "000009", "000000", "200000"] },
+        { label: "C0002 =", values: ["0002", "011", "2215", "000", "000", "+079.0", "5.0", "0300", "0", "000", "0000", "020", "170", "114", "140", "000000", "000001", "300020"] },
+        { label: "C0003 =", values: ["0001", "016", "2210", "000", "000", "+098.0", "2.0", "0300", "0", "000", "0000", "020", "170", "114", "240", "000000", "000001", "400020"] },
     ];
-
-    const data = rowData.slice(0, 4).map((row, rIdx) => {
-        const rowObj = { code: row.code, className: "h-4" };
-        row.vals.forEach((val, cIdx) => {
-            rowObj[`v${cIdx}`] = `p121_${row.code}_v${cIdx}`;
-            rowObj[`v${cIdx}_defaultValue`] = val; // Assuming FormQuickTable handles defaultValue if customized?
-            // FormQuickTable generic input uses `defaultValue={row.defaultValue ?? ''}` strictly.
-            // It doesn't look for `row[key + '_defaultValue']`.
-            // I need to customize FormQuickTable or just accept empty?
-            // Actually `FormQuickTable` line 235: `defaultValue={row.defaultValue ?? ''}`.
-            // This applies ONE default value for the whole row?? No, `row` is the row object.
-            // It uses `row.defaultValue` which seems wrong for cell-specific defaults.
-            // Wait, looking at FormQuickTable.jsx line 235:
-            // `defaultValue={row.defaultValue ?? ''}`
-            // Yes, it uses `row.defaultValue`. That is a BUG/Limitation in FormQuickTable if cells have different defaults.
-            // It means I CANNOT set per-cell default value easily using generic `type: input`.
-            // I should use `render` function for cells to set default value!
-        });
-        return rowObj;
-    });
-
-    // Custom render to handle default values
-    // Actually, I can update columns to use `render`.
-    const columnsWithRender = columns.map(col => {
-        if (col.type === 'input') {
-            return {
-                ...col,
-                type: undefined, // Disable generic input
-                render: (val, row, { register }) => (
-                    <input
-                        type="text"
-                        {...register(val)}
-                        defaultValue={row[`${val}_default`]} // Pass default via custom prop in data
-                        className="w-full h-full bg-transparent text-center outline-none"
-                    />
-                )
-            };
-        }
-        return col;
-    });
-
-    // Remap data to include _default keys
-    const dataWithDefaults = rowData.slice(0, 4).map((row, rIdx) => {
-        const rowObj = { code: row.code, className: "h-4" };
-        row.vals.forEach((val, cIdx) => {
-            const fieldName = `p121_${row.code}_v${cIdx}`;
-            rowObj[`v${cIdx}`] = fieldName;
-            rowObj[`${fieldName}_default`] = val;
-        });
-        return rowObj;
-    });
 
     return (
         <A4Paper content={content} currentPage={121}>
@@ -129,23 +36,14 @@ function Page121() {
                     Check that the upper and lower nozzles are Ø6 !!! (ตรวจสอบ upper และ lower ใช้ nozzles Ø6)
                 </div>
 
-                {/* Table */}
-                <div className="mb-2">
-                    <FormQuickTable
-                        columns={columnsWithRender}
-                        data={dataWithDefaults}
-                        bordered
-                        className="text-center w-full table-fixed !overflow-hidden"
-                        headerClassName="!text-[8px] leading-tight !py-0 break-words"
-                    />
-                </div>
+                {/* Condition Table */}
+                <FinalConditionTable headers={headers} tableRows={tableRows} />
 
                 {/* H Codes */}
-                <div className="grid grid-cols-2 gap-x-8 gap-y-1 mb-2 px-4 text-[10px]">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-1 mb-2 px-4 text-[10px] mt-2">
                     <div>H0001 = +000000.1964 (1ST)</div>
                     <div>H0002 = +000000.1264 (2ND)</div>
                     <div>H0003 = +000000.0100</div>
-                    <div>C0003 = 0001 016 2210 ... (Included in table)</div>
                 </div>
 
                 {/* Data Setting Check */}
