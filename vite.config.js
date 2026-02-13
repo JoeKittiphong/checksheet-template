@@ -7,7 +7,7 @@ import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
 // const formName = process.env.FORM_NAME || 'Test';
-const formName = process.env.FORM_NAME || 'FAWI0005_V3';
+const formName = process.env.FORM_NAME || 'FAWI0008_V3';
 
 // ปิด PWA ตอน dev mode เพื่อป้องกัน caching issues
 const isDev = process.env.NODE_ENV !== 'production';

@@ -54,7 +54,21 @@ const ProblemDirect = ({ name, apiEndpoint }) => {
                             version: "VER.0",
                             status: "work_in_progress",
                             machine_no: formData.machine_no, // Use input from modal
-                            checksheet_data: {}
+                            checksheet_data: {
+                                model: formData.model,
+                                machine_no: formData.machine_no,
+                                mc_model: formData.model,
+                                mc_model_input: formData.model, // Add input field
+                                mc_no: formData.machine_no,
+                                mc_no_input: formData.machine_no, // Add input field
+                                // Map AS Group to Checkboxes
+                                div_semi: formData.as_group === 'SEMI',
+                                div_body: formData.as_group === 'BODY',
+                                div_mc: formData.as_group === 'MC_CHECK',
+                                div_insp: formData.as_group === 'FINAL' || formData.as_group === 'INSPECTION',
+                                div_acc: formData.as_group === 'ACCURACY',
+                                div_other: !['SEMI', 'BODY', 'MC_CHECK', 'FINAL', 'INSPECTION', 'ACCURACY'].includes(formData.as_group)
+                            }
                         };
 
                         const response = await axios.post(`${apiEndpoint}/api/save-form`, payload, {

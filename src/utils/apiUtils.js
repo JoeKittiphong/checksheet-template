@@ -176,10 +176,13 @@ export const uploadPendingFiles = async (formData, apiEndpoint, originalData = {
         if (value instanceof File) {
             // Check if there was an original file (string) to delete
             const originalValue = originalData[key];
+            console.log(`[Upload] Checking key: ${key}, Value is File. Original:`, originalValue);
+
             if (originalValue && typeof originalValue === 'string' && originalValue !== '') {
                 // Determine folder based on key logic (same as upload)
                 const isDoubleCheck = key.includes('_dc_') && key.includes('_image');
                 const folder = isDoubleCheck ? 'double_check' : 'assy_problem';
+                console.log(`[Upload] Marking for deletion: ${originalValue} from ${folder}`);
                 filesToDelete.push({ filename: originalValue, folder });
             }
 

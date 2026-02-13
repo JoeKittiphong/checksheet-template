@@ -327,3 +327,16 @@ _2026-02-13_
 - **Remove "+ ASSY PROBLEM" Button**:
   - ปรับปรุง `A4Paper.jsx` ให้รับ Prop `showProblemButton` (Default = true)
   - กำหนดค่า `showProblemButton={false}` ในหน้า `ASSY_PROBLEM` เพื่อซ่อนปุ่มแจ้งปัญหา (เพราะอยู่ในหน้าแจ้งปัญหาอยู่แล้ว) ไม่ให้แสดงซ้ำซ้อน
+
+- **Pre-fill ASSY_PROBLEM Data**:
+  - แก้ไข `ProblemDirect.jsx` ให้ส่งข้อมูลเริ่มต้น (`checksheet_data`) ไปยัง Server ตอนสร้างใบปัญหางานใหม่
+  - **การ Mapping ข้อมูล (Fix):**
+    - `model` -> `mc_model` & `model` & **`mc_model_input`** (สำคัญ! ต้องมี input ไม่งั้น text ไม่ขึ้น)
+    - `machine_no` -> `mc_no` & `machine_no` & **`mc_no_input`** (สำคัญ!)
+    - `as_group` -> ติ๊ก Checkbox ตามเงื่อนไข:
+        - `FINAL`, `INSPECTION` -> `div_insp` (Inspection)
+        - `SEMI` -> `div_semi`
+        - `BODY` -> `div_body`
+        - `MC_CHECK` -> `div_mc`
+        - `ACCURACY` -> `div_acc`
+        - อื่นๆ -> `div_other`

@@ -37,6 +37,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     const [status, setStatus] = useState('prepare'); // Status state
 
     const [pageStatus, setPageStatus] = useState({});
+    const [checksheetData, setChecksheetData] = useState(null); // Store loaded data for comparison
 
     // Initialize Global Form State
     const methods = useForm({
@@ -119,6 +120,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                         console.error("Failed to restore auto-save data:", e);
                     }
 
+                    setChecksheetData(finalData); // Store original data
                     methods.reset(finalData);
 
                     if (data.id) {
@@ -173,7 +175,9 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
             // Handling Deferred Uploads
             try {
-                const { updatedData, hasChanges } = await uploadPendingFiles(formData, apiEndpoint, methods.formState.defaultValues);
+                // Use stored checksheetData as the "original" source of truth for file comparison
+                console.log("[ChecksheetMaster] Checksheet Data for Upload:", checksheetData);
+                const { updatedData, hasChanges } = await uploadPendingFiles(formData, apiEndpoint, checksheetData || {});
                 if (hasChanges) {
                     formData = updatedData;
                     // Update form state with uploaded strings so we don't re-upload
@@ -206,6 +210,9 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                 if (result.data && result.data.id) {
                     setFormId(result.data.id);
                 }
+
+                // Update checksheetData with the latest saved data to keep deletion logic in sync
+                setChecksheetData(formData);
 
                 // Update local status
                 setStatus(nextStatus);
