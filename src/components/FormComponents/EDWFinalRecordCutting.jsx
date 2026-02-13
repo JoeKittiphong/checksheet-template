@@ -113,10 +113,10 @@ const EDWFinalRecordCutting = (props) => {
     ];
 
     const effectiveStdData = props.standardRows || [
-        { v: std.c0001?.v, a: std.c0001?.a, speed: std.c0001?.speed, time: std.c0001?.time },
+        { v: std.c0001?.v, a: std.c0001?.a, speed: std.c0001?.speed, time: std.c0001?.time, className: "text-[9px]" },
         { v: std.c0002?.v, a: std.c0002?.a, speed: std.c0002?.speed, time: std.c0002?.time, className: "text-[9px] text-red-500 font-bold" },
         { v: std.c0003?.v, a: std.c0003?.a, speed: std.c0003?.speed, time: std.c0003?.time, className: "text-[9px] text-red-500 font-bold" },
-        { v: std.c904?.v, a: std.c904?.a, speed: std.c904?.speed, time: std.c904?.time },
+        { v: std.c904?.v, a: std.c904?.a, speed: std.c904?.speed, time: std.c904?.time, className: "text-[9px]" },
         { v: "", a: "", speed: "", time: std.totalTime, className: "text-[9px] bg-green-500 font-bold" }
     ];
 

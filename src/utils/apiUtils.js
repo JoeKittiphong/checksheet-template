@@ -164,15 +164,25 @@ export const deleteForm = async ({ apiEndpoint, formId }) => {
     }
 };
 
-export const uploadPendingFiles = async (formData, apiEndpoint) => {
+export const uploadPendingFiles = async (formData, apiEndpoint, originalData = {}) => {
     const updatedData = { ...formData };
     let hasChanges = false;
+    const filesToDelete = []; // Queue for old files to delete
 
     // Simple shallow check for now (expand to recursive if needed for nested files)
     for (const key in updatedData) {
         const value = updatedData[key];
 
         if (value instanceof File) {
+            // Check if there was an original file (string) to delete
+            const originalValue = originalData[key];
+            if (originalValue && typeof originalValue === 'string' && originalValue !== '') {
+                // Determine folder based on key logic (same as upload)
+                const isDoubleCheck = key.includes('_dc_') && key.includes('_image');
+                const folder = isDoubleCheck ? 'double_check' : 'assy_problem';
+                filesToDelete.push({ filename: originalValue, folder });
+            }
+
             // Found a file, compress it first
             console.log(`Original size: ${(value.size / 1024).toFixed(2)} KB`);
             const compressedFile = await compressImage(value);
@@ -253,6 +263,29 @@ export const uploadPendingFiles = async (formData, apiEndpoint) => {
                 throw new Error(`Upload error for ${key}: ${err.message}`);
             }
         }
+    }
+
+    // Process Deletions AFTER all uploads are successful
+    // This assumes if any upload failed, we threw error and aborted save, retaining old files.
+    if (filesToDelete.length > 0) {
+        console.log("Deleting replaced files:", filesToDelete);
+        // Execute deletions in parallel or sequential? Sequential is safer to avoid overwhelming if many.
+        // We use Promise.allSettled to not block save success on delete failure (cleanup is secondary)
+        await Promise.allSettled(filesToDelete.map(async (fileInfo) => {
+            try {
+                await axios.delete(`${apiEndpoint}/api/upload/delete`, {
+                    data: {
+                        filename: fileInfo.filename,
+                        folder: fileInfo.folder
+                    },
+                    withCredentials: true
+                });
+                console.log(`Deleted old file: ${fileInfo.filename}`);
+            } catch (delErr) {
+                console.warn(`Failed to delete old file: ${fileInfo.filename}`, delErr.message);
+                // Non-critical error, proceed
+            }
+        }));
     }
 
     return { updatedData, hasChanges };

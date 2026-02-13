@@ -5,6 +5,7 @@ import SectionTitle from '@/components/UIcomponent/SectionTitle';
 import FormItemCheck from '@/components/FormComponents/FormItemCheck';
 import FormQuickTable from '@/components/FormComponents/FormQuickTable';
 import FormCheckedBox from '@/components/FormComponents/FormCheckedBox';
+import FormInputCheckSTD from '@/components/FormComponents/FormInputCheckSTD';
 import OscilloscopeImg from '@/assets/FAWI0005_V3/6_Oscilloscope.png';
 
 function Page6() {
@@ -36,26 +37,16 @@ function Page6() {
 
                 {/* 6.1 Resistivity */}
                 <div className="mt-2 pl-4">
-                    <div className="flex items-center flex-wrap">
-                        <FormItemCheck
-                            name="p6_resistivity_check"
-                            label="6.1 RESITIVITY (Supply Tank) : "
-                            showCheckbox={true}
-                            style={{ margin: 0 }}
-                        />
-                        <div className="flex items-center gap-1 ml-1">
-                            <FormItemCheck
-                                name=""
-                                showCheckbox={false}
-                                input={{
-                                    name: "p6_resistivity_val",
-                                    width: "80px",
-                                    className: "border-b border-black text-center"
-                                }}
-                            />
-                            <span>x 10<sup className='text-[8px]'>4</sup>Ω.cm ( STD : 5.0 - 5.2 X 10<sup className='text-[8px]'>4</sup>Ω.cm )</span>
-                        </div>
-                    </div>
+                    <FormInputCheckSTD
+                        name="p6_resistivity_val"
+                        label="6.1 RESITIVITY (Supply Tank) : "
+                        showCheckbox={true}
+                        checkboxName="p6_resistivity_check"
+                        minStd={5.0}
+                        maxStd={5.2}
+                        unit={<span>x 10<sup className='text-[8px]'>4</sup>Ω.cm ( STD : 5.0 - 5.2 X 10<sup className='text-[8px]'>4</sup>Ω.cm )</span>}
+                        inputWidth="w-[80px]"
+                    />
                 </div>
 
                 {/* 6.2 Change data */}
@@ -100,10 +91,10 @@ function Page6() {
                         </div>
                         <div className='mt-9'>
                             <div className="ml-2 flex flex-col justify-around text-[10px] h-[120px]">
-                            {data6_4.map((row, idx) => (
-                                <span key={idx} className="h-5 flex items-center">---{'>'} {row.arrow}</span>
-                            ))}
-                        </div>
+                                {data6_4.map((row, idx) => (
+                                    <span key={idx} className="h-5 flex items-center">---{'>'} {row.arrow}</span>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

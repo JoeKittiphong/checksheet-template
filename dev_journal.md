@@ -255,3 +255,75 @@ _2026-02-02_
 - `formRoutes.js` - available_models in response
 - `AddModal.jsx` - flexible model matching
 - `meta.json` (FAWI0006_V3) - available_models array
+
+### 23. การเพิ่มแบบฟอร์มใหม่และการปรับปรุง Page 77, 87 (FAWI0006 Refactor)
+_2026-02-03_
+
+- **New Forms**: เพิ่มแบบฟอร์มใหม่ตามความต้องการของผู้ใช้งาน
+- **Bug Fixes**:
+  - แก้ไขปัญหา Page 77 ที่มีการ Duplication (ซ้ำซ้อน)
+  - แก้ไข Page 87 JSX Error ที่ทำให้หน้าเว็บโหลดไม่ได้
+- **Performance Optimization**: 
+  - ปรับปรุง `ChecksheetMaster` ให้โหลดเร็วขึ้น
+  - ปรับปรุง Logic ของ Pagination ให้แสดงผลถูกต้องและตอบสนองไวขึ้น
+
+### 24. ปรับปรุงระบบแจ้งปัญหา (Problem Direct Enhancement)
+_2026-02-05_
+
+พัฒนาฟีเจอร์สำหรับการแจ้งปัญหา (Problem Report) ให้ใช้งานสะดวกยิ่งขึ้น:
+- **Create Modal**: เพิ่ม Modal สำหรับสร้างรายการปัญหาโดยไม่ต้องเปลี่ยนหน้า ทำให้ Workflow ต่อเนื่องไม่สะดุด
+- **Server Integration**: เชื่อมต่อ API เพื่อรองรับการลบรายการปัญหา (Delete Action) ออกจาก Server ได้โดยตรง
+- **Print Overlay**: เพิ่ม Overlay สำหรับการสั่งพิมพ์หน้ารายงานปัญหา เพื่อให้ได้รูปแบบเอกสารที่สวยงามเมื่อพิมพ์ออกทางเครื่องพิมพ์
+
+### 25. การจัดทำ Page 120-121 (Additional Pages)
+_2026-02-11_
+
+- ดำเนินการสร้างหน้า 120 และ 121 เพิ่มเติมตามเอกสารอ้างอิง
+- ตรวจสอบความถูกต้องของ Input fields และการแสดงผล
+
+### 26. การจัดทำ Page 130-138 และ Reference Page (FAWI0005_V3 Completion)
+_2026-02-12_
+
+ดำเนินการสร้างหน้าสุดท้ายของชุด FAWI0005_V3 จนครบสมบูรณ์:
+- **New Pages**: สร้างหน้า 130 ถึง 138 ครบถ้วน
+- **Specific Implementations**:
+  - **Page 136**: ปรับแต่งการแสดงผล `EDWFinalRoughnessCheck` และ `EDWFinalSizeRecord` โดยใช้ Tailwind CSS Arbitrary Selectors (`[&_tbody_tr:nth-child(1)]:hidden`) เพื่อซ่อนแถวที่ไม่ต้องการ (Up/Low) โดยไม่ต้องแก้ไข Component กลาง รักษากฎการ Reusable ของระบบ
+  - **Page 137**: สร้าง Form ตรวจสอบ ECO System และ Nozzle Check พร้อมรูปประกอบ
+  - **Page 138**: สร้างหน้า Reference "Gathering Settings" โดยใช้ Monospace font เพื่อแสดง Code Parameter ที่ซับซ้อนให้อ่านง่าย
+- **Assets Management**: เพิ่มและจัดการรูปภาพประกอบใหม่ๆ (Diagrams, Nozzle images, Jig images) ลงในโฟลเดอร์ `assets/FAWI0005_V3/`
+- **System Update**: 
+  - อัปเดต `FAWI0005_V3.jsx` ให้รองรับ Range หน้าทั้งหมด (1-138)
+  - อัปเดต `meta.json` และ `*-setting.js` ให้ข้อมูลเป็นปัจจุบัน
+
+### 27. ปรับปรุง Page 5 และ CreateProblemModal (Refactor & Validation)
+_2026-02-13_
+
+ดำเนินการปรับปรุงคุณภาพโค้ดและเพิ่มฟีเจอร์ตรวจสอบความถูกต้องของข้อมูลตามความต้องการของผู้ใช้:
+
+- **Refactoring Page 5**:
+  - ตัด `DynamicTableSelector.jsx` ออกและย้าย Logic การเลือกตาราง (AL400G vs AL600G) กลับเข้ามาไว้ใน `Page5.jsx` โดยตรง เพื่อลดความซับซ้อนของโครงสร้างไฟล์และทำให้อ่านโค้ดง่ายขึ้น
+
+- **Voltage Validation (+/- 1V)**:
+  - เพิ่ม Logic ตรวจสอบค่า Min/Max ให้กับตารางตรวจสอบแรงดันไฟฟ้าทั้ง 3 ตารางใน Page 5
+  - กำหนดให้แจ้งเตือน (ตัวแดง) หากค่าที่วัดได้อยู่นอกช่วง **Standard Value +/- 1V**
+
+- **CreateProblemModal Data Source**:
+  - ปรับปรุง `ProblemDirect.jsx` ให้ดึงค่าเริ่มต้น (Default Values) สำหรับ Modal แจ้งปัญหาจาก React Hook Form (`getValues`) เป็นหลักแทนการใช้ Metadata
+  - **Solved Issue**: แก้ปัญหาการดึงชื่อ Model ผิดพลาดในกรณีที่ Metadata เก็บชื่อรวม (เช่น "Model A & B") แต่ในฟอร์มผู้ใช้เลือก "Model A" -> ระบบจะดึง "Model A" ไปใช้อย่างถูกต้อง
+  - รองรับการดึง `machine_no` จากหลายชื่อตัวแปร (`machineNo`, `mc_no`, `mc_no_input`)
+
+- **Fix ASSY_PROBLEM Image Path**:
+  - แก้ไข `ImageUploadBox.jsx` ให้ดึงภาพจากโฟลเดอร์ `uploads/assy_problem_images` (จากเดิมที่ผิดเป็น `uploads/assy_problem`) ทำให้ภาพที่บันทึกแล้วกลับมาแสดงผลได้ถูกต้อง
+  - เพิ่ม Route ใหม่ใน Server (`as_server.js`) ให้รองรับ Path `uploads/assy_problem_images` และปลดล็อก Authentication สำหรับ Route นี้เพื่อแก้ปัญหารูปไม่ขึ้น
+
+- **Implement Image Deletion on Save**:
+  - ปรับปรุง Logic การอัปโหลดรูปภาพ (`apiUtils.js`, `ChecksheetMaster.jsx`)
+  - เมื่อผู้ใช้เปลี่ยนรูปภาพใหม่และกด **บันทึก (Save)** ระบบจะทำการ:
+    1. อัปโหลดรูปใหม่ขึ้น Server
+    2. ตรวจสอบว่ามีรูปเก่าอยู่หรือไม่
+    3. หากมีรูปเก่า จะทำการ **ลบรูปเก่าทิ้งทันที** เพื่อไม่ให้เปลืองพื้นที่ Server
+  - การทำงานนี้จะเกิดขึ้นเฉพาะตอนกด Save เท่านั้น (ถ้าเปลี่ยนรูปแต่ไม่ Save รูปเก่าจะไม่หาย)
+
+- **Remove "+ ASSY PROBLEM" Button**:
+  - ปรับปรุง `A4Paper.jsx` ให้รับ Prop `showProblemButton` (Default = true)
+  - กำหนดค่า `showProblemButton={false}` ในหน้า `ASSY_PROBLEM` เพื่อซ่อนปุ่มแจ้งปัญหา (เพราะอยู่ในหน้าแจ้งปัญหาอยู่แล้ว) ไม่ให้แสดงซ้ำซ้อน

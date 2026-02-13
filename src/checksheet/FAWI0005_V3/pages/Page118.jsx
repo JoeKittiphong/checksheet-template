@@ -1,12 +1,11 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import { content } from "../FAWI0005_V3-setting";
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import SectionTitle from '@/components/UIcomponent/SectionTitle';
 import FormCheckedBox from '@/components/FormComponents/FormCheckedBox';
+import FormItemCheck from '@/components/FormComponents/FormItemCheck';
 
 function Page118() {
-    const { register } = useFormContext();
 
     const dataA = [
         { label: "V0", vals: ["4", "4", "4", "3", "3", "3", "3", "3", "2"] },
@@ -36,6 +35,7 @@ function Page118() {
 
     const xHeaders = ["X 1.00", "X 0.95", "X 0.90", "X 0.85", "X 0.80", "X 0.75", "X 0.70", "X 0.65", "X 0.60"];
     const checkTopKeys = ["p118_check_top_x100", "p118_check_top_x095", "p118_check_top_x090", "p118_check_top_x085", "p118_check_top_x080", "p118_check_top_x075", "p118_check_top_x070", "p118_check_top_x065", "p118_check_top_x060"];
+    const checkBottomKeys = ["p118_check_bottom_x100", "p118_check_bottom_x095", "p118_check_bottom_x090", "p118_check_bottom_x085", "p118_check_bottom_x080", "p118_check_bottom_x075", "p118_check_bottom_x070", "p118_check_bottom_x065", "p118_check_bottom_x060"];
 
     return (
         <A4Paper content={content} currentPage={118}>
@@ -58,10 +58,10 @@ function Page118() {
                             {checkTopKeys.map((keyName, i) => (
                                 <th key={i} className="border border-black bg-white w-[8%] p-0 align-middle">
                                     <div className="flex justify-center items-center h-full">
-                                        <input
-                                            type="checkbox"
-                                            {...register(keyName)}
-                                            className="w-5 h-5 cursor-pointer"
+                                        <FormItemCheck
+                                            name={keyName}
+                                            showCheckbox
+                                            checkboxSize="w-5 h-5"
                                         />
                                     </div>
                                 </th>
@@ -126,13 +126,13 @@ function Page118() {
                         <tr className="h-10">
                             <td className="border-none"></td> {/* Sidebar gap */}
                             <td className="border border-black font-bold bg-white h-6">Check</td>
-                            {checkTopKeys.map((keyName, i) => (
+                            {checkBottomKeys.map((keyName, i) => (
                                 <td key={i} className="border border-black bg-white p-0 align-middle">
                                     <div className="flex justify-center items-center h-full">
-                                        <input
-                                            type="checkbox"
-                                            {...register(keyName, { required: true })}
-                                            className="w-5 h-5 cursor-pointer"
+                                        <FormItemCheck
+                                            name={keyName}
+                                            showCheckbox
+                                            checkboxSize="w-5 h-5"
                                         />
                                     </div>
                                 </td>

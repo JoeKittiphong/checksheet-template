@@ -173,7 +173,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
             // Handling Deferred Uploads
             try {
-                const { updatedData, hasChanges } = await uploadPendingFiles(formData, apiEndpoint);
+                const { updatedData, hasChanges } = await uploadPendingFiles(formData, apiEndpoint, methods.formState.defaultValues);
                 if (hasChanges) {
                     formData = updatedData;
                     // Update form state with uploaded strings so we don't re-upload
@@ -287,7 +287,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     return (
         <FormProvider {...methods}>
             <KeypadProvider>
-                <ChecksheetProvider handleSave={() => handleSave()} isSaving={isSaving} apiEndpoint={apiEndpoint}>
+                <ChecksheetProvider handleSave={() => handleSave()} isSaving={isSaving} apiEndpoint={apiEndpoint} meta={meta}>
                     <div className="flex flex-col h-screen relative">
                         {/* Validation Loading Overlay */}
                         {(isValidating || isPrintLoading) && (

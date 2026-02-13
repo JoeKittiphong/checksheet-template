@@ -45,7 +45,7 @@ function Page1({ apiEndpoint }) {
     );
 
     return (
-        <A4Paper className="!bg-yellow-200">
+        <A4Paper className="!bg-yellow-200" showProblemButton={false}>
             {/* Header Section */}
             <div className=" bg-yellow-200">
                 <h1 className="text-center font-bold text-xl mb-2 pb-2">ASS'Y PROBLEM FORM</h1>

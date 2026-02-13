@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useFormContext, Controller } from 'react-hook-form';
 import CreateProblemModal from './CreateProblemModal';
+import { useChecksheet } from '../../context/ChecksheetContext';
 
 /**
  * ProblemDirect Component - Post-it Style
@@ -19,6 +20,7 @@ import CreateProblemModal from './CreateProblemModal';
  */
 const ProblemDirect = ({ name, apiEndpoint }) => {
     const { control, getValues } = useFormContext();
+    const { meta } = useChecksheet();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [isValidating, setIsValidating] = useState(false);
@@ -158,6 +160,11 @@ const ProblemDirect = ({ name, apiEndpoint }) => {
                                     onCreate={handleCreate}
                                     isCreating={isCreating}
                                     apiEndpoint={apiEndpoint}
+                                    defaultValues={{
+                                        as_group: getValues('as_group') || meta?.as_group || 'SEMI',
+                                        model: getValues('model') || getValues('mc_model') || '',
+                                        machine_no: getValues('machineNo') || getValues('machine_no') || getValues('mc_no') || getValues('mc_no_input') || ''
+                                    }}
                                 />
                             </>
                         ) : (
@@ -182,7 +189,7 @@ const ProblemDirect = ({ name, apiEndpoint }) => {
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     )}
-                                    Problem<br/>Report
+                                    Problem<br />Report
                                 </button>
 
                                 <span className="absolute bottom-1 right-1 text-[8px] italic opacity-90">ID {problemId}</span>

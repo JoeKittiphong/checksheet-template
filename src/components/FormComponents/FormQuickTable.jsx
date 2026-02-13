@@ -239,7 +239,7 @@ const FormQuickTable = ({
                                                             />
                                                         );
                                                     })()}
-                                                    {row.suffix && <span className="shrink-0">{row.suffix}</span>}
+                                                    {(row.suffix || col.suffix) && <span className="shrink-0">{row.suffix || col.suffix}</span>}
                                                 </div>
                                             ) : (
                                                 <span className="whitespace-pre-wrap text-center block w-full">{cellValue}</span>

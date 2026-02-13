@@ -33,7 +33,7 @@ function Page92() {
         c0001: { v: "26~34", a: "8.5~11.0", speed: "0.95~1.25", time: "H071= 37:00~42:00", color: "bg-green-500" }, // Green background in image
         c0002: { v: "49~57", a: "1.0~2.4", speed: "2.0~3.0", time: "H072= 12:00~16:00", color: "bg-green-500" },
         c0003: { v: "40~50", a: "0.8~2.5", speed: "4.0~8.0", time: "H073= 04:00~08:30", color: "bg-green-500" },
-        c0904: { v: "2~8", a: "-", speed: "4.5~5.5", time: "H074= 06:00~08:00", color: "bg-green-500" },
+        c904: { v: "2~8", a: "-", speed: "4.5~5.5", time: "H074= 06:00~08:00", color: "bg-green-500" },
         totalTime: "H081= 0:59:00~1:14:30"
     };
 
@@ -146,7 +146,7 @@ function Page92() {
                             <p>Check of Manage - Check - Motor I/O - Page7</p>
                         </div>
                         <div className="flex w-full">
-                            <div className="ml-auto w-52">
+                            <div className="ml-auto w-62">
                                 <FormQuickTable
                                     columns={columnsIORetry}
                                     data={dataIORetry}

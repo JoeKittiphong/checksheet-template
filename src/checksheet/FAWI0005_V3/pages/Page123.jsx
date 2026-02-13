@@ -140,7 +140,7 @@ function Page123() {
                             <p>Check of Manage - Check - Motor I/O - Page7</p>
                         </div>
                         <div className="flex w-full">
-                            <div className="ml-auto w-52">
+                            <div className="ml-auto w-62">
                                 <FormQuickTable
                                     columns={columnsIORetry}
                                     data={dataIORetry}

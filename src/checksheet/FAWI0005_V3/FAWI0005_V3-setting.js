@@ -3,7 +3,7 @@ export const meta = {
     version: "V3",
     title: "TEST CUT-2 AL400G & AL600G (iG+E)",
     department: "EDW",
-    model: "AL400G&AL600G(iG+E)",
+    model: "AL400G(iG+E)&AL600G(iG+E)",
     as_group: "FINAL",
     checksheet_name: "FAWI0005_V3"
 }
@@ -27,7 +27,7 @@ export const content = {
     company: 'Sodick (Thailand) Co.,Ltd',
     totalPage: 138,
     date: "14 Feb 2025",
-    model: 'AL400G&AL600G(iG+E)',
+    model: 'AL400G(iG+E)&AL600G(iG+E)',
     group: 'FINAL'
 }
 

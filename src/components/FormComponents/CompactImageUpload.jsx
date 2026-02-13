@@ -13,7 +13,7 @@ import { Camera, Loader2, X, Image, ZoomIn } from 'lucide-react';
  * @param {string} props.name - Form field name to store the filename
  * @param {string} props.apiEndpoint - Base API endpoint (e.g. http://localhost:3000/api)
  * @param {string} props.uploadPath - Upload route path (default: '/upload/assy')
- * @param {string} props.uploadFolder - Static folder path for viewing (default: 'assy_problem_images')
+ * @param {string} props.uploadFolder - Static folder path for viewing (default: 'assy_problem')
  * @param {string} props.label - Label text for upload button (default: "เพิ่มภาพ")
  * @param {string} props.viewLabel - Label text when image exists (default: "ภาพ")
  * @param {boolean} props.deferred - If true, store File object instead of immediate upload
@@ -23,7 +23,7 @@ const CompactImageUpload = ({
     name,
     apiEndpoint,
     uploadPath = '/upload/assy',
-    uploadFolder = 'assy_problem_images',
+    uploadFolder = 'assy_problem',
     label = "เพิ่มภาพ",
     viewLabel = "ภาพ",
     deferred = false,

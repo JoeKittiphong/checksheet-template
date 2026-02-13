@@ -2,6 +2,7 @@ import React from 'react';
 import { content } from "../FAWI0005_V3-setting";
 import A4Paper from "@/components/UIcomponent/A4Paper";
 import SectionTitle from '@/components/UIcomponent/SectionTitle';
+import FormItemCheck from '@/components/FormComponents/FormItemCheck';
 // Assuming the user will place the image
 import diagram from "@/assets/FAWI0005_V3/page97_diagram.png";
 
@@ -36,13 +37,41 @@ function Page97() {
                             <tbody>
                                 <tr>
                                     <td className="border border-black p-1">0.20mm</td>
-                                    <td className="border border-black p-1">Check</td>
-                                    <td className="border border-black p-1">Check</td>
-                                    <td className="border border-black p-1">Check</td>
-                                    <td className="border border-black p-1">Check</td>
-                                    <td className="border border-black p-1">Check</td>
-                                    <td className="border border-black p-1">Check</td>
-                                    <td className="border border-black p-1">Check</td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_a" showCheckbox />
+                                        </div>
+                                    </td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_b" showCheckbox />
+                                        </div>
+                                    </td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_c" showCheckbox />
+                                        </div>
+                                    </td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_d" showCheckbox />
+                                        </div>
+                                    </td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_e" showCheckbox />
+                                        </div>
+                                    </td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_f" showCheckbox />
+                                        </div>
+                                    </td>
+                                    <td className="border border-black p-1">
+                                        <div className="flex justify-center">
+                                            <FormItemCheck name="p97_check_g" showCheckbox />
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

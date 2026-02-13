@@ -22,8 +22,23 @@ function Page81() {
     const { register, control, formState: { errors } } = useFormContext();
 
     // Standards (Same as 78 for now)
-    const roughnessStdsRa = { d: "~0.330", f: "~0.330" };
-    const roughnessStdsRz = { d: "~2.60", f: "~2.60" };
+    // Standards (Same as 78 for now)
+    const roughnessStdsRa = {
+        stds: { d: "~0.330", f: "~0.330" },
+        inputs: {
+            Up: { d: true },
+            Mid: { d: true },
+            Low: { d: true, f: true }
+        }
+    };
+    const roughnessStdsRz = {
+        stds: { d: "~2.60", f: "~2.60" },
+        inputs: {
+            Up: { d: true },
+            Mid: { d: true },
+            Low: { d: true, f: true }
+        }
+    };
     const sizeStds = { ae: "14.9980~15.0020", bf: "14.9980~15.0020", cg: "14.9980~15.0020", dh: "14.9980~15.0020" };
 
     // Cutting Standards for Page 81 (Copied from 78)
@@ -95,7 +110,7 @@ function Page81() {
                     <div className="font-bold text-sm mr-55">Standard</div>
                 </div>
 
-                <EDWFinalRecordCutting prefix="p81_" />
+                <EDWFinalRecordCutting prefix="p81_" standards={cuttingStandards} />
 
                 <div className="flex items-center gap-4 text-[10px] mt-1">
                     <div className="flex items-center gap-2 ml-auto">
@@ -117,7 +132,7 @@ function Page81() {
                         <EDWFinalRoughnessCheck
                             prefix="p81_ra_"
                             variant="4th-7points"
-                            standards={{ stds: roughnessStdsRa }}
+                            standards={roughnessStdsRa}
                         />
                     </div>
 
@@ -130,7 +145,7 @@ function Page81() {
                         <EDWFinalRoughnessCheck
                             prefix="p81_rz_"
                             variant="4th-7points"
-                            standards={{ stds: roughnessStdsRz }}
+                            standards={roughnessStdsRz}
                         />
                     </div>
 

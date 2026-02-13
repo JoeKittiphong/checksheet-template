@@ -22,9 +22,32 @@ function Page78() {
     const { register, control, formState: { errors } } = useFormContext();
 
     // Standards
-    const roughnessStdsRa = { d: "~0.330", f: "~0.330" };
-    const roughnessStdsRz = { d: "~2.60", f: "~2.60" };
+    const roughnessStdsRa = {
+        stds: { d: "~0.330", f: "~0.330" },
+        inputs: {
+            Up: { d: true },
+            Mid: { d: true },
+            Low: { d: true, f: true }
+        }
+    };
+    const roughnessStdsRz = {
+        stds: { d: "~2.60", f: "~2.60" },
+        inputs: {
+            Up: { d: true },
+            Mid: { d: true },
+            Low: { d: true, f: true }
+        }
+    };
     const sizeStds = { ae: "14.9980~15.0020", bf: "14.9980~15.0020", cg: "14.9980~15.0020", dh: "14.9980~15.0020" };
+
+    // Cutting Standards
+    const cuttingStandards = {
+        c0001: { v: "21~26", a: "15.0~18.0", speed: "2.4~3.3", time: "H071= 19:30~22:30" },
+        c0002: { v: "53~61", a: "1.3~2.3", speed: "2.8~3.8", time: "H072= 11:20~15:30" },
+        c0003: { v: "750~1050", a: "0.7~2.0", speed: "5.5~7.0", time: "H073= 06:00~09:00" },
+        c904: { v: "2000~3200", a: "-", speed: "4.5~5.5", time: "H074= 09:00~10:00" },
+        totalTime: "H081= 45:50~57:00"
+    };
 
     // IO Retry Table Columns
     const columnsIORetry = [
@@ -80,7 +103,7 @@ function Page78() {
                     <div className="font-bold text-sm mr-55">Standard</div>
                 </div>
 
-                <EDWFinalRecordCutting prefix="p78_" />
+                <EDWFinalRecordCutting prefix="p78_" standards={cuttingStandards} />
 
                 <div className="flex items-center gap-4 text-[10px] mt-1">
                     <div className="flex items-center gap-2 ml-auto">
@@ -102,7 +125,7 @@ function Page78() {
                         <EDWFinalRoughnessCheck
                             prefix="p78_ra_"
                             variant="4th-7points"
-                            standards={{ stds: roughnessStdsRa }}
+                            standards={roughnessStdsRa}
                         />
                     </div>
 
@@ -115,7 +138,7 @@ function Page78() {
                         <EDWFinalRoughnessCheck
                             prefix="p78_rz_"
                             variant="4th-7points"
-                            standards={{ stds: roughnessStdsRz }}
+                            standards={roughnessStdsRz}
                         />
                     </div>
 

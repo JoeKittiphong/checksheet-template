@@ -55,7 +55,7 @@ function Page10() {
 
     // --- 7.1 Table ---
     const data7_1 = [
-        { item: "GALPM SIG CHG (ON10 OF 10 ~ ON 30 OF31)", std: "1.0", setting: "p10_galpm_setting" }
+        { item: "GALPM SIG CHG (ON10 OF 10 ~ ON 30 OF31)", std: "1.0", setting: "p10_galpm_setting", setting_min: 1.0, setting_max: 1.0, setting_expected: 1.0 }
     ];
 
     const columns7_1 = [

@@ -26,7 +26,6 @@ function Page59() {
                     <TableCalculateSetting
                         multiplier={p58_val_3}
                         registerPrefix="p59"
-                        maxValueRefIndex={6}
                         title={`"Disch-Page10-[[361~370]<br/>DPW PC12 V10~V19]"`}
                         rowConfig={[
                             { index: 10, label: "V10", presentSuffix: "(#120)", inputSuffix: "(#1120)", isCalculated: true },

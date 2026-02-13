@@ -4,6 +4,7 @@ import { content } from "../FAWI0005_V3-setting";
 import SectionTitle from '@/components/UIcomponent/SectionTitle';
 import FormQuickTable from '@/components/FormComponents/FormQuickTable';
 import FormItemCheck from '@/components/FormComponents/FormItemCheck';
+import FormCheckedBox from '@/components/FormComponents/FormCheckedBox';
 
 // Import images
 import imgCuttingArea from '@/assets/FAWI0005_V3/p18_cutting_area.png';
@@ -36,9 +37,9 @@ function Page20() {
     ];
 
     const speedData = [
-        { label: "Cutting Speed", std: "2.90~3.00", name: "p20_speed", minStd: 2.90, maxStd: 3.00 },
-        { label: "Voltage (LCD)", std: "23~31", name: "p20_voltage", minStd: 23, maxStd: 31 },
-        { label: "Current (LCD)", std: "13~16", name: "p20_current", minStd: 13, maxStd: 16 },
+        { label: "Cutting Speed", std: "2.90~3.00", name: "p20_speed", name_min: 2.90, name_max: 3.00 },
+        { label: "Voltage (LCD)", std: "23~31", name: "p20_voltage", name_min: 23, name_max: 31 },
+        { label: "Current (LCD)", std: "13~16", name: "p20_current", name_min: 13, name_max: 16 },
     ];
 
     const speedColumns = [
@@ -176,6 +177,13 @@ function Page20() {
                     <div className="font-bold mt-3 text-[10px] text-black not-italic pt-1">
                         Contact to ENG Division before go to next check, if you have to input over "0"or under "-8".
                     </div>
+                </div>
+
+                <div className="absolute bottom-[-150px] right-20">
+                    <FormCheckedBox
+                        name="p20_checked_by"
+                        label="Checked by :"
+                    />
                 </div>
 
             </div>

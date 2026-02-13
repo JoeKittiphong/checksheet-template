@@ -8,9 +8,9 @@ import FormCheckedBox from '@/components/FormComponents/FormCheckedBox';
 
 function Page19() {
     const speedData = [
-        { label: "Cutting Speed", std: "2.70~2.80", name: "p19_speed", minStd: 2.70, maxStd: 2.80 },
-        { label: "Voltage (LCD)", std: "20~24", name: "p19_voltage", minStd: 20, maxStd: 24 },
-        { label: "Current (LCD)", std: "9~12", name: "p19_current", minStd: 9, maxStd: 12 },
+        { label: "Cutting Speed", std: "2.70~2.80", name: "p19_speed", name_min: 2.70, name_max: 2.80 },
+        { label: "Voltage (LCD)", std: "20~24", name: "p19_voltage", name_min: 20, name_max: 24 },
+        { label: "Current (LCD)", std: "9~12", name: "p19_current", name_min: 9, name_max: 12 },
         {
             label: "Pulse-conversion compensation TM (W) PC0_8",
             name: "p19_pulse_comp_manual",
@@ -113,9 +113,8 @@ function Page19() {
                 {/* Footer Signature */}
                 <div className="absolute bottom-[-150px] right-10">
                     <FormCheckedBox
-                        name="p19_signature"
+                        name="p19_checked_by"
                         label="Checked by :"
-                        className="flex-row items-center gap-2"
                     />
                 </div>
 

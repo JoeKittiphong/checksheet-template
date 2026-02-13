@@ -130,12 +130,12 @@ function Page137() {
 
                     <div className="pl-8">
                         <div className="font-bold underline mb-1">กรณีมี UPS</div>
-                        <FormInputCheckSTD label="-Power Recovery Setting =" name="p137_ups_power_recovery" unit="(STD = 03)" inputWidth="w-40" />
-                        <FormInputCheckSTD label="-UPS ST HALT DELAY =" name="p137_ups_halt_delay" unit="(STD = 200) [Secret2-P.4]" inputWidth="w-40" />
+                        <FormInputCheckSTD label="-Power Recovery Setting =" name="p137_ups_power_recovery" unit="(STD = 03)" inputWidth="w-40" validateStd={false} />
+                        <FormInputCheckSTD label="-UPS ST HALT DELAY =" name="p137_ups_halt_delay" unit="(STD = 200) [Secret2-P.4]" inputWidth="w-40" validateStd={false} />
 
                         <div className="font-bold underline mb-1 mt-2">กรณีไม่มี UPS</div>
-                        <FormInputCheckSTD label="-Power Recovery Setting =" name="p137_no_ups_power_recovery" unit="(STD = 00)" inputWidth="w-40" />
-                        <FormInputCheckSTD label="-UPS ST HALT DELAY =" name="p137_no_ups_halt_delay" unit="(STD = 00) [Secret2-P.4]" inputWidth="w-40" />
+                        <FormInputCheckSTD label="-Power Recovery Setting =" name="p137_no_ups_power_recovery" unit="(STD = 00)" inputWidth="w-40" validateStd={false} />
+                        <FormInputCheckSTD label="-UPS ST HALT DELAY =" name="p137_no_ups_halt_delay" unit="(STD = 00) [Secret2-P.4]" inputWidth="w-40" validateStd={false} />
                     </div>
 
                     <div className="mt-4 flex justify-end pr-10 absolute bottom-0 right-[-40px]">

@@ -2,9 +2,9 @@ import { createContext, useContext } from 'react';
 
 const ChecksheetContext = createContext(null);
 
-export const ChecksheetProvider = ({ children, handleSave, isSaving, apiEndpoint }) => {
+export const ChecksheetProvider = ({ children, handleSave, isSaving, apiEndpoint, meta }) => {
     return (
-        <ChecksheetContext.Provider value={{ handleSave, isSaving, apiEndpoint }}>
+        <ChecksheetContext.Provider value={{ handleSave, isSaving, apiEndpoint, meta }}>
             {children}
         </ChecksheetContext.Provider>
     );
@@ -22,5 +22,5 @@ export const useChecksheet = () => {
             apiEndpoint: ''
         };
     }
-    return context;
+    return { ...context, meta: context.meta || {} }; // Ensure meta is always returning at least empty object
 };

@@ -17,6 +17,7 @@ function A4Paper({
     formNumber = '',
     content = null,
     currentPage = 1,
+    showProblemButton = true,
     showHeader = true
 }) {
     const { apiEndpoint } = useChecksheet();
@@ -68,12 +69,14 @@ function A4Paper({
                 }}
             >
                 {/* ProblemDirect - Positioning at Top-Right of paper content */}
-                <div className="absolute top-0 right-0 z-50">
-                    <ProblemDirect
-                        name={`p${currentPage}_problem_id`}
-                        apiEndpoint={apiEndpoint}
-                    />
-                </div>
+                {showProblemButton && (
+                    <div className="absolute top-0 right-0 z-50">
+                        <ProblemDirect
+                            name={`p${currentPage}_problem_id`}
+                            apiEndpoint={apiEndpoint}
+                        />
+                    </div>
+                )}
 
                 {/* Inner content border */}
                 <div className="w-full h-full border-2 border-black relative overflow-hidden flex flex-col">

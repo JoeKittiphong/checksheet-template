@@ -33,11 +33,10 @@ const ImageUploadBox = ({ name, apiEndpoint, uploadPath = '/upload/assy', label 
             if (currentFile.startsWith('http')) {
                 imageUrl = currentFile;
             } else {
-                // assume stored in uploads/assy_problem_images or served statically
+                // assume stored in uploads/assy_problem or served statically
                 // If backend saves just filename "img-123.jpg", we need to know where it is served
                 // Based on server config: app.use('/uploads', ... static(path.join(__dirname, 'uploads')))
-                // And uploadConfig puts it in ../assy_problem_images. 
-                // Wait, if I moved the folder to ../assy_problem_images, I need to make sure express serves it!
+                // And uploadConfig puts it in ../upload_images/assy_problem. 
                 // For now, let's assume the previous logic for URL construction:
                 // If checking "deferred", we rely on the file object.
                 // If it's a string, it's already saved.

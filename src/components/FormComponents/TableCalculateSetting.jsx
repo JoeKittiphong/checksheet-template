@@ -108,7 +108,7 @@ function TableCalculateSetting({
                         return (
                             <tr key={row.index}>
                                 {idx === 0 && (
-                                    <td rowSpan={rows.length} className="border border-black text-center p-1 w-12 bg-white relative">
+                                    <td rowSpan={rows.length} className="border border-black text-center w-12 bg-white relative">
                                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90 whitespace-nowrap font-bold w-64 text-center">
                                             <span dangerouslySetInnerHTML={{ __html: title.replace(/\n/g, '<br/>') }} />
                                         </div>

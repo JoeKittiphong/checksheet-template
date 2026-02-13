@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 
-const CreateProblemModal = ({ isOpen, onClose, onCreate, isCreating, apiEndpoint }) => {
+const CreateProblemModal = ({ isOpen, onClose, onCreate, isCreating, apiEndpoint, defaultValues = {} }) => {
     if (!isOpen) return null;
 
     const [formData, setFormData] = useState({
         department: 'ASSEMBLY', // Constant, hidden
-        as_group: 'SEMI',
-        model: '',
-        machine_no: '', // New field
+        as_group: defaultValues.as_group || 'SEMI',
+        model: defaultValues.model || '',
+        machine_no: defaultValues.machine_no || '', // New field
     });
+
+    // Update state when defaultValues change (e.g. when modal opens with new context)
+    React.useEffect(() => {
+        if (isOpen) {
+            setFormData(prev => ({
+                ...prev,
+                as_group: defaultValues.as_group || prev.as_group,
+                model: defaultValues.model || prev.model,
+                machine_no: defaultValues.machine_no || prev.machine_no
+            }));
+        }
+    }, [isOpen, defaultValues]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,8 +36,8 @@ const CreateProblemModal = ({ isOpen, onClose, onCreate, isCreating, apiEndpoint
             return;
         }
         if (!formData.machine_no.trim()) {
-             alert('กรุณากรอกชื่อเครื่อง (Please enter Machine No)');
-             return;
+            alert('กรุณากรอกชื่อเครื่อง (Please enter Machine No)');
+            return;
         }
         onCreate(formData);
     };
@@ -34,7 +46,7 @@ const CreateProblemModal = ({ isOpen, onClose, onCreate, isCreating, apiEndpoint
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 print:hidden">
             <div className="bg-white p-6 rounded-lg shadow-xl w-96 border border-gray-300">
                 <h3 className="text-lg font-bold mb-4 text-center border-b pb-2">สร้างใบแจ้งปัญหา (Create Problem)</h3>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Hidden Constant Fields: Form Type & Department */}
 

@@ -35,9 +35,30 @@ const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd", 
         if (!allowInput) return "No Need";
 
         const isError = errors[name];
+
+        // Parse standard range for validation
+        let validateRule = {};
+        if (stdRange && stdRange.includes('~')) {
+            const [minStr, maxStr] = stdRange.split('~');
+            const min = parseFloat(minStr);
+            const max = parseFloat(maxStr);
+
+            if (!isNaN(min) && !isNaN(max)) {
+                validateRule = {
+                    validate: (value) => {
+                        if (!value) return true; // Let required handle empty
+                        const num = parseFloat(value);
+                        if (isNaN(num)) return "Invalid";
+                        if (num < min || num > max) return "Out of range";
+                        return true;
+                    }
+                };
+            }
+        }
+
         return (
             <input
-                {...register(name, { required: true })}
+                {...register(name, { required: true, ...validateRule })}
                 className={`w-full h-full text-center outline-none ${isError ? 'bg-red-500 placeholder:text-white' : 'bg-transparent'}`}
             />
         );
@@ -99,12 +120,14 @@ const EDWFinalRoughnessCheck = ({ prefix = "", standards = {}, variant = "3rd", 
     // Data definition with input flags
     const getData = () => {
         if (variant === "4th-7points") {
-            // Using standards prop to configure which columns are active if needed, or default logic
-            // Defaulting to d and f active based on typical 4th 7points usage
+            const customInputs = standards.inputs || {};
+            // Defaulting to d and f active based on typical 4th 7points usage if not provided
+            const defaultInputs = { d: true, f: true };
+
             return [
-                { id: "Up", label: "Up", inputs: { d: true, f: true }, className: "text-[9px]" },
-                { id: "Mid", label: "Mid", inputs: { d: true, f: true }, className: "text-[9px]" },
-                { id: "Low", label: "Low", inputs: { d: true, f: true }, className: "text-[9px]" },
+                { id: "Up", label: "Up", inputs: customInputs.Up || defaultInputs, className: "text-[9px]" },
+                { id: "Mid", label: "Mid", inputs: customInputs.Mid || defaultInputs, className: "text-[9px]" },
+                { id: "Low", label: "Low", inputs: customInputs.Low || defaultInputs, className: "text-[9px]" },
                 { id: "STD", label: `STD(μm)`, isStd: true, stds: standards.stds || {}, className: "text-[9px]" }
             ];
         }

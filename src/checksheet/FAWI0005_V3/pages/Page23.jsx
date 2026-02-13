@@ -137,9 +137,8 @@ function Page23() {
                 {/* Footer Signature */}
                 <div className="absolute bottom-[-150px] right-20">
                     <FormCheckedBox
-                        name="p23_signature"
+                        name="p23_checked_by"
                         label="Checked by :"
-                        className="flex-row items-center gap-2"
                     />
                 </div>
 

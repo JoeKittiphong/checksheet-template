@@ -120,9 +120,8 @@ function Page24() {
                 {/* Footer Signature */}
                 <div className="absolute bottom-[0px] right-20">
                     <FormCheckedBox
-                        name="p24_signature"
+                        name="p24_checked_by"
                         label="Checked by :"
-                        className="flex-row items-center gap-2"
                     />
                 </div>
 
