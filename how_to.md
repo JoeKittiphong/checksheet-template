@@ -325,3 +325,62 @@ Rolling X วางแนวนอน แต่ลูกศรที่ใช้
     ...
 />
 ```
+
+---
+
+## 3. FormEDMTableStraightness
+
+ใช้สำหรับตาราง Straightness Check ที่ต้องการแสดงกราฟประกอบข้อมูลโดยอัตโนมัติ เหมาะสำหรับข้อมูลที่มีจำนวนแถวมาก (เช่น 30-60 แถว)
+
+### Features
+
+-   **Auto Graph**: พล็อตกราฟเส้นเชื่อมจุดข้อมูลให้อัตโนมัติทางด้านขวาของตาราง
+-   **Dynamic Sizing**: รองรับการปรับขนาดความกว้างตาราง ความสูงแถว และขนาดตัวอักษร เพื่อให้แสดงผลข้อมูลจำนวนมากในหน้าเดียวได้
+-   **Validation**: มีการคำนวณ Diff (Max - Min) และตรวจสอบกับค่า Standard ให้ทันที (แสดงแถบสีแดงถ้าเกินค่ามาตรฐาน)
+
+### Props
+
+| Property | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `name` | `string` | - | **Required**. RHF field name prefix (เช่น `"p10_data_left"`) |
+| `title` | `string` | `"Straight of X Axis"` | หัวข้อตาราง |
+| `rowCount` | `number` | `31` | จำนวนแถวข้อมูล |
+| `strokeStep` | `number` | `20` | ค่าที่เพิ่มขึ้นในแต่ละขั้น (Stroke) |
+| `standard` | `number` | `3` | ค่ามาตรฐาน (Diff ต้องไม่เกินค่านี้) |
+| `fontSize` | `string` | `"text-xs"` | Tailwind class สำหรับขนาดตัวอักษร (เช่น `"text-[10px]"`) |
+| `width` | `string` | `"280px"` | ความกว้างรวมของ Component |
+| `colWidths` | `string[]` | `['w-8', 'w-10', 'w-12']` | Array กำหนดความกว้างของคอลัมน์ [Index, Stroke, Value] |
+| `rowHeight` | `number` | `16` | ความสูงของแต่ละแถว (pixels) |
+
+### Examples
+
+#### Standard Usage
+ใช้ค่า Default สำหรับตารางขนาดปกติ (ประมาณ 30 แถว)
+```jsx
+<FormEDMTableStraightness
+    name="Page13.straightnessData"
+    title="Straight of X Axis"
+    rowCount={30}
+    standard={3}
+    defaultValue={{}}
+/>
+```
+
+#### Compact Usage (High Density)
+ใช้สำหรับตารางที่มีข้อมูลจำนวนมาก (เช่น 60+ แถว) เพื่อให้ยัดลงในหน้าเดียวได้
+```jsx
+<FormEDMTableStraightness
+    name="Page10.straightnessDataLeft"
+    title="Straight of X Axis"
+    rowCount={61}
+    strokeStep={20}
+    standard={3}
+    // Custom Sizing for Compact View
+    fontSize="text-[10px]"       // ลดขนาดตัวอักษร
+    rowHeight={12}               // ลดความสูงแถว
+    width="300px"                // ปรับความกว้างตาราง
+    colWidths={['w-6', 'w-8', 'w-10']} // ปรับความกว้างคอลัมน์
+    defaultValue={{}}
+/>
+```
+

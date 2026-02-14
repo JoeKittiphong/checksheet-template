@@ -1,38 +1,96 @@
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import EDMCoilTubeCheck from '../PageComponent/EDMCoilTubeCheck';
+import TristateCheckbox from '../UIcomponent/TristateCheckbox'; // Import TristateCheckbox directly
 
-const FormEDMCoilTubeCheck = ({ name, defaultValue, ...props }) => {
+const FormEDMCoilTubeCheck = ({
+    name,
+    defaultValue,
+    axes = [
+        { key: 'x', label: 'x' },
+        { key: 'ykc', label: 'Y(KC)' },
+        { key: 'ykb', label: 'Y(KB)' }
+    ],
+    ...props
+}) => {
     const { control } = useFormContext();
 
+    // Use passed axes or default
+    const axisConfig = axes;
+
+    const renderRows = () => {
+        const rows = [];
+
+        axisConfig.forEach((axis) => {
+            // Row 1: Axis Label + IN
+            const inName = `${name}.${axis.key}.in`;
+            const outName = `${name}.${axis.key}.out`;
+
+            rows.push(
+                <tr key={`${axis.key}-in`}>
+                    <td
+                        className="border border-black p-1 text-center font-medium"
+                        rowSpan={2}
+                    >
+                        {axis.label}
+                    </td>
+                    <td className="border border-black p-1 text-center">Coil "IN"</td>
+                    <td className="border border-black p-1 text-center flex justify-center">
+                        <Controller
+                            name={inName}
+                            control={control}
+                            rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                            render={({ field, fieldState: { error } }) => (
+                                <TristateCheckbox
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    error={!!error}
+                                    size="w-4 h-4"
+                                />
+                            )}
+                        />
+                    </td>
+                </tr>
+            );
+
+            // Row 2: OUT
+            rows.push(
+                <tr key={`${axis.key}-out`}>
+                    <td className="border border-black p-1 text-center">Coil "OUT"</td>
+                    <td className="border border-black p-1 text-center flex justify-center">
+                        <Controller
+                            name={outName}
+                            control={control}
+                            rules={{ validate: (v) => (v !== null && v !== undefined && v !== '') || "Required" }}
+                            render={({ field, fieldState: { error } }) => (
+                                <TristateCheckbox
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    error={!!error}
+                                    size="w-4 h-4"
+                                />
+                            )}
+                        />
+                    </td>
+                </tr>
+            );
+        });
+
+        return rows;
+    };
+
     return (
-        <Controller
-            name={name}
-            control={control}
-            defaultValue={defaultValue || {}}
-            rules={{
-                validate: (value) => {
-                    // Check if at least one value is set? Or all? User wants "Require all" usually.
-                    // Structure: { x: { in: v, out: v }, ... }
-                    // Simple check: iterate keys, ensure 'in' and 'out' are not null/undefined/false?
-                    // But Tristate can be false (NG). It should not be null/""
-                    if (!value) return "Required";
-                    const axes = ['x', 'ykc', 'ykb'];
-                    for (const axis of axes) {
-                        if (value[axis]?.in === undefined || value[axis]?.in === null || value[axis]?.in === "") return false;
-                        if (value[axis]?.out === undefined || value[axis]?.out === null || value[axis]?.out === "") return false;
-                    }
-                    return true;
-                }
-            }}
-            render={({ field }) => (
-                <EDMCoilTubeCheck
-                    data={field.value || {}}
-                    onChange={field.onChange}
-                    {...props}
-                />
-            )}
-        />
+        <table className="border-collapse border border-black text-sm">
+            <thead>
+                <tr>
+                    <th className="border border-black p-1 w-16 text-center">Axis</th>
+                    <th className="border border-black p-1 w-24 text-center">Check</th>
+                    <th className="border border-black p-1 w-28 text-center">ทดสอบด้วยการดึง</th>
+                </tr>
+            </thead>
+            <tbody>
+                {renderRows()}
+            </tbody>
+        </table>
     );
 };
 

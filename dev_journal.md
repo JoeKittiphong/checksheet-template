@@ -339,4 +339,26 @@ _2026-02-13_
         - `BODY` -> `div_body`
         - `MC_CHECK` -> `div_mc`
         - `ACCURACY` -> `div_acc`
-        - อื่นๆ -> `div_other`
+### 28. การปรับโครงสร้างหน้าและปรับแต่งตาราง (FAMB0008_V1 Reordering & Customization)
+_2026-02-14_
+
+ดำเนินการปรับโครงสร้าง Checksheet และปรับแต่ง Component ตามความต้องการของผู้ใช้:
+
+- **Page Reordering (Structure Update)**:
+  - **Delete Pages**: ลบหน้า 10, 11, 12 ออกจากระบบ
+  - **Shift Pages**: เลื่อนหน้า 13-22 ขึ้นมาแทนที่ เป็นหน้า 10-19
+  - **Restoration**: กู้คืนหน้า 10-12 (เนื้อหาเดิมของหน้า 13-15 จาก Template) ที่ถูกลบไปโดยไม่ตั้งใจระหว่างการย้าย
+
+- **FormEDMTableStraightness Customization**:
+  - ปรับปรุง Component ตาราง Straightness เพื่อรองรับข้อมูลจำนวนมาก (61 Rows) ในหน้าเดียว
+  - **New Props**:
+    - `fontSize`: ปรับขนาดตัวอักษรได้ (ใช้ `text-[10px]`)
+    - `width`: กำหนดความกว้างตารางได้ (ใช้ `300px`)
+    - `colWidths`: กำหนดความกว้างคอลัมน์ย่อยได้ (`['w-6', 'w-8', 'w-10']`)
+    - `rowHeight`: กำหนดความสูงแถวได้ (ใช้ `12px`)
+  - **UI Cleanup**:
+    - ลบ Header Row ที่ไม่จำเป็นออก (Height = 0)
+    - ลด Padding ของ Title Bar (`py-0`) เพื่อประหยัดพื้นที่แนวตั้ง
+
+- **Implementation Result**:
+  - หน้า 10 (Straightness Top) สามารถแสดงผลข้อมูล 61 จุดวัดได้ครบถ้วนในหน้าเดียว โดยตารางมีความกระชับ อ่านง่าย และกราฟแสดงผลได้ถูกต้องไม่ผิดเพี้ยน

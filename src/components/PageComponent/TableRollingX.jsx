@@ -4,20 +4,12 @@ import PitchingTable from '../common/PitchingTable';
 /**
  * TableRollingX Component
  * Wrapper around PitchingTable for Rolling X data.
- * 
- * Logic:
- * - Layout: Horizontal (like Pitching X)
- * - Arrows: Up/Down (like Pitching Y) -> determined by arrowAxis="y"
- * - Rows: B, T
- * - Cols: X+, X0 (Ref), X-
  */
 const TableRollingX = ({
-    data = { b: [], t: [] },
-    onChange = () => { },
+    name,
+    control,
     standard = { min: -20, max: 20 },
-    referenceCol = 1, // Default to middle column (index 1) as ref
     showRowT = true,
-    showRowDiff = true
 }) => {
     // Config for PitchingTable
     const config = {
@@ -29,24 +21,20 @@ const TableRollingX = ({
         // Dimensions become the Cols in Horizontal Layout
         dimensions: [
             { label: 'X+' },
-            { label: 'X0', isRef: true }, // Assuming forced Ref at X0 for now or mapped from referenceCol
+            { label: 'X0', isRef: true },
             { label: 'X-' }
         ],
         diffLabel: 'DIFF',
-        dataLabel: 'DATA ROLLING - X'
+        dataLabel: 'DATA ROLLING - X',
+        calcDiffWithZero: !showRowT // Enable zero-diff calc if T row is hidden
     };
-
-    // Note: The original generic PitchingTable assumes isRef is defined in dimensions.
-    // If referenceCol is dynamic, we might need to map it. 
-    // For this template, X0 is usually fixed as ref.
-    // Let's assume standard 3-column [X+, X0, X-] for now.
 
     return (
         <PitchingTable
+            name={name}
+            control={control}
             axis="x"            // Horizontal Layout
             arrowAxis="y"       // Up/Down Arrows
-            data={data}
-            onChange={onChange}
             config={config}
             standard={standard}
         />

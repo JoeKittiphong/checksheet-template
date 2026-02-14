@@ -1,41 +1,30 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
 /**
  * EDMCoilMagnetCheck Component
  * component สำหรับตารางเช็ค Spec ของ Magnet, Coil และ Linear Scale
- * ใช้ Tailwind CSS สำหรับ Styling
+ * Refactored for Granular Validation (Checkbox + S/N).
  */
 function EDMCoilMagnetCheck({
+    name,
+    control,
     title = "MAGNET PLATE SPEC",
     config = [], // [{ axis: 'X', specs: ['spec1', 'spec2'] }]
-    data = {},   // { X: [{ checked: false, sn: '' }, ...] }
-    onChange = () => { }
+    defaultValue = {}
 }) {
-    const handleUpdate = (axis, index, field, value) => {
-        const newData = { ...data };
-        if (!newData[axis]) newData[axis] = [];
-        // Ensure array is long enough
-        while (newData[axis].length <= index) {
-            newData[axis].push({ checked: false, sn: '' });
-        }
-        newData[axis][index] = { ...newData[axis][index], [field]: value };
-        onChange(newData);
-    };
-
-    const getVal = (axis, index, field) => data[axis]?.[index]?.[field] || (field === 'checked' ? false : '');
-
-    const { formState: { isSubmitted } } = useFormContext();
+    // Note: We don't necessarily need useWatch for the whole object if we map via config.
+    // The Controllers will handle their own state.
 
     return (
-        <table className="w-full border-collapse text-[11px] font-sans border-2 border-black mb-4 print:mb-2">
+        <table className="w-full border-collapse text-[11px] font-sans border-2 border-black mb-2 print:mb-2">
             <thead>
                 <tr className="bg-white">
                     <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[12%]">AXIS</th>
-                    <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[8%] text-xs">x</th>
-                    <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[15%] min-w-[60px]">ITEM</th>
+                    <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[8%] text-xs">☒</th>
                     <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[40%]">{title}</th>
                     <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[25%]">S/N</th>
+                    <th className="border-[1.5px] border-black p-1.5 text-center font-bold uppercase w-[15%]">Item</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,29 +37,72 @@ function EDMCoilMagnetCheck({
                             {idx === 0 && (
                                 <td
                                     rowSpan={rowCount}
-                                    className="border border-black p-0.5 text-center align-middle font-bold text-[12px] bg-white"
+                                    className="border border-black text-center align-middle font-bold text-[12px] bg-white"
                                 >
                                     {group.axis}
                                 </td>
                             )}
+
+                            {/* Checkbox (X) Column */}
                             <td className="border border-black text-center align-middle">
-                                <div
-                                    className="w-[4.5mm] h-[4.5mm] border border-black flex items-center justify-center cursor-pointer m-auto text-[10px] font-bold bg-white"
-                                    onClick={() => handleUpdate(group.axis, idx, 'checked', !getVal(group.axis, idx, 'checked'))}
-                                >
-                                    {getVal(group.axis, idx, 'checked') ? 'X' : ''}
-                                </div>
+                                <Controller
+                                    name={`${name}.${group.axis}.${idx}.checked`}
+                                    control={control}
+                                    defaultValue={false}
+                                    rules={{ required: true }}
+                                    render={({ field, fieldState: { error } }) => (
+                                        <div
+                                            className={`w-[4.5mm] h-[4.5mm] flex items-center justify-center cursor-pointer m-auto text-[10px] font-bold bg-white
+                                                ${error ? 'border-2 border-red-500 bg-red-50' : 'border border-black'}
+                                            `}
+                                            onClick={() => field.onChange(!field.value)}
+                                        >
+                                            {field.value ? 'X' : ''}
+                                        </div>
+                                    )}
+                                />
                             </td>
-                            <td className="border border-black  text-center align-middle"></td>
+
                             <td className="border border-black text-center align-middle font-medium px-2">
                                 {spec}
                             </td>
+
+                            {/* S/N Input Column */}
                             <td className="border border-black text-center align-middle">
-                                <input
-                                    type="text"
-                                    className={`w-full h-full border-none text-center text-[11px] outline-none p-1 ${isSubmitted && !getVal(group.axis, idx, 'sn') ? 'border border-red-500 bg-red-50 px-1' : 'bg-transparent'}`}
-                                    value={getVal(group.axis, idx, 'sn')}
-                                    onChange={(e) => handleUpdate(group.axis, idx, 'sn', e.target.value)}
+                                <Controller
+                                    name={`${name}.${group.axis}.${idx}.sn`}
+                                    control={control}
+                                    defaultValue=""
+                                    rules={{ required: true }}
+                                    render={({ field, fieldState: { error } }) => (
+                                        <input
+                                            type="text"
+                                            className={`w-full h-full border-none text-center text-[11px] outline-none p-1 
+                                                ${error ? 'border border-red-500 bg-red-50 px-1' : 'bg-transparent'}
+                                            `}
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            onBlur={field.onBlur}
+                                        />
+                                    )}
+                                />
+                            </td>
+
+                            {/* Item Input Column */}
+                            <td className="border border-black text-center align-middle">
+                                <Controller
+                                    name={`${name}.${group.axis}.${idx}.item`}
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <input
+                                            type="text"
+                                            className="w-full h-full border-none text-center text-[11px] outline-none p-1 bg-transparent"
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            onBlur={field.onBlur}
+                                        />
+                                    )}
                                 />
                             </td>
                         </tr>
@@ -80,7 +112,5 @@ function EDMCoilMagnetCheck({
         </table>
     );
 }
-
-
 
 export default EDMCoilMagnetCheck;

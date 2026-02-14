@@ -66,6 +66,8 @@ function Page5() {
                         labelA="A=Kb"
                         labelB="B"
                         standards={LevelTableXABSTD}
+                        showStd={true}
+                        validateStd={true}
                         defaultValue={{ a: [], b: [] }}
                     />
                 </div>
@@ -81,12 +83,16 @@ function Page5() {
                                 name="page5.pitchingXData"
                                 cols={5}
                                 standards={PitchingSTD}
+                                showStd={true}
+                                validateStd={true}
                                 defaultValue={[]}
                             />
                             <FormEDMTableRollingX
                                 name="page5.rollingXData"
                                 cols={5}
                                 standards={RollingSTD}
+                                showStd={true}
+                                validateStd={true}
                                 defaultValue={[]}
                             />
                         </div>

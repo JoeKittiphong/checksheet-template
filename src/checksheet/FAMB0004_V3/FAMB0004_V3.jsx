@@ -26,7 +26,6 @@ import Page19 from "./pages/Page19";
 import Page20 from "./pages/Page20";
 import Page21 from "./pages/Page21";
 import Page22 from "./pages/Page22";
-import Page23 from "./pages/Page23";
 import Blankpage from "./pages/Blankpage";
 
 function FAMB0004_V3() {
@@ -55,7 +54,6 @@ function FAMB0004_V3() {
         <Page20 />,
         <Page21 />,
         <Page22 />,
-        <Page23 />,
     ];
 
     const pageLabels = [
@@ -65,7 +63,7 @@ function FAMB0004_V3() {
         "Page 6", "Page 7", "Page 8", "Page 9", "Page 10",
         "Page 11", "Page 12", "Page 13", "Page 14", "Page 15",
         "Page 16", "Page 17", "Page 18", "Page 19", "Page 20",
-        "Page 21", "Page 22", "Page 23"
+        "Page 21", "Page 22"
     ];
 
     return (

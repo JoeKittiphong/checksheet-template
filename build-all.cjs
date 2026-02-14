@@ -4,7 +4,7 @@ const path = require('path');
 
 // List of forms to build
 const forms = [
-    "ASSY_PROBLEM",
+    // "ASSY_PROBLEM",
     // "FAMB0002V2",
     // "FAMB0003_V2",
     // "FAMB0004_V3",
@@ -15,6 +15,12 @@ const forms = [
     // "FAWI0025_V2",
     // "FAWI0026_V2",
     // "FAWI0038_V2"
+    // "FAMB0005_V2",
+    // "FAMB0006_V2",
+    "FAMB0008_V1"
+
+
+
 ];
 
 console.log("🚀 Starting Bulk Build Process...\n");

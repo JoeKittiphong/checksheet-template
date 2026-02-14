@@ -55,7 +55,7 @@ function Page9() {
                                 name="page9.runTime"
                                 minHours={2}
                                 validateStd={true}
-                                defaultValue={{ start: '', finish: '' }}
+                                defaultValue={{ startTime: '', finishTime: '' }}
                             />
                             <div className="mt-10 ml-80">
                                 <FormCheckedBox name="page9.checkedInfo15" />

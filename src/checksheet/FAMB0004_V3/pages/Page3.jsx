@@ -1,116 +1,132 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import FormEDMparallelY from "@/components/FormComponents/FormEDMparallelY";
+import FormTableYABDIFF from "@/components/FormComponents/FormTableYABDIFF";
 import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
-import { useFormContext, Controller } from "react-hook-form";
+import FormEDMTablePitchingY from "@/components/FormComponents/FormEDMTablePitchingY";
+import FormEDMTableRollingY from "@/components/FormComponents/FormEDMTableRollingY";
+import { useFormContext } from "react-hook-form";
 
 // Images
 import image5 from "@/assets/FAMB0004_V3/image-5.PNG";
 import image6 from "@/assets/FAMB0004_V3/image-6.PNG";
-import image6_1 from "@/assets/FAMB0004_V3/image-6.PNG";
-import image6_2 from "@/assets/FAMB0004_V3/image-6.PNG";
 
 function Page3() {
     const { control } = useFormContext();
 
-    // Standards สำหรับ EDMparallelY
-    const tableYABStandards = [
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
-        { min: 0, max: 3 },
+    // Standards สำหรับ Pitching Y
+    const pitchingYStandards = [
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
     ];
+
+    // Standards สำหรับ Rolling Y
+    const rollingYStandards = [
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+        { min: 0, max: 0, arrow: '' },
+    ];
+
+    // Standards for Item 6
+    const checkParallelStandards = Array(11).fill({ min: 0, max: 4, arrow: '' });
 
     return (
         <A4Paper content={content} currentPage={3}>
             <div>
-                <div>
-                    <p className="text-sm font-bold mb-5">5. CHECK ค่าความขนานและความตรงของแกน Y หลังจากที่ประกอบ Lm-guide แล้ว หน่วยวัดเป็น µm</p>
-                </div>
-                <div className="flex">
-                    <img src={image5} alt="page3" className="w-60 h-full m-2" />
-                    <div className="mr-10">
-                        <p>(เว้นระยะห่างช่องละ 105 mm.)</p>
-                        <FormEDMparallelY
-                            name="page3.tableYABData"
-                            rows={9}
-                            standards={tableYABStandards}
-                            showStd={false}
-                            validateStd={true}
-                            defaultValue={[
-                                { a: '0', b: '0' }, { a: '', b: '' }, { a: '', b: '' },
-                                { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
-                                { a: '', b: '' }, { a: '', b: '' }, { a: '0', b: '' }
-                            ]}
-                        />
-                        <div className="h-5 mb-5">
-                            <p>ค่าความตรงและขนานไม่เกิน 3 µm</p>
+                <div className="mt-5">
+                    <p className="text-sm font-bold">5. CHECK ค่า Pitching/Rolling แกน Y หน่วยวัดเป็น mm [ระหว่างราง A,B และ B,C]</p>
+                    <div className="flex">
+                        <img src={image5} alt="page3" className="w-70 h-full m-2" />
+                        <div>
+                            <div className="flex">
+                                <div className="m-5">
+                                    <FormEDMTablePitchingY
+                                        name="page3.pitchingYData"
+                                        rows={5}
+                                        standards={pitchingYStandards}
+                                        showStd={true}
+                                        validateStd={true}
+                                        defaultValue={['', '', '', '', '']}
+                                    />
+                                    <p className="text-sm">(เว้นระยะห่างช่องละ 328 mm.)</p>
+                                </div>
+                                <div className="m-5">
+                                    <FormEDMTableRollingY
+                                        name="page3.rollingYData"
+                                        rows={5}
+                                        standards={rollingYStandards}
+                                        showStd={true}
+                                        validateStd={true}
+                                        defaultValue={['', '', '', '', '']}
+                                    />
+                                    <p className="text-sm">(เว้นระยะห่างช่องละ 328 mm.)</p>
+                                </div>
+                            </div>
+                            <p className="text-sm ml-5 mb-2">MAX = 25 µm</p>
+                            <div className="flex">
+                                <div className="mr-2">
+                                    <FormChecknumber
+                                        name="page3.pitchingGaugeNo"
+                                        label="Level gauge No. (Pitching)"
+                                    />
+                                    <FormChecknumber
+                                        name="page3.rollingGaugeNo"
+                                        label="Level gauge No. (Rolling)"
+                                    />
+                                </div>
+                                <FormCheckedBox
+                                    name="page3.checkedInfo5"
+                                    label="CHECKED BY / DATE"
+                                />
+                            </div>
                         </div>
-                        <FormChecknumber
-                            name="page3.dialGaugeNo"
-                            label="Dial gauge No."
-                        />
-                        <FormChecknumber
-                            name="page3.parallelBarNo"
-                            label="Parallel bar No."
-                        />
-                    </div>
-                    <div className="h-80 flex flex-col justify-end">
-                        <FormCheckedBox name="page3.checkedInfo" />
                     </div>
                 </div>
                 <div className="mt-5">
-                    <p className="text-sm font-bold mb-5">6. CHECK การประกอบ Cooler block เข้ากับ Table</p>
-                    <img src={image6} alt="page3" className="w-150 h-full m-2 ml-10" />
-                </div>
-                <div className="flex">
-                    <div className="w-1/2 justify-center">
-                        <p className="text-sm ml-2">6.1 CHECK กำรล็อค Fitting (nipple)  เข้ำกับ Cooler block </p>
-                        <div className="flex">
-                            <img src={image6_1} alt="page3" className="w-1/2 h-full m-2 ml-10" />
-                            <p>เติมเครื่องหมาย ✔ ลงในช่องว่างเมื่อตรวจสอบได้ว่าการล็อคได้ผลแล้วทาการมาร์คสี </p>
-                        </div>
-                        <div className="flex justify-center my-2">
-                            <Controller
-                                name="page3.check61"
+                    <p className="text-sm font-bold">6. CHECK ค่าความขนานและความตรงของแกน Y หลังจากที่ประกอบ Lm-guide แล้ว หน่วยวัดเป็น µm [ระหว่างราง A และ B]</p>
+                    <div className="flex">
+                        <img src={image6} alt="page3" className="w-60 h-full m-2" />
+                        <div>
+                            <p className="mb-2">(เว้นระยะห่างช่องละ 131 mm.)</p>
+                            <FormTableYABDIFF
+                                name="page3.checkParallelData"
                                 control={control}
-                                defaultValue={false}
-                                render={({ field }) => (
-                                    <input
-                                        className="w-5 h-5"
-                                        type="checkbox"
-                                        checked={field.value ?? false}
-                                        onChange={(e) => field.onChange(e.target.checked)}
-                                    />
-                                )}
+                                rows={11}
+                                labelA="A=Kb"
+                                labelB="B"
+                                labelDiff="A+B"
+                                diffMode="sum"
+                                standards={checkParallelStandards}
+                                showStd={false}
+                                validateStd={true}
+                                showArrows={false}
+                                defaultValue={[
+                                    { a: '0', b: '0' }, { a: '', b: '' }, { a: '', b: '' },
+                                    { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
+                                    { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
+                                    { a: '', b: '' }, { a: '0', b: '' }
+                                ]}
                             />
                         </div>
-                    </div>
-                    <div className="w-1/2 justify-center">
-                        <p className="text-sm ml-2">6.2. ทดสอบ แรงดึงของ Tube ด้วยมือเปล่า</p>
-                        <div className="flex">
-                            <img src={image6_2} alt="page3" className="w-30 h-full m-2 ml-10" />
-                            <p className="flex-1 text-sm">เติมเครื่องหมาย ✔ ลงในช่องว่างเมื่อตรวจสอบ แล้วว่าดึง tube ตามตำแหน่ง Hose connector แล้ว tube ไม่หลุดออก</p>
-                        </div>
-                        <div className="flex justify-center my-2">
-                            <Controller
-                                name="page3.check62"
-                                control={control}
-                                defaultValue={false}
-                                render={({ field }) => (
-                                    <input
-                                        className="w-5 h-5"
-                                        type="checkbox"
-                                        checked={field.value ?? false}
-                                        onChange={(e) => field.onChange(e.target.checked)}
-                                    />
-                                )}
+                        <div className="h-70 flex flex-col justify-center ml-2 p-2">
+                            <p className="text-sm mb-2">ค่าความตรงและความขนาน ไม่เกิน 4 µm</p>
+                            <FormChecknumber
+                                name="page3.dialGaugeNo"
+                                label="Dial gauge No."
+                            />
+                            <FormChecknumber
+                                name="page3.parallelBarNo"
+                                label="Parallel bar No."
+                            />
+                            <div className="h-5"></div>
+                            <FormCheckedBox
+                                name="page3.checkedInfo6"
+                                label="CHECKED BY / DATE"
                             />
                         </div>
                     </div>

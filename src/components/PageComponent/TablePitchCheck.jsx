@@ -1,194 +1,149 @@
-import React, { useRef, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
+import { useWatch, Controller, useFormContext } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import { cleanNumericInput } from '../../utils/formatUtils';
 import { useFocusNavigation } from '../../hooks/useFocusNavigation';
 
 /**
  * TablePitchCheck Component
- * 
- * Styled to match the provided image exactly
+ * Refactored to use granular Controllers and Enable/Disable support.
+ * Supports continuity calculation via linkedNextVal and external focus control.
  */
-function TablePitchCheck({
-    data = { a: [], b: [] },
-    onChange = () => { },
+const TablePitchCheck = forwardRef(({
+    name,
+    control,
     axisLabel = "X1",
     rowCount = 16,
     stepSize = 20,
-    maxAB = 15,      // Max allowed value for A and B columns
-    maxDiff = 1,     // Max allowed value for A-B diff
-    showCalcCol = true  // Show/hide the calculated column
-}) {
+    maxAB = 15,
+    maxDiff = 1,
+    showCalcCol = true,
+    enabled = true, // Default enabled
+    onToggle = null, // Optional toggle handler
+    minVal = 0, // Optional minimum value for labels
+    linkedNextVal = null, // Value from the "next" table for continuity calculation
+    onReachTop = null, // Callback when Enter is pressed at Top Row (Index 0)
+    onReachBottomB = null, // Callback when Enter is pressed at Bottom Row B (or last enabled B)
+    disableBottomRowA = false,
+    disableBottomRowB = false,
+    disablePenultimateRowB = false, // Disable rowCount - 2 in Col B
+    disableReturnRow = false,
+    disableTopRowB = true, // Default true (standard 0 start)
+    disableTopRowA = false,
+    disableSecondRowB = false
+}, ref) => {
     const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
-    // Generate Row labels: bottom row (before RETURN) = 0, ascending upward
-    const rowLabels = [];
-    for (let i = 0; i < rowCount; i++) {
-        rowLabels.push((rowCount - 1 - i) * stepSize);
-    }
-
-    const returnIndex = rowCount;
 
     const inputRefsA = useRef([]);
     const inputRefsB = useRef([]);
 
-    const [editingCell, setEditingCell] = useState(null);
-    const [editingValue, setEditingValue] = useState('');
-
-    const handleFocus = (col, index, val) => {
-        setEditingCell({ col, index });
-        setEditingValue(val || '');
-    };
-
-    const handleChange = (val) => {
-        setEditingValue(cleanNumericInput(val));
-    };
-
-    const commitValue = () => {
-        if (!editingCell) return;
-        const { col, index } = editingCell;
-
-        const newData = { ...data };
-        if (!newData[col]) newData[col] = [];
-
-        newData[col][index] = editingValue;
-        onChange(newData);
-
-        setEditingCell(null);
-        setEditingValue('');
-    };
-
-    const handleKeyDown = (e, col, index) => {
-        if (e.key === 'Enter') {
-            commitValue();
-            if (col === 'a') {
-                moveFocus(e, index, inputRefsA.current, {
-                    direction: -1,
-                    onBoundary: () => {
-                        // Skip first B row (same as last A row), go to second B row
-                        // B starts from top (index 0). Index 1 is the 2nd row.
-                        const bRow1 = inputRefsB.current[1];
-                        if (bRow1) bRow1.focus();
-                    }
-                });
-            } else if (col === 'b') {
-                moveFocus(e, index, inputRefsB.current, {
-                    direction: 1,
-                    onBoundary: () => {
-                        // Go to RETURN row (handled as index returnIndex)
-                        const retRow = inputRefsB.current[returnIndex];
-                        if (retRow) retRow.focus();
-                    }
-                });
-            }
+    // Expose focus method to parent
+    useImperativeHandle(ref, () => ({
+        focusIndex: (index, col = 'a') => {
+            if (col === 'a') inputRefsA.current[index]?.focus();
+            else inputRefsB.current[index]?.focus();
         }
-    };
+    }));
 
-    const handleBlur = () => {
-        commitValue();
-    };
+    const tableData = useWatch({
+        control,
+        name: name,
+        defaultValue: { a: [], b: [] }
+    });
 
-    const getVal = (col, idx) => {
-        if (editingCell?.col === col && editingCell?.index === idx) return editingValue;
-        return data[col]?.[idx] || '';
-    };
+    const getVal = (col, idx) => tableData[col]?.[idx] || '';
 
-    // Calculated column: (A[currentRow] - A[nextRow]) * 5
     const getCalcCol = (idx) => {
-        const currA = parseFloat(data.a?.[idx]);
-        const nextA = parseFloat(data.a?.[idx + 1]);
+        const currA = parseFloat(getVal('a', idx));
+        // If last row, try using linkedNextVal for continuity
+        const nextValRaw = (idx === rowCount - 1 && linkedNextVal !== null)
+            ? linkedNextVal
+            : getVal('a', idx + 1);
+
+        const nextA = parseFloat(nextValRaw);
+
         if (isNaN(currA) || isNaN(nextA)) return '';
         return ((currA - nextA) * 5).toFixed(3).replace(/\.?0+$/, '');
     };
 
-    // A - B (absolute value)
     const getDiffAB = (idx) => {
-        const a = parseFloat(data.a?.[idx]);
-        const b = parseFloat(data.b?.[idx]);
+        const a = parseFloat(getVal('a', idx));
+        const b = parseFloat(getVal('b', idx));
         if (isNaN(a) || isNaN(b)) return '';
         return Math.abs(a - b).toFixed(3).replace(/\.?0+$/, '');
     };
 
-    // Validation functions
-    const isABInvalid = (col, idx) => {
-        return !validateValue(data[col]?.[idx], {
-            maxValue: maxAB,
-            validateStd: true
-        });
-    };
+    const isABInvalid = (val) => !validateValue(val, { maxValue: maxAB, validateStd: true });
 
     const isDiffInvalid = (idx) => {
-        const a = parseFloat(data.a?.[idx]);
-        const b = parseFloat(data.b?.[idx]);
-        if (isNaN(a) || isNaN(b)) return false;
-
-        const diff = Math.abs(a - b);
-        return !validateValue(diff, {
-            maxDiff: maxDiff,
-            validateStd: true
-        });
+        const diff = getDiffAB(idx);
+        if (diff === '') return false;
+        return !validateValue(diff, { maxDiff, validateStd: true, useAbs: true });
     };
 
-    // Position Max: Max of Column A
     const getPositionMax = () => {
-        const nums = (data.a || []).slice(0, rowCount).map(v => parseFloat(v)).filter(v => !isNaN(v));
-        if (nums.length === 0) return '';
-        return Math.max(...nums).toFixed(3).replace(/\.?0+$/, '');
+        const nums = (tableData.a || []).slice(0, rowCount).map(v => parseFloat(v)).filter(v => !isNaN(v));
+        return nums.length > 0 ? Math.max(...nums).toFixed(3).replace(/\.?0+$/, '') : '';
     };
 
-    // Lost Motion: Max of Column (A-B)
     const getLostMotion = () => {
         const diffs = [];
         for (let i = 0; i < rowCount; i++) {
-            const a = parseFloat(data.a?.[i]);
-            const b = parseFloat(data.b?.[i]);
+            const a = parseFloat(tableData.a?.[i]);
+            const b = parseFloat(tableData.b?.[i]);
             if (!isNaN(a) && !isNaN(b)) {
                 diffs.push(Math.abs(a - b));
             }
         }
-        if (diffs.length === 0) return '';
-        return Math.max(...diffs).toFixed(3).replace(/\.?0+$/, '');
+        return diffs.length > 0 ? Math.max(...diffs).toFixed(3).replace(/\.?0+$/, '') : '';
     };
+
+    const handleKeyDown = (e, col, index) => {
+        if (!enabled) return;
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            if (col === 'a') {
+                moveFocus(e, index, inputRefsA.current, {
+                    direction: -1, // Moving UP (calculating from bottom)
+                    onBoundary: () => {
+                        // If at Top (Index 0), trigger callback
+                        if (index === 0 && onReachTop) {
+                            onReachTop();
+                        } else {
+                            if (inputRefsB.current[1]) inputRefsB.current[1].focus();
+                        }
+                    }
+                });
+            } else if (col === 'b') {
+                moveFocus(e, index, inputRefsB.current, {
+                    direction: 1, // Moving DOWN
+                    onBoundary: () => {
+                        // Check if we are at bottom or last enabled row
+                        const isBottom = index === rowCount - 1;
+                        if (isBottom && onReachBottomB) {
+                            onReachBottomB();
+                        } else {
+                            const retRow = inputRefsB.current[rowCount];
+                            if (retRow && !disableReturnRow) retRow.focus();
+                        }
+                    }
+                });
+            }
+        }
+    };
+
+    const rowLabels = Array.from({ length: rowCount }, (_, i) => minVal + ((rowCount - 1 - i) * stepSize));
+    const returnIndex = rowCount;
 
     // Styles
-    const tableStyle = {
-        borderCollapse: 'collapse',
-        fontSize: '8px',
-        fontFamily: 'Arial, sans-serif'
-    };
-
-    const thStyle = {
-        border: '1px solid black',
-        padding: '2px 4px',
-        textAlign: 'center',
-        fontWeight: 'normal',
-        backgroundColor: 'white'
-    };
-
-    const tdStyle = {
-        border: '1px solid black',
-        padding: '2px 4px',
-        textAlign: 'center',
-        height: '14px',
-        minWidth: '24px'
-    };
-
-    const inputStyle = {
-        width: '100%',
-        height: '100%',
-        border: 'none',
-        textAlign: 'center',
-        fontSize: '8px',
-        padding: 0,
-        margin: 0,
-        background: 'transparent',
-        outline: 'none'
-    };
-
-    const invalidStyle = {
-        backgroundColor: '#ffcccc',
-        color: 'red'
-    };
+    const tableStyle = { borderCollapse: 'collapse', fontSize: '8px', fontFamily: 'Arial, sans-serif' };
+    const thStyle = { border: '1px solid black', padding: '2px 4px', textAlign: 'center', fontWeight: 'normal', backgroundColor: 'white' };
+    const tdStyle = { border: '1px solid black', padding: '2px 4px', textAlign: 'center', height: '14px', minWidth: '24px' };
+    const inputStyle = { width: '100%', height: '100%', border: 'none', textAlign: 'center', fontSize: '8px', padding: 0, margin: 0, background: 'transparent', outline: 'none' };
+    const invalidStyle = { backgroundColor: '#ffcccc', color: 'red' };
 
     return (
         <div style={{ display: 'inline-block' }}>
@@ -197,7 +152,12 @@ function TablePitchCheck({
                     <tr>
                         <th rowSpan={2} style={{ ...thStyle, width: '30px' }}>mm</th>
                         <th rowSpan={2} style={{ ...thStyle, width: '24px' }}></th>
-                        <th colSpan={3} style={thStyle}>{axisLabel}</th>
+                        <th colSpan={3} style={thStyle}>
+                            <div className="flex items-center justify-center gap-1">
+                                {onToggle && <input type="checkbox" checked={enabled} onChange={onToggle} />}
+                                <span>{axisLabel}</span>
+                            </div>
+                        </th>
                     </tr>
                     <tr>
                         <th style={{ ...thStyle, width: '24px' }}>A</th>
@@ -209,68 +169,140 @@ function TablePitchCheck({
                     {rowLabels.map((label, idx) => (
                         <tr key={idx}>
                             <td style={tdStyle}>{label}</td>
-                            <td style={tdStyle}>{showCalcCol ? getCalcCol(idx) : ''}</td>
-                            <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('a', idx) ? (isABInvalid('a', idx) ? invalidStyle : {}) : { border: '2px solid red' }) }}>
-                                <input
-                                    ref={el => inputRefsA.current[idx] = el}
-                                    type="text"
-                                    style={{ ...inputStyle, ...(isABInvalid('a', idx) ? { color: 'red' } : {}) }}
-                                    value={getVal('a', idx)}
-                                    onFocus={() => handleFocus('a', idx, data.a?.[idx])}
-                                    onChange={e => handleChange(e.target.value)}
-                                    onKeyDown={e => handleKeyDown(e, 'a', idx)}
-                                    onBlur={handleBlur}
+                            <td style={tdStyle}>{showCalcCol && enabled ? getCalcCol(idx) : ''}</td>
+
+                            {/* Column A */}
+                            <td style={{ ...tdStyle, padding: 0, ...(!enabled ? { backgroundColor: '#e0e0e0' } : {}) }}>
+                                <Controller
+                                    name={`${name}.a.${idx}`}
+                                    control={control}
+                                    rules={{ required: enabled }}
+                                    render={({ field, fieldState: { error } }) => {
+                                        const val = field.value || '';
+                                        const disabledRow = (idx === rowCount - 1 && disableBottomRowA) ||
+                                            (idx === 0 && disableTopRowA);
+                                        const invalid = enabled && !disabledRow && isABInvalid(val) && (isSubmitted || val);
+                                        const isDisabled = !enabled || disabledRow;
+
+                                        return (
+                                            <input
+                                                ref={(e) => {
+                                                    field.ref(e);
+                                                    inputRefsA.current[idx] = e;
+                                                }}
+                                                type="text"
+                                                disabled={isDisabled}
+                                                style={{
+                                                    ...inputStyle,
+                                                    ...(error && !isDisabled ? { border: '2px solid red', backgroundColor: '#fff0f0' } : {}),
+                                                    ...(invalid ? { color: 'red' } : {}),
+                                                    ...(isDisabled ? { cursor: 'not-allowed', backgroundColor: '#e0e0e0' } : {})
+                                                }}
+                                                value={val}
+                                                onChange={(e) => field.onChange(cleanNumericInput(e.target.value))}
+                                                onKeyDown={(e) => handleKeyDown(e, 'a', idx)}
+                                                onBlur={field.onBlur}
+                                            />
+                                        );
+                                    }}
                                 />
                             </td>
-                            <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('b', idx) ? (isABInvalid('b', idx) ? invalidStyle : {}) : { border: '2px solid red' }) }}>
-                                <input
-                                    ref={el => inputRefsB.current[idx] = el}
-                                    type="text"
-                                    style={{ ...inputStyle, ...(isABInvalid('b', idx) ? { color: 'red' } : {}) }}
-                                    value={getVal('b', idx)}
-                                    onFocus={() => handleFocus('b', idx, data.b?.[idx])}
-                                    onChange={e => handleChange(e.target.value)}
-                                    onKeyDown={e => handleKeyDown(e, 'b', idx)}
-                                    onBlur={handleBlur}
-                                />
+
+                            {/* Column B */}
+                            <td style={{ ...tdStyle, padding: 0, ...((idx === 0 && disableTopRowB) || !enabled ? { backgroundColor: '#e0e0e0' } : {}) }}>
+                                {(idx > 0 || !disableTopRowB) && (
+                                    <Controller
+                                        name={`${name}.b.${idx}`}
+                                        control={control}
+                                        rules={{ required: enabled }}
+                                        render={({ field, fieldState: { error } }) => {
+                                            const val = field.value || '';
+                                            const disabledRow = (idx === rowCount - 1 && disableBottomRowB) ||
+                                                (idx === rowCount - 2 && disablePenultimateRowB) ||
+                                                (idx === 0 && disableTopRowB) ||
+                                                (idx === 1 && disableSecondRowB);
+                                            const invalid = enabled && !disabledRow && isABInvalid(val) && (isSubmitted || val);
+                                            const isDisabled = !enabled || disabledRow;
+
+                                            return (
+                                                <input
+                                                    ref={(e) => {
+                                                        field.ref(e);
+                                                        inputRefsB.current[idx] = e;
+                                                    }}
+                                                    type="text"
+                                                    disabled={isDisabled}
+                                                    style={{
+                                                        ...inputStyle,
+                                                        ...(error && !isDisabled ? { border: '2px solid red', backgroundColor: '#fff0f0' } : {}),
+                                                        ...(invalid ? { color: 'red' } : {}),
+                                                        ...(isDisabled ? { cursor: 'not-allowed', backgroundColor: '#e0e0e0' } : {})
+                                                    }}
+                                                    value={val}
+                                                    onChange={(e) => field.onChange(cleanNumericInput(e.target.value))}
+                                                    onKeyDown={(e) => handleKeyDown(e, 'b', idx)}
+                                                    onBlur={field.onBlur}
+                                                />
+                                            );
+                                        }}
+                                    />
+                                )}
                             </td>
-                            <td style={{ ...tdStyle, ...(isDiffInvalid(idx) ? invalidStyle : {}) }}>{getDiffAB(idx)}</td>
+
+                            {/* Diff Column */}
+                            <td style={{ ...tdStyle, ...(enabled && isDiffInvalid(idx) ? invalidStyle : {}), ...(!enabled ? { backgroundColor: '#e0e0e0' } : {}) }}>
+                                {enabled ? getDiffAB(idx) : ''}
+                            </td>
                         </tr>
                     ))}
 
                     {/* RETURN Row */}
                     <tr>
                         <td colSpan={3} style={{ ...tdStyle, textAlign: 'left', paddingLeft: '4px' }}>RETURN</td>
-                        <td style={{ ...tdStyle, padding: 0, ...(!isSubmitted || getVal('b', returnIndex) ? {} : { border: '2px solid red' }) }}>
-                            <input
-                                ref={el => inputRefsB.current[returnIndex] = el}
-                                type="text"
-                                style={inputStyle}
-                                value={getVal('b', returnIndex)}
-                                onFocus={() => handleFocus('b', returnIndex, data.b?.[returnIndex])}
-                                onChange={e => handleChange(e.target.value)}
-                                onKeyDown={e => handleKeyDown(e, 'b', returnIndex)}
-                                onBlur={handleBlur}
+                        <td style={{ ...tdStyle, padding: 0, ...(!enabled ? { backgroundColor: '#e0e0e0' } : {}) }}>
+                            <Controller
+                                name={`${name}.b.${returnIndex}`}
+                                control={control}
+                                rules={{ required: enabled }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <input
+                                        ref={(e) => {
+                                            field.ref(e);
+                                            inputRefsB.current[returnIndex] = e;
+                                        }}
+                                        type="text"
+                                        disabled={!enabled}
+                                        style={{
+                                            ...inputStyle,
+                                            ...(error ? { border: '2px solid red', backgroundColor: '#fff0f0' } : {}),
+                                            ...(!enabled ? { cursor: 'not-allowed', backgroundColor: '#e0e0e0' } : {})
+                                        }}
+                                        value={field.value || ''}
+                                        onChange={(e) => field.onChange(cleanNumericInput(e.target.value))}
+                                        onKeyDown={(e) => handleKeyDown(e, 'b', returnIndex)}
+                                        onBlur={field.onBlur}
+                                    />
+                                )}
                             />
                         </td>
-                        <td style={tdStyle}></td>
+                        <td style={{ ...tdStyle, ...(!enabled ? { backgroundColor: '#e0e0e0' } : {}) }}></td>
                     </tr>
 
                     {/* POSITION MAX Row */}
                     <tr>
                         <td colSpan={3} style={{ ...tdStyle, textAlign: 'left', paddingLeft: '4px', fontWeight: 'bold' }}>POSITION MAX</td>
-                        <td colSpan={2} style={tdStyle}>{getPositionMax()}</td>
+                        <td colSpan={2} style={tdStyle}>{enabled ? getPositionMax() : ''}</td>
                     </tr>
 
                     {/* LOST MOTION Row */}
                     <tr>
                         <td colSpan={3} style={{ ...tdStyle, textAlign: 'left', paddingLeft: '4px', fontWeight: 'bold' }}>LOST MOTION</td>
-                        <td colSpan={2} style={tdStyle}>{getLostMotion()}</td>
+                        <td colSpan={2} style={tdStyle}>{enabled ? getLostMotion() : ''}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     );
-}
+});
 
 export default TablePitchCheck;

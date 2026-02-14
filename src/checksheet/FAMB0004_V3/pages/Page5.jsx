@@ -10,6 +10,7 @@ import { useFormContext } from "react-hook-form";
 // Images
 import image9 from "@/assets/FAMB0004_V3/image-9.PNG";
 import image10 from "@/assets/FAMB0004_V3/image-10.PNG";
+import FormItemCheck from "@/components/FormComponents/FormItemCheck";
 
 function Page5() {
     const { control } = useFormContext();
@@ -47,63 +48,49 @@ function Page5() {
     return (
         <A4Paper content={content} currentPage={5}>
             <div>
-                <p className="text-sm font-bold mb-5">9. CHECK LEVEL X การเช็คระดับน ้าแกน X (หลังจากที่ประกอบ Saddle ขึ้นบน Bed แล้ว) หน่วยวัดเป็น µm</p>
-                <div className="flex w-full justify-center">
-                    <div className="mr-10 mb-5 flex flex-col items-center">
-                        <p className="text-sm ">(เว้นระยะห่างช่องละ 107 mm.)</p>
-                        <img src={image9} alt="page5" className="w-70" />
+                <p className="text-sm font-bold">9. ตรวจสอบการ Support Leveling bolt ก่อนการ CHECK ACCURACY ของเครื่อง</p>
+                <div>
+                    <p className="text-sm ml-5 mb-5">เมื่อประกอบ Table , Saddle เข้ำกับ Bed แล้ว ให้เลื่อน Saddle ไปต ำแหน่ง Y+ แล้วต้อง <b>หมุน Leveling bolt Support(ตำแหน่งหมายเลข 4,5)</b> ลงมาชน Leveling block ให้ตึงมือ<b>(ห้ามใช้ ประแจ)</b></p>
+                    <div className="flex">
+                        <img src={image9} alt="page5" className="w-70 m-2 ml-10" />
+                        <div>
+                            <div className="flex mb-10 items-start mt-5">
+                                <div className="w-10 h-8 flex items-center justify-center mr-2">
+                                    <FormItemCheck
+                                        name="page5.levelingBoltCheck"
+                                        label={null}
+                                    />
+                                </div>
+                                <p>หมุน Leveling bolt support ตำแหน่ง 4 และ 5<br />ลงมาชน Leveling block โดยไม่ได้ใช้ประแจ<br />เรียบร้อยแล้ว</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="mt-10 flex flex-col justify-between h-40">
-                        <FormCheckedBox name="page5.checkedInfo9" />
-                        <FormChecknumber
-                            name="page5.levelingGaugeNo9"
-                            label="Leveling guage No."
-                        />
-                    </div>
-                </div>
-                <div className="ml-20 mb-10">
-                    <FormLevelTableXAB
-                        name="page5.levelXData"
-                        cols={9}
-                        labelA="A=Kb"
-                        labelB="B"
-                        standards={LevelTableXABSTD}
-                        defaultValue={{ a: [], b: [] }}
-                    />
                 </div>
                 <p className="text-sm font-bold">10. CHECK ค่า Pitching/Rolling แกน X (หลังจากประกอบ Saddle เข้ากับ Bed เรียบร้อยแล้ว) หน่วยวัดเป็น µm</p>
                 <div>
-                    <div className="flex mb-5">
-                        <div className="mr-10 flex flex-col items-center">
-                            <p className="text-sm">(เว้นระยะห่างช่องละ 212 mm.)</p>
-                            <img src={image10} alt="page5" className="w-70" />
-                        </div>
-                        <div className="flex flex-col justify-between">
-                            <FormEDMTablePitchingX
-                                name="page5.pitchingXData"
-                                cols={5}
-                                standards={PitchingSTD}
-                                defaultValue={[]}
-                            />
-                            <FormEDMTableRollingX
-                                name="page5.rollingXData"
-                                cols={5}
-                                standards={RollingSTD}
-                                defaultValue={[]}
+                    <div className="flex flex-col items-center mb-5">
+                        <p className="text-sm">(เว้นระยะห่างช่องละ 212 mm.)</p>
+                        <img src={image10} alt="page5" className="w-70" />
+                    </div>
+                    <div className="flex">
+                        <div className="mb-10">
+                            <FormLevelTableXAB
+                                name="page5.levelXData"
+                                cols={13}
+                                labelA="A=Kb"
+                                labelB="B"
+                                standards={LevelTableXABSTD}
+                                validateStd={false}
+                                showStd={false}
+                                defaultValue={{ a: [], b: [] }}
                             />
                         </div>
                     </div>
-                    <div className="flex">
-                        <div className="flex flex-col justify-between h-20 ml-20 mr-10">
-                            <FormChecknumber
-                                name="page5.pitchingGaugeNo"
-                                label="(Pitching) Leveling guage No."
-                            />
-                            <FormChecknumber
-                                name="page5.rollingGaugeNo"
-                                label="( Rolling ) Leveling guage No."
-                            />
-                        </div>
+                    <div className="flex justify-between h-20 ml-20 mr-10">
+                        <FormChecknumber
+                            name="page5.rollingGaugeNo"
+                            label="Leveling guage No."
+                        />
                         <FormCheckedBox name="page5.checkedInfo10" />
                     </div>
                 </div>

@@ -26,9 +26,9 @@ function Page7() {
                             <FormEDMCoilTubeCheck
                                 name="page7.coilTubeData121"
                                 defaultValue={{
-                                    x: { in: false, out: false },
-                                    ykc: { in: false, out: false },
-                                    ykb: { in: false, out: false }
+                                    x: { in: null, out: null },
+                                    ykc: { in: null, out: null },
+                                    ykb: { in: null, out: null }
                                 }}
                             />
                         </div>
@@ -45,9 +45,9 @@ function Page7() {
                             <FormEDMCoilTubeCheck
                                 name="page7.coilTubeData122"
                                 defaultValue={{
-                                    x: { in: false, out: false },
-                                    ykc: { in: false, out: false },
-                                    ykb: { in: false, out: false }
+                                    x: { in: null, out: null },
+                                    ykc: { in: null, out: null },
+                                    ykb: { in: null, out: null }
                                 }}
                             />
                         </div>

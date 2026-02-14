@@ -4,20 +4,12 @@ import PitchingTable from '../common/PitchingTable';
 /**
  * TableRollingY Component
  * Wrapper around PitchingTable for Rolling Y data.
- * 
- * Logic:
- * - Layout: Vertical (like Pitching Y)
- * - Arrows: Left/Right (like Pitching X) -> determined by arrowAxis="x"
- * - Rows: Y+, Y0 (Ref), Y-
- * - Cols: B, C, DIFF
  */
 const TableRollingY = ({
-    data = { b: [], c: [] },
-    onChange = () => { },
+    name,
+    control,
     standard = { min: -20, max: 20 },
-    referenceRow = 1, // Default to middle row (index 1) as ref (Y0)
     showColC = true,
-    showColDiff = true
 }) => {
     // Config for PitchingTable
     const config = {
@@ -33,15 +25,16 @@ const TableRollingY = ({
             { label: 'Y-' }
         ],
         diffLabel: 'DIFF',
-        dataLabel: 'DATA ROLLING - Y'
+        dataLabel: 'DATA ROLLING - Y',
+        calcDiffWithZero: !showColC // Enable zero-diff calc if C col is hidden
     };
 
     return (
         <PitchingTable
+            name={name}
+            control={control}
             axis="y"            // Vertical Layout
             arrowAxis="x"       // Left/Right Arrows
-            data={data}
-            onChange={onChange}
             config={config}
             standard={standard}
         />

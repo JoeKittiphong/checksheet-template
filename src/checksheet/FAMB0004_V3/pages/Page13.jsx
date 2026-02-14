@@ -10,13 +10,13 @@ function Page13() {
 
     return (
         <A4Paper content={content} currentPage={13}>
-            <div>
+            <div className="relative">
                 <p className="text-sm font-bold">20. STRAIGHTNESS  ( TOP )</p>
-                <div className="flex gap-5 ml-15 mt-2">
+                <div className="flex items-start gap-5 ml-15 mt-2">
                     <FormEDMTableStraightness
                         name="page13.straightnessDataLeft"
                         title="Straight of X Axis"
-                        rowCount={31}
+                        rowCount={44}
                         strokeStep={20}
                         standard={3}
                         defaultValue={{}}
@@ -24,13 +24,13 @@ function Page13() {
                     <FormEDMTableStraightness
                         name="page13.straightnessDataRight"
                         title="Straight of Y Axis"
-                        rowCount={31}
+                        rowCount={34}
                         strokeStep={20}
                         standard={3}
                         defaultValue={{}}
                     />
                 </div>
-                <div className="flex justify-between mt-5 ml-50 mr-30">
+                <div className="flex justify-between mt-5 ml-50 mr-30 absolute bottom-0 right-[-100px]">
                     <div className="space-y-2">
                         <FormChecknumber
                             name="page13.dialGaugeNo"

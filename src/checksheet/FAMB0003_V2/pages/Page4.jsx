@@ -3,6 +3,7 @@ import { content } from "../FAMB0003_V2-setting";
 import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
 import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import FormLevelTableXAB from "@/components/FormComponents/FormLevelTableXAB";
+import FormItemCheck from "@/components/FormComponents/FormItemCheck";
 import { useFormContext, Controller } from "react-hook-form";
 
 // Images
@@ -22,21 +23,14 @@ function Page4() {
                         <div className="flex">
                             <img src={image7} alt="page4" className="w-80 m-2 ml-10" />
                             <div>
-                                <div className="flex mb-10">
-                                    <Controller
+                                <div className="flex mb-10 items-center">
+                                    <FormItemCheck
                                         name="page4.levelingBoltCheck"
-                                        control={control}
-                                        defaultValue={false}
-                                        render={({ field }) => (
-                                            <input
-                                                className="w-10 h-10 m-2"
-                                                type="checkbox"
-                                                checked={field.value ?? false}
-                                                onChange={(e) => field.onChange(e.target.checked)}
-                                            />
-                                        )}
+                                        label=""
+                                        className="m-2 ml-0"
+                                        checkboxSize="w-5 h-5"
                                     />
-                                    <p>หมุน Leveling bolt support ตำแหน่ง 4 และ 5ลงมาชน Leveling block โดยไม่ได้ใช้ประแจเรียบร้อยแล้ว</p>
+                                    <p className="ml-2">หมุน Leveling bolt support ตำแหน่ง 4 และ 5ลงมาชน Leveling block โดยไม่ได้ใช้ประแจเรียบร้อยแล้ว</p>
                                 </div>
                                 <FormCheckedBox name="page4.checkedInfo7" />
                             </div>
@@ -57,8 +51,8 @@ function Page4() {
                         <FormLevelTableXAB
                             name="page4.levelXData"
                             cols={9}
-                            labelA="B"
-                            labelB="A=Kb"
+                            labelA="A=Kb"
+                            labelB="B"
                             defaultValue={{ a: [], b: [] }}
                         />
                     </div>

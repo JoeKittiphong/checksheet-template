@@ -1,47 +1,89 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import FormTablePitchXYZUV from "@/components/FormComponents/FormTablePitchXYZUV";
-import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
+import FormEDMBodyCheckTable from "@/components/FormComponents/FormEDMBodyCheckTable";
 import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import { useFormContext } from "react-hook-form";
+
+// Images
+import image27 from "@/assets/FAMB0004_V3/image-29.png";
 
 function Page19() {
     const { control } = useFormContext();
 
+    const defaultBodyRows = [
+        {
+            no: 1,
+            partName: "LM-GUIDE Y",
+            points: [
+                { check: "CS 6X25", qty: 26, torque: 150 },
+                { check: "H.S.CTSK[M6X18(SCM)]", qty: 26, torque: 50 }
+            ],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 2,
+            partName: "MAGNET Y",
+            points: [{ check: "CS 6X25", qty: 16, torque: 150 }],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 3,
+            partName: "LINEAR COIL Y",
+            points: [{ check: "CS 6X25", qty: 20, torque: 150 }],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 4,
+            partName: "SADDLE TO BED",
+            points: [{ check: "CS 8X35", qty: 24, torque: 250 }],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 5,
+            partName: "MAGNET Y",
+            points: [{ check: "CS 6X25", qty: 16, torque: 150 }],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 6,
+            partName: "LM-GUIDE X",
+            points: [
+                { check: "CS 8X25", qty: 26, torque: 250 },
+                { check: "H.S.CTSK[M6X18(SCM)]", qty: 26, torque: 50 }
+            ],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 7,
+            partName: "MAGNET X",
+            points: [{ check: "CS 6X25", qty: 8, torque: 150 }],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        },
+        {
+            no: 8,
+            partName: "LINEAR COIL X",
+            points: [{ check: "CS 6X25", qty: 10, torque: 150 }],
+            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
+        }
+    ];
+
     return (
         <A4Paper content={content} currentPage={19}>
-            <div className="flex flex-col gap-2">
-                <p className="text-sm font-bold">26. PITCH CHECK (Z - AXIS)</p>
+            <div className="flex flex-col gap-4">
+                <p className="text-sm font-bold uppercase">27. TORQUE CHECK (1/2)</p>
                 <div className="flex justify-center">
-                    <FormTablePitchXYZUV
-                        name="page19.pitchZData"
-                        rowCount={27}
-                        stepSize={20}
-                        showCalcCol={false}
-                        tableLabels={['Z1', 'Z2', 'Z3', 'Z4']}
-                        maxAB={15}
-                        maxDiff={1}
-                        defaultValue={[
-                            { a: [], b: [] },
-                            { a: [], b: [] },
-                            { a: [], b: [] },
-                            { a: [], b: [] }
-                        ]}
-                    />
+                    <img src={image27} alt="page20" className="w-150" />
                 </div>
-
-                <div className="flex justify-start items-end gap-10 mt-4 ml-20">
-                    <div className="space-y-4">
-                        <FormChecknumber
-                            name="page19.pitchMasterNo"
-                            label="PITCH MASTER NO."
-                        />
-                        <FormChecknumber
-                            name="page19.dialGaugeNo"
-                            label="DIAL GAUGE NO."
-                        />
-                    </div>
-                    <FormCheckedBox name="page19.checkedInfo26" />
+                <FormEDMBodyCheckTable
+                    name="page19.bodyRows"
+                    defaultValue={defaultBodyRows}
+                />
+                <div className="flex justify-between">
+                    <p className="text-sm">** DOBLE CHECK BY LEADER UP</p>
+                    <FormChecknumber
+                        name="page19.torqueWrenchNo"
+                        label="TORQUE NO."
+                    />
                 </div>
             </div>
         </A4Paper>

@@ -10,15 +10,15 @@ function Page17() {
 
     return (
         <A4Paper content={content} currentPage={17}>
-            <div className="flex flex-col gap-2">
-                <p className="text-sm font-bold">24. PITCH CHECK (X - AXIS)</p>
+            <div className="flex flex-col">
+                <p className="text-sm font-bold">25. PITCH CHECK (Y - AXIS)</p>
                 <div className="flex justify-center">
                     <FormTablePitchXYZUV
-                        name="page17.pitchXData"
-                        rowCount={31}
+                        name="page17.pitchYData"
+                        rowCount={44}
                         stepSize={20}
                         showCalcCol={false}
-                        tableLabels={['X1', 'X2', 'X3', 'X4']}
+                        tableLabels={['Y1', 'Y2', 'Y3', 'Y4']}
                         maxAB={15}
                         maxDiff={1}
                         defaultValue={[
@@ -30,8 +30,7 @@ function Page17() {
                     />
                 </div>
 
-                <div className="flex justify-start items-end gap-10 mt-4 ml-20">
-                    <div className="space-y-4">
+                <div className="flex justify-start items-end gap-10 mt-2 ml-20">
                         <FormChecknumber
                             name="page17.pitchMasterNo"
                             label="PITCH MASTER NO."
@@ -40,8 +39,9 @@ function Page17() {
                             name="page17.dialGaugeNo"
                             label="DIAL GAUGE NO."
                         />
+                    <div className="space-y-4">
                     </div>
-                    <FormCheckedBox name="page17.checkedInfo24" />
+                    {/* <FormCheckedBox name="page17.checkedInfo25" /> */}
                 </div>
             </div>
         </A4Paper>

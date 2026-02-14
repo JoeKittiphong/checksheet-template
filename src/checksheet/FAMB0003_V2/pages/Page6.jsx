@@ -42,9 +42,14 @@ function Page6() {
                         showStd={false}
                         validateStd={false}
                         useArrow={false}
-                        labelA="B"
-                        labelB="A=Kb"
-                        defaultValue={{ a: [], b: [] }}
+                        labelA="A=Kb"
+                        labelB="B"
+                        labelDiff="A+B"
+                        calcType="sum"
+                        defaultValue={{
+                            a: ["0", "", "", "", "", "", "", "", "0"],
+                            b: ["0", "", "", "", "", "", "", "", ""]
+                        }}
                     />
                 </div>
                 <div className="ml-20 mb-10">
@@ -56,9 +61,14 @@ function Page6() {
                         showStd={false}
                         validateStd={true}
                         useArrow={false}
-                        labelA="B"
-                        labelB="A=Kb"
-                        defaultValue={{ a: [], b: [] }}
+                        labelA="A=Kb"
+                        labelB="B"
+                        labelDiff="A+B"
+                        calcType="sum"
+                        defaultValue={{
+                            a: ["0", "", "", "", "", "", "", "", "0"],
+                            b: ["0", "", "", "", "", "", "", "", ""]
+                        }}
                     />
                 </div>
                 <div className="flex w-full justify-center">

@@ -7,8 +7,8 @@ import EntoTable from '../common/EntoTable';
  * Structure: Single Section (A, B, Diff)
  */
 const TableEnto = ({
-    data = { a: [], b: [] },
-    onChange = () => { },
+    name,
+    control,
     axisLabel = "Z1L",
     rowCount = 21,
     stepSize = 20,
@@ -27,8 +27,8 @@ const TableEnto = ({
 
     return (
         <EntoTable
-            data={data}
-            onChange={onChange}
+            name={name}
+            control={control}
             sections={sections}
             rowCount={rowCount}
             stepSize={stepSize}

@@ -11,14 +11,14 @@ function Page18() {
     return (
         <A4Paper content={content} currentPage={18}>
             <div className="flex flex-col gap-2">
-                <p className="text-sm font-bold">25. PITCH CHECK (Y - AXIS)</p>
+                <p className="text-sm font-bold">26. PITCH CHECK (Z - AXIS)</p>
                 <div className="flex justify-center">
                     <FormTablePitchXYZUV
-                        name="page18.pitchYData"
+                        name="page18.pitchZData"
                         rowCount={31}
                         stepSize={20}
                         showCalcCol={false}
-                        tableLabels={['Y1', 'Y2', 'Y3', 'Y4']}
+                        tableLabels={['Z1', 'Z2', 'Z3', 'Z4']}
                         maxAB={15}
                         maxDiff={1}
                         defaultValue={[
@@ -41,7 +41,7 @@ function Page18() {
                             label="DIAL GAUGE NO."
                         />
                     </div>
-                    <FormCheckedBox name="page18.checkedInfo25" />
+                    <FormCheckedBox name="page18.checkedInfo26" />
                 </div>
             </div>
         </A4Paper>

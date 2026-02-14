@@ -1,0 +1,16 @@
+import React from 'react';
+import A4Paper from "@/components/UIcomponent/A4Paper";
+import { content } from "../FAMB0005_V2-setting";
+
+function Page20() {
+    return (
+        <A4Paper content={content} currentPage={20}>
+            <div className="p-4">
+                <h2 className="text-xl font-bold mb-4">Page 20</h2>
+                {/* Add content components here */}
+            </div>
+        </A4Paper>
+    );
+}
+
+export default Page20;

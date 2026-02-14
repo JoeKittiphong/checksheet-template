@@ -16,7 +16,7 @@ const FormStartFinishTime = ({ name, minHours, validateStd, defaultValue = { sta
                     return (value.startTime && value.finishTime) || "Required";
                 }
             }}
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
                 <StartFinishTime
                     {...field}
                     startTime={field.value?.startTime || ''}
@@ -25,6 +25,7 @@ const FormStartFinishTime = ({ name, minHours, validateStd, defaultValue = { sta
                     onFinishChange={(val) => field.onChange({ ...field.value, finishTime: val })}
                     minHours={minHours}
                     validateStd={validateStd}
+                    error={!!fieldState.error}
                     {...props}
                 />
             )}

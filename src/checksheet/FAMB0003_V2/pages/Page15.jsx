@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 
 // Images
 import image22 from "@/assets/FAMB0003_V2/image-22.png";
+import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 
 function Page15() {
     const { control } = useFormContext();
@@ -34,6 +35,10 @@ function Page15() {
                                 unit="μm"
                                 maxStd={parallelHeadSTD}
                                 minStd={0}
+                            />
+                            <FormChecknumber
+                                name="page15.dialgauge"
+                                label="Dial gauge No. = "
                             />
                         </div>
                         <FormCheckedBox name="page15.checkedInfo22" />

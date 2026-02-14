@@ -1,9 +1,11 @@
-﻿import A4Paper from "@/components/UIcomponent/A4Paper";
+﻿import React from 'react';
+import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0003_V2-setting";
 import FormEDMparallelY from "@/components/FormComponents/FormEDMparallelY";
 import FormChecknumber from "@/components/FormComponents/FormChecknumber";
 import FormCheckedBox from "@/components/FormComponents/FormCheckedBox";
-import { useFormContext, Controller } from "react-hook-form";
+import FormItemCheck from "@/components/FormComponents/FormItemCheck"; // Added
+import { useFormContext } from "react-hook-form"; // Removed Controller
 
 // Images
 import image5 from "@/assets/FAMB0003_V2/image-5.png";
@@ -77,18 +79,10 @@ function Page3() {
                             <p>เติมเครื่องหมาย ✔ ลงในช่องว่างเมื่อตรวจสอบได้ว่าการล็อคได้ผลแล้วทาการมาร์คสี </p>
                         </div>
                         <div className="flex justify-center my-2">
-                            <Controller
+                            <FormItemCheck
                                 name="page3.check61"
-                                control={control}
-                                defaultValue={false}
-                                render={({ field }) => (
-                                    <input
-                                        className="w-5 h-5"
-                                        type="checkbox"
-                                        checked={field.value ?? false}
-                                        onChange={(e) => field.onChange(e.target.checked)}
-                                    />
-                                )}
+                                label=""
+                                className="justify-center"
                             />
                         </div>
                     </div>
@@ -99,18 +93,10 @@ function Page3() {
                             <p className="flex-1 text-sm">เติมเครื่องหมาย ✔ ลงในช่องว่างเมื่อตรวจสอบ แล้วว่าดึง tube ตามตำแหน่ง Hose connector แล้ว tube ไม่หลุดออก</p>
                         </div>
                         <div className="flex justify-center my-2">
-                            <Controller
+                            <FormItemCheck
                                 name="page3.check62"
-                                control={control}
-                                defaultValue={false}
-                                render={({ field }) => (
-                                    <input
-                                        className="w-5 h-5"
-                                        type="checkbox"
-                                        checked={field.value ?? false}
-                                        onChange={(e) => field.onChange(e.target.checked)}
-                                    />
-                                )}
+                                label=""
+                                className="justify-center"
                             />
                         </div>
                     </div>

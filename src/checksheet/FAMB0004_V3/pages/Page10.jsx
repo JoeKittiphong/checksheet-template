@@ -7,7 +7,7 @@ import FormEDMLevelCeramic from "@/components/FormComponents/FormEDMLevelCeramic
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image17 from "@/assets/FAMB0004_V3/image-10.PNG";
+import image17 from "@/assets/FAMB0004_V3/image-19.PNG";
 
 function Page10() {
     const { control } = useFormContext();
@@ -48,8 +48,8 @@ function Page10() {
                             <img src={image17} alt="page10" className="w-80 mb-10 ml-5 mr-10" />
                             <FormEDMLevelCeramic
                                 name="page10.levelCeramicData"
-                                standardX={20}
-                                standardY={20}
+                                standardX={30}
+                                standardY={30}
                                 defaultValue={{
                                     x: {
                                         tl: '', tc: '', tr: '',

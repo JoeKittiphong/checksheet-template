@@ -18,7 +18,7 @@ export const cover = {
     dateOfIssue: "2026-01-19",
     approvalDate: "2026-01-19",
     issuedBy: "ENGINEERING DIV.",
-    title: "Cover Sheet",
+    title: "BODY ASS'Y CHCEK SHEET",
     company: "Sodick ( Thailand ) Co., Ltd."
 };
 

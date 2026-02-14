@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useWatch } from 'react-hook-form';
 import { validateValue } from '../../utils/validationUtils';
 import TablePitchCheck from './TablePitchCheck';
 
@@ -6,16 +7,12 @@ import TablePitchCheck from './TablePitchCheck';
  * TablePitchXYZUV Component
  * 
  * Contains 4 TablePitchCheck tables (Y1, Y2, Y3, Y4)
- * Tracks last modified table for MAX and BACKLASH display
+ * Calculates Global MAX and BACKLASH from ALL 4 tables.
+ * Includes Enable/Disable Toggle for each table.
  */
 function TablePitchXYZUV({
-    data = [
-        { a: [], b: [] },
-        { a: [], b: [] },
-        { a: [], b: [] },
-        { a: [], b: [] }
-    ],
-    onChange = () => { },
+    name,
+    control,
     rowCount = 16,
     stepSize = 20,
     maxAB = 15,
@@ -23,56 +20,87 @@ function TablePitchXYZUV({
     showCalcCol = true,
     tableLabels = ['Y1', 'Y2', 'Y3', 'Y4']
 }) {
-    // Track which table was last modified (0-3)
-    const [lastModified, setLastModified] = useState(null);
+    // Enabled state for 4 tables
+    const [enabledTables, setEnabledTables] = useState([true, true, true, true]);
 
-    // Handle change for a specific table
-    const handleTableChange = (tableIndex, newTableData) => {
-        const newData = [...data];
-        newData[tableIndex] = newTableData;
-        onChange(newData);
-        setLastModified(tableIndex);
+    // Watch all data for real-time header calculation
+    const watchedData = useWatch({
+        control,
+        name: name,
+        defaultValue: [
+            { a: [], b: [] },
+            { a: [], b: [] },
+            { a: [], b: [] },
+            { a: [], b: [] }
+        ]
+    });
+
+    const toggleTable = (index) => {
+        const newEnabled = [...enabledTables];
+        newEnabled[index] = !newEnabled[index];
+        setEnabledTables(newEnabled);
     };
 
-    // Calculate MAX (Position Max) from last modified table
-    const getMaxValue = () => {
-        if (lastModified === null) return '';
-        const tableData = data[lastModified];
-        const nums = (tableData.a || []).slice(0, rowCount).map(v => parseFloat(v)).filter(v => !isNaN(v));
-        if (nums.length === 0) return '';
-        return Math.max(...nums).toFixed(3).replace(/\.?0+$/, '');
+    // Helper: Calculate Max Value for a single table
+    const getTableMax = (tableData) => {
+        if (!tableData?.a) return -1;
+        const nums = tableData.a.slice(0, rowCount).map(v => parseFloat(v)).filter(v => !isNaN(v));
+        return nums.length > 0 ? Math.max(...nums) : -1;
     };
 
-    // Calculate BACKLASH (Lost Motion) from last modified table
-    const getBacklashValue = () => {
-        if (lastModified === null) return '';
-        const tableData = data[lastModified];
+    // Helper: Calculate Backlash for a single table
+    const getTableBacklash = (tableData) => {
+        if (!tableData?.a || !tableData?.b) return -1;
         const diffs = [];
         for (let i = 0; i < rowCount; i++) {
-            const a = parseFloat(tableData.a?.[i]);
-            const b = parseFloat(tableData.b?.[i]);
+            const a = parseFloat(tableData.a[i]);
+            const b = parseFloat(tableData.b[i]);
             if (!isNaN(a) && !isNaN(b)) {
                 diffs.push(Math.abs(a - b));
             }
         }
-        if (diffs.length === 0) return '';
-        return Math.max(...diffs).toFixed(3).replace(/\.?0+$/, '');
-    };
-    // Check if MAX value exceeds standard
-    const isMaxInvalid = () => {
-        return !validateValue(getMaxValue(), {
-            maxValue: maxAB,
-            validateStd: true
-        });
+        return diffs.length > 0 ? Math.max(...diffs) : -1;
     };
 
-    // Check if BACKLASH value exceeds standard
-    const isBacklashInvalid = () => {
-        return !validateValue(getBacklashValue(), {
-            maxValue: maxDiff,
-            validateStd: true
+    // Calculate Global Max from all ENABLED tables
+    const globalMax = useMemo(() => {
+        let max = -1;
+        // Ensure watchedData is iterable (handle sparse object or null)
+        const dataArray = Array.isArray(watchedData) ? watchedData : Object.values(watchedData || {});
+
+        dataArray.forEach((table, idx) => {
+            // If object values, idx might not match original index order if sparse? 
+            // Actually, if we use Object.values, we lose index correlation with enabledTables if unexpected order.
+            // Better to use loop 0..3 and access safely.
         });
-    };
+
+        // Better approach: Loop 0 to 3 explicitly
+        for (let i = 0; i < 4; i++) {
+            if (enabledTables[i]) {
+                const table = watchedData?.[i] || {};
+                const tMax = getTableMax(table);
+                if (tMax > max) max = tMax;
+            }
+        }
+        return max === -1 ? '' : max.toFixed(3).replace(/\.?0+$/, '');
+    }, [watchedData, rowCount, enabledTables]);
+
+    // Calculate Global Backlash from all ENABLED tables
+    const globalBacklash = useMemo(() => {
+        let max = -1;
+        for (let i = 0; i < 4; i++) {
+            if (enabledTables[i]) {
+                const table = watchedData?.[i] || {};
+                const tMax = getTableBacklash(table);
+                if (tMax > max) max = tMax;
+            }
+        }
+        return max === -1 ? '' : max.toFixed(3).replace(/\.?0+$/, '');
+    }, [watchedData, rowCount, enabledTables]);
+
+    // Validation Checkers
+    const isGlobalMaxInvalid = () => !validateValue(globalMax, { maxValue: maxAB, validateStd: true });
+    const isGlobalBacklashInvalid = () => !validateValue(globalBacklash, { maxValue: maxDiff, validateStd: true });
 
     const invalidStyle = { backgroundColor: '#ffcccc', color: 'red' };
 
@@ -85,13 +113,17 @@ function TablePitchXYZUV({
                         <td rowSpan={2} className="border border-black font-bold text-center align-middle" style={{ padding: '1mm 2mm', width: '8mm' }}>STD</td>
                         <td className="border border-black" style={{ padding: '1mm 2mm', width: '50%' }}>MAX {maxAB} µm</td>
                         <td className="border-b" style={{ padding: '1mm 2mm' }}>DATA =</td>
-                        <td className="border-b text-center" style={{ padding: '1mm 2mm', minWidth: '10mm', ...(isMaxInvalid() ? invalidStyle : {}) }}>{getMaxValue()}</td>
+                        <td className="border-b text-center" style={{ padding: '1mm 2mm', minWidth: '10mm', ...(globalMax !== '' && isGlobalMaxInvalid() ? invalidStyle : {}) }}>
+                            {globalMax}
+                        </td>
                         <td className="border-b" style={{ padding: '1mm 2mm' }}>µm</td>
                     </tr>
                     <tr>
                         <td className="border border-black" style={{ padding: '1mm 2mm', width: '50%' }}>BACK LASH {maxDiff} µm</td>
                         <td className="border-b" style={{ padding: '1mm 2mm' }}>DATA =</td>
-                        <td className="text-center" style={{ padding: '1mm 2mm', minWidth: '10mm', ...(isBacklashInvalid() ? invalidStyle : {}) }}>{getBacklashValue()}</td>
+                        <td className="text-center" style={{ padding: '1mm 2mm', minWidth: '10mm', ...(globalBacklash !== '' && isGlobalBacklashInvalid() ? invalidStyle : {}) }}>
+                            {globalBacklash}
+                        </td>
                         <td className="border-b" style={{ padding: '1mm 2mm' }}>µm</td>
                     </tr>
                 </tbody>
@@ -102,14 +134,16 @@ function TablePitchXYZUV({
                 {[0, 1, 2, 3].map((tableIndex) => (
                     <TablePitchCheck
                         key={tableIndex}
-                        data={data[tableIndex]}
-                        onChange={(newData) => handleTableChange(tableIndex, newData)}
+                        name={`${name}.${tableIndex}`}
+                        control={control}
                         axisLabel={tableLabels[tableIndex]}
                         rowCount={rowCount}
                         stepSize={stepSize}
                         maxAB={maxAB}
                         maxDiff={maxDiff}
                         showCalcCol={showCalcCol}
+                        enabled={enabledTables[tableIndex]} // Pass enabled state
+                        onToggle={() => toggleTable(tableIndex)} // Pass toggle handler
                     />
                 ))}
             </div>

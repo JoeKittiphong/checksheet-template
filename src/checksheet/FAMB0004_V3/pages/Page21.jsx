@@ -1,77 +1,51 @@
 ﻿import A4Paper from "@/components/UIcomponent/A4Paper";
 import { content } from "../FAMB0004_V3-setting";
-import FormEDMBodyCheckTable from "@/components/FormComponents/FormEDMBodyCheckTable";
-import FormChecknumber from "@/components/FormComponents/FormChecknumber";
+import FormEDMCoilMagnetCheck from "@/components/FormComponents/FormEDMCoilMagnetCheck";
 import { useFormContext } from "react-hook-form";
-
-// Images
-import image27_2 from "@/assets/FAMB0004_V3/image-20-12.png";
 
 function Page21() {
     const { control } = useFormContext();
 
-    const defaultBodyRows = [
-        {
-            no: 9,
-            partName: "MAGNET PLATE X",
-            points: [{ check: "CS 6X25", qty: 8, torque: 150 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        },
-        {
-            no: 10,
-            partName: "ARM(X) TO SADDLE",
-            points: [{ check: "CS 8X40", qty: 16, torque: 250 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        },
-        {
-            no: 11,
-            partName: "TABEL TO BED",
-            points: [{ check: "CS 12X80", qty: 6, torque: 600 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        },
-        {
-            no: 12,
-            partName: "CERAMIC BASE",
-            points: [{ check: "CS 8X45", qty: 8, torque: 200 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        },
-        {
-            no: 13,
-            partName: "HEAD TO ARM (X) (FRONT)",
-            points: [{ check: "CS 8X30", qty: 8, torque: 250 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        },
-        {
-            no: 14,
-            partName: "HEAD TO ARM (X) (BACK)",
-            points: [{ check: "CS 8X40", qty: 4, torque: 250 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        },
-        {
-            no: 15,
-            partName: "LM-GUIDE SLIDE TANK",
-            points: [{ check: "CS 6X25", qty: 26, torque: 150 }],
-            actionBy: '', actionDate: '', doubleBy: '', doubleDate: ''
-        }
+    // Configuration for the three tables
+    const magnetConfig = [
+        { axis: 'X', specs: ['TM0016SD-001', 'TM028SD-001', 'TM028SD-001'] },
+        { axis: 'Y', specs: ['TM0016SD-001', 'TM0016SD-001', 'TM0016SD-001', 'TM0016SD-001', 'TM028SD-001', 'TM028SD-001'] },
+        { axis: 'Z', specs: ['MAGNET PLATE(QUILL)[AG60l]'] }
+    ];
+
+    const coilConfig = [
+        { axis: 'X', specs: ['TC066GN-010'] },
+        { axis: 'Y', specs: ['TC066GN-010', 'TC066GN-010'] },
+        { axis: 'Z', specs: ['TC066GN-009', 'TC066GN-009'] }
+    ];
+
+    const scaleConfig = [
+        { axis: 'X', specs: ['LC485 ML670'] },
+        { axis: 'Y', specs: ['LC485 ML470'] },
+        { axis: 'Z', specs: ['LC485 ML420'] }
     ];
 
     return (
         <A4Paper content={content} currentPage={21}>
-            <p className="text-sm font-bold">27. TORQUE CHECK (2/2)</p>
-            <div className="flex justify-center mb-5">
-                <img src={image27_2} alt="page21" className="w-150" />
-            </div>
-            <div className="flex flex-col gap-4">
-                <FormEDMBodyCheckTable
-                    name="page21.bodyRows"
-                    defaultValue={defaultBodyRows}
+            <div className="flex flex-col gap-2 p-1">
+                <p className="text-sm font-bold uppercase mb-2">28. SPECIFICATION CHECK LIST </p>
+                <FormEDMCoilMagnetCheck
+                    name="page21.magnetData"
+                    title="MAGNET PLATE SPEC"
+                    config={magnetConfig}
+                    defaultValue={{}}
                 />
-            </div>
-            <div className="flex justify-between mt-5">
-                <p className="text-sm">** DOBLE CHECK BY LEADER UP</p>
-                <FormChecknumber
-                    name="page21.torqueWrenchNo"
-                    label="TORQUE NO."
+                <FormEDMCoilMagnetCheck
+                    name="page21.coilData"
+                    title="LINEAR COIL SPEC"
+                    config={coilConfig}
+                    defaultValue={{}}
+                />
+                <FormEDMCoilMagnetCheck
+                    name="page21.scaleData"
+                    title="LINEAR SCALE SPEC"
+                    config={scaleConfig}
+                    defaultValue={{}}
                 />
             </div>
         </A4Paper>

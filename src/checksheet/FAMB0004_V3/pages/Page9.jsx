@@ -6,7 +6,8 @@ import FormStartFinishTime from "@/components/FormComponents/FormStartFinishTime
 import { useFormContext } from "react-hook-form";
 
 // Images
-import image14 from "@/assets/FAMB0004_V3/image-14-1.PNG";
+import image15 from "@/assets/FAMB0004_V3/image-15.PNG";
+import image16 from "@/assets/FAMB0004_V3/image-16.PNG";
 
 function Page9() {
     const { control } = useFormContext();
@@ -14,10 +15,20 @@ function Page9() {
     return (
         <A4Paper content={content} currentPage={9}>
             <div>
+                <div className="">
+                    <p className="text-sm font-bold">15. Check การประกอบ Magnet plate X</p>
+                    <div className="flex flex-col justify-center items-center">
+                        <img src={image15} alt="page9" className="w-90" />
+                        <div className="w-full pl-20 pr-20 mb-5">
+                            <p className="text-sm">1. Magnet plate จะต้องถูกประกอบอยู่ตามรูป มิฉะนั้นขั้วแม่เหล็กจะผิดทิศทาง ทำให้เวลาที่เครื่องทำงานที่ Machine check จะไม่สามารถทำงานได้</p>
+                            <p className="text-sm">2. ให้สังเกต Mark ที่ Magnet plate เวลาประกอบ</p>
+                        </div>
+                    </div>
+                </div>
                 <div>
-                    <p className="text-sm font-bold mb-10">14. การตรวจสอบระยะห่างระหว่าง Magnet Plate และ Linear Coil ของแกน X และ Y (STD. 0.6-0.8 µm)</p>
+                    <p className="text-sm font-bold">16. การตรวจสอบระยะห่างระหว่าง Magnet Plate และ Linear Coil ของแกน X และ Y (STD. 0.6-0.8 µm)</p>
                     <div className="mt-5 flex flex-col justify-center items-center">
-                        <img src={image14} alt="page9" className="w-100 mb-10" />
+                        <img src={image16} alt="page9" className="w-60 mb-5" />
                         <div className="flex flex-col space-y-5">
                             <FormInputCheckSTD
                                 name="page9.magnetCoilX"
@@ -49,7 +60,7 @@ function Page9() {
                         </div>
                     </div>
                     <div className="mt-10">
-                        <p className="text-sm font-bold mb-5">15. Machine running 2 Hrs.(Full stroke of XYZ)</p>
+                        <p className="text-sm font-bold mb-5">17. Machine running 2 Hrs.(Full stroke of XYZ)</p>
                         <div className="ml-20">
                             <FormStartFinishTime
                                 name="page9.runTime"
@@ -57,7 +68,7 @@ function Page9() {
                                 validateStd={true}
                                 defaultValue={{ start: '', finish: '' }}
                             />
-                            <div className="mt-10 ml-80">
+                            <div className="mt-5 ml-110">
                                 <FormCheckedBox name="page9.checkedInfo15" />
                             </div>
                         </div>

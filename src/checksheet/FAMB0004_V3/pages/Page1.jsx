@@ -37,25 +37,48 @@ function Page1() {
                             <p className="text-sm text-center mb-2">(เว้นระยะห่างช่องละ 105 mm.)</p>
                             <FormLevelTableYAB
                                 name="page1.levelYData"
-                                rows={9}
+                                rows={11}
                                 labelA="A=Kb"
                                 labelB="B"
+                                labelC="C"
+                                showC={true}
                                 defaultValue={[
-                                    { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' },
-                                    { a: '0', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }, { a: '', b: '' }
+                                    { a: '', b: '', c: '' }, { a: '', b: '', c: '' }, { a: '', b: '', c: '' }, { a: '', b: '', c: '' },
+                                    { a: '0', b: '', c: '' }, { a: '', b: '', c: '' }, { a: '', b: '', c: '' }, { a: '', b: '', c: '' },
+                                    { a: '', b: '', c: '' }, { a: '', b: '', c: '' }, { a: '', b: '', c: '' }
                                 ]}
                             />
                         </div>
-                        <div className="flex flex-col justify-end ml-4">
-                            <FormCheckedBox
-                                name="page1.checkedInfo"
-                                label="CHECKED BY / DATE"
-                            />
-                            <div className="h-10"></div>
-                            <FormChecknumber
-                                name="page1.levelingGaugeNo"
-                                label="Leveling guage No."
-                            />
+                        <div className="flex flex-col justify-between ml-4 h-full">
+                            <div className="space-y-4 mt-10">
+                                <p className="font-bold">LM Guide No.</p>
+                                <FormChecknumber
+                                    name="page1.lmGuideNoA"
+                                    label="A:"
+                                    labelWidth="w-8"
+                                />
+                                <FormChecknumber
+                                    name="page1.lmGuideNoB"
+                                    label="B:"
+                                    labelWidth="w-8"
+                                />
+                                <FormChecknumber
+                                    name="page1.lmGuideNoC"
+                                    label="C:"
+                                    labelWidth="w-8"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <FormCheckedBox
+                                    name="page1.checkedInfo"
+                                    label="CHECKED BY / DATE"
+                                />
+                                <div className="h-4"></div>
+                                <FormChecknumber
+                                    name="page1.levelingGaugeNo"
+                                    label="Leveling guage No."
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,7 +90,7 @@ function Page1() {
                             <p className="mb-2">(เว้นระยะห่างช่องละ 105 mm.)</p>
                             <FormTableYABDIFF
                                 name="page1.tableYABData"
-                                rows={9}
+                                rows={11}
                                 standards={tableYABStandards}
                                 showStd={false}
                                 validateStd={false}

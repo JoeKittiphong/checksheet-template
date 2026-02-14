@@ -6,10 +6,9 @@ import PitchingTable from '@/components/common/PitchingTable';
  * Refactored to use generic PitchingTable.
  */
 function TablePitchingY({
-    data,
-    onChange,
+    name,
+    control,
     standard = { min: -20, max: 20 },
-    referenceRow = 1 // Y0 (center)
 }) {
     const config = {
         dataKeys: [{ key: 'b', label: 'B' }, { key: 'c', label: 'C' }],
@@ -25,9 +24,9 @@ function TablePitchingY({
 
     return (
         <PitchingTable
+            name={name}
+            control={control}
             axis="y"
-            data={data}
-            onChange={onChange}
             config={config}
             standard={standard}
         />

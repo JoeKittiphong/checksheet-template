@@ -10,7 +10,7 @@ const FormCheckedBox = ({ name, label = "CHECKED BY / DATE", defaultValue = { na
             name={name}
             control={control}
             defaultValue={defaultValue}
-            rules={{
+            rules={props.rules || {
                 validate: (value) => {
                     if (!value) return "Required";
                     if (!value.name || !value.date) return "Required";

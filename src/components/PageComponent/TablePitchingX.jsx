@@ -6,8 +6,8 @@ import PitchingTable from '@/components/common/PitchingTable';
  * Refactored to use generic PitchingTable.
  */
 function TablePitchingX({
-    data,
-    onChange,
+    name,
+    control,
     standard = { min: -20, max: 20 },
     referenceCol = 1 // X0
 }) {
@@ -25,9 +25,9 @@ function TablePitchingX({
 
     return (
         <PitchingTable
+            name={name}
+            control={control}
             axis="x"
-            data={data}
-            onChange={onChange}
             config={config}
             standard={standard}
         />

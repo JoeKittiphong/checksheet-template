@@ -19,10 +19,11 @@ const StartFinishTime = React.forwardRef(({
     onStartChange = () => { },
     onFinishChange = () => { },
     minHours = 0,
-    validateStd = false
+    validateStd = false,
+    error = false // Receive error prop
 }, ref) => {
     const { formState: { isSubmitted } } = useFormContext(); // Global validation state
-    // คำนวณ Total Hours
+    // ... calculation logic ...
     const calculateTotalHours = () => {
         if (!startTime || !finishTime) return '';
 
@@ -65,6 +66,12 @@ const StartFinishTime = React.forwardRef(({
         return hours >= minHours;
     };
 
+    // Determine if we should show error style
+    // Show error if (isSubmitted AND missing value) OR (error prop (from Controller validation) is true)
+    // Actually if Controller error is true, it means verification failed.
+    const showStartError = (isSubmitted && !startTime) || (error && !startTime);
+    const showFinishError = (isSubmitted && !finishTime) || (error && !finishTime);
+
     return (
         <div className="flex items-center text-sm space-x-4">
             {/* Start */}
@@ -75,7 +82,7 @@ const StartFinishTime = React.forwardRef(({
                     type="time"
                     value={startTime}
                     onChange={(e) => onStartChange(e.target.value)}
-                    className={`border-b outline-none px-1 text-center w-28 ${isSubmitted && !startTime ? 'border-red-500 bg-red-50' : 'border-black'}`}
+                    className={`border-b outline-none px-1 text-center w-28 ${showStartError ? 'border-red-500 bg-red-50' : 'border-black'}`}
                 />
             </div>
 
@@ -86,7 +93,7 @@ const StartFinishTime = React.forwardRef(({
                     type="time"
                     value={finishTime}
                     onChange={(e) => onFinishChange(e.target.value)}
-                    className={`border-b outline-none px-1 text-center w-28 ${isSubmitted && !finishTime ? 'border-red-500 bg-red-50' : 'border-black'}`}
+                    className={`border-b outline-none px-1 text-center w-28 ${showFinishError ? 'border-red-500 bg-red-50' : 'border-black'}`}
                 />
             </div>
 

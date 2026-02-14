@@ -163,6 +163,7 @@ function LevelTableYAB({
                         <input
                             ref={(el) => (inputRefsA.current[i] = el)}
                             type="text"
+                            required
                             inputMode="numeric"
                             value={getInputValue(i, 'a')}
                             onFocus={() => handleFocus(i, 'a')}
@@ -176,6 +177,7 @@ function LevelTableYAB({
                         <input
                             ref={(el) => (inputRefsB.current[i] = el)}
                             type="text"
+                            required
                             inputMode="numeric"
                             value={getInputValue(i, 'b')}
                             onFocus={() => handleFocus(i, 'b')}
