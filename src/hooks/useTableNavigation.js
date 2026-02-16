@@ -34,18 +34,24 @@ export const useTableNavigation = () => {
         return false;
     };
 
-    const handleKeyDown = useCallback((e, rowIndex, colKey, totalRows, columns) => {
-        // e: KeyboardEvent
-        // rowIndex: number
-        // colKey: string (current column key)
-        // totalRows: number (optional, for boundary check)
-        // columns: string[] (ordered array of column keys, for left/right navigation)
+    const handleKeyDown = useCallback((e, rowIndex, colKey, columns, direction = 'vertical') => {
+        // e: KeyboardEvent, rowIndex: number, colKey: string, columns: string[], direction: 'vertical'|'horizontal'
 
         if (e.key === 'Enter') {
             e.preventDefault();
-            // Enter usually moves down, Shift+Enter moves up
-            const direction = e.shiftKey ? -1 : 1;
-            focusCell(rowIndex + direction, colKey);
+            if (direction === 'horizontal' && columns) {
+                const currentColIndex = columns.indexOf(colKey.toString());
+                const shift = e.shiftKey ? -1 : 1;
+                if (currentColIndex !== -1) {
+                    const nextColIndex = currentColIndex + shift;
+                    if (nextColIndex >= 0 && nextColIndex < columns.length) {
+                        focusCell(rowIndex, columns[nextColIndex]);
+                    }
+                }
+            } else {
+                const shift = e.shiftKey ? -1 : 1;
+                focusCell(rowIndex + shift, colKey);
+            }
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
             focusCell(rowIndex + 1, colKey);

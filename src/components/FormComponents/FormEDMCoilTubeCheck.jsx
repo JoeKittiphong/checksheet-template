@@ -10,6 +10,9 @@ const FormEDMCoilTubeCheck = ({
         { key: 'ykc', label: 'Y(KC)' },
         { key: 'ykb', label: 'Y(KB)' }
     ],
+    headerAxis = "Axis",
+    headerCheck = "Check",
+    headerResult = "ทดสอบด้วยการดึง",
     ...props
 }) => {
     const { control } = useFormContext();
@@ -82,9 +85,9 @@ const FormEDMCoilTubeCheck = ({
         <table className="border-collapse border border-black text-sm">
             <thead>
                 <tr>
-                    <th className="border border-black p-1 w-16 text-center">Axis</th>
-                    <th className="border border-black p-1 w-24 text-center">Check</th>
-                    <th className="border border-black p-1 w-28 text-center">ทดสอบด้วยการดึง</th>
+                    <th className="border border-black p-1 w-20 text-center">{headerAxis}</th>
+                    <th className="border border-black p-1 w-24 text-center">{headerCheck}</th>
+                    <th className="border border-black p-1 w-28 text-center">{headerResult}</th>
                 </tr>
             </thead>
             <tbody>

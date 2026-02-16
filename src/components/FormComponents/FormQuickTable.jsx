@@ -2,6 +2,7 @@ import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form'; // Add Controller
 import { handleInfinityShortcut, getValidationClass } from '../../utils/formUtils';
 import { useKeypad } from '../../context/KeypadContext';
+import { useTableNavigation } from '../../hooks/useTableNavigation'; // Add useTableNavigation hook
 import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox'; // Add TristateCheckbox
 
 /**
@@ -20,10 +21,15 @@ const FormQuickTable = ({
     columns = [],
     data = [],
     headerRows = null,
-    className = ""
+    className = "",
+    navigationMode = 'vertical' // New prop
 }) => {
     const { register, watch, setValue, control, formState: { errors } } = useFormContext(); // Add control and errors
     const { openKeypad, isKeypadEnabled } = useKeypad();
+    const { handleKeyDown, registerInput } = useTableNavigation();
+
+    // Mapping for column keys (for navigation)
+    const columnKeys = columns.map(col => col.key);
 
     // -- Helper to calculate row spans for grouping columns --
     const calculateRowSpans = () => {
@@ -218,7 +224,17 @@ const FormQuickTable = ({
                                                         return (
                                                             <input
                                                                 type="text"
-                                                                {...register(cellValue, { required: true })} // Default required
+                                                                {...(() => {
+                                                                    const { ref, ...rest } = register(cellValue, { required: true });
+                                                                    return {
+                                                                        ...rest,
+                                                                        ref: (e) => {
+                                                                            ref(e);
+                                                                            registerInput(rIdx, col.key)(e);
+                                                                        },
+                                                                        onKeyDown: (e) => handleKeyDown(e, rIdx, col.key, columnKeys, navigationMode)
+                                                                    };
+                                                                })()}
                                                                 inputMode={isMobile ? "none" : "text"}
                                                                 readOnly={isMobile}
                                                                 onClick={() => {

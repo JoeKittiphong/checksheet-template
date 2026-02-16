@@ -23,10 +23,13 @@ const FormLevelTableYAB = ({
     showC = false,
     axis = "y",
     showArrows = true,
+    showB = true,
     ...props
 }) => {
     const { registerInput, handleKeyDown, focusCell } = useTableNavigation();
-    const columnKeys = showC ? ['a', 'b', 'c'] : ['a', 'b'];
+    let columnKeys = ['a'];
+    if (showB) columnKeys.push('b');
+    if (showC) columnKeys.push('c');
 
     // Custom KeyDown handler to replicate specific navigation logic
     // Col A: Enter moves Up (direction -1). At top, moves to Col B, Row 0.
@@ -125,7 +128,8 @@ const FormLevelTableYAB = ({
                 );
             }
         },
-        {
+        // Column B (Optional)
+        ...(showB ? [{
             key: 'b',
             header: labelB,
             width: '96px',
@@ -166,7 +170,7 @@ const FormLevelTableYAB = ({
                     />
                 );
             }
-        },
+        }] : []),
         // Column C (Optional)
         ...(showC ? [{
             key: 'c',

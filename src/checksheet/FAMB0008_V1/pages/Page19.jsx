@@ -13,19 +13,19 @@ function Page19() {
     const { control, getValues, setValue } = useFormContext();
 
     const defaultCheckPoints = React.useMemo(() => [
-        { id: 1, x: 5, y: 11, label: checkpoint.c1, checked: null, textPosition: "bottom" },
+        { id: 1, x: 10, y: 14, label: checkpoint.c1, checked: null, textPosition: "bottom" },
         { id: 2, x: 3, y: 30, label: checkpoint.c2, checked: null, textPosition: "right" },
         { id: 3, x: 8, y: 37, label: checkpoint.c3, checked: null, textPosition: "bottom" },
         { id: 4, x: 2, y: 50, label: checkpoint.c4, checked: null, textPosition: "bottom" },
-        { id: 5, x: 3, y: 80, label: checkpoint.c5, checked: null, textPosition: "right" },
-        { id: 6, x: 32, y: 93, label: checkpoint.c6, checked: null, textPosition: "bottom" },
-        { id: 7, x: 45, y: 78, label: checkpoint.c7, checked: null, textPosition: "bottom" },
-        { id: 8, x: 65, y: 75, label: checkpoint.c8, checked: null, textPosition: "bottom" },
-        { id: 9, x: 80, y: 60, label: checkpoint.c9, checked: null, textPosition: "bottom" },
-        { id: 10, x: 78, y: 34, label: checkpoint.c10, checked: null, textPosition: "bottom" },
-        { id: 11, x: 75, y: 12, label: checkpoint.c11, checked: null, textPosition: "right" },
-        { id: 12, x: 44, y: 15, label: checkpoint.c12, checked: null, textPosition: "right" },
-        { id: 13, x: 23, y: 8, label: checkpoint.c13, checked: null, textPosition: "right" },
+        // { id: 5, x: 3, y: 88, label: checkpoint.c5, checked: null, textPosition: "right" },
+        // { id: 6, x: 32, y: 93, label: checkpoint.c6, checked: null, textPosition: "bottom" },
+        { id: 7, x: 20, y: 80, label: checkpoint.c7, checked: null, textPosition: "bottom" },
+        { id: 8, x: 55, y: 80, label: checkpoint.c8, checked: null, textPosition: "bottom" },
+        { id: 9, x: 80, y: 65, label: checkpoint.c9, checked: null, textPosition: "bottom" },
+        { id: 10, x: 78, y: 44, label: checkpoint.c10, checked: null, textPosition: "bottom" },
+        { id: 11, x: 75, y: 32, label: checkpoint.c11, checked: null, textPosition: "right" },
+        { id: 12, x: 54, y: 10, label: checkpoint.c12, checked: null, textPosition: "right" },
+        { id: 13, x: 33, y: 10, label: checkpoint.c13, checked: null, textPosition: "right" },
     ], []);
 
     React.useEffect(() => {

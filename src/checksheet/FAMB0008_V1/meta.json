@@ -1,8 +1,8 @@
 {
     "form_name": "FAMB0008",
     "version": "1",
-    "department": "DEPARTMENT",
-    "model": "MODEL",
-    "as_group": "GROUP",
+    "department": "EDM",
+    "model": "AL100G PLUS",
+    "as_group": "BODY",
     "checksheet_name": "FAMB0008_V1"
 }
