@@ -10,7 +10,7 @@ export const meta = {
 
 export const imagePath = `${import.meta.env.BASE_URL}images/FAMB0004_V3/`
 // In development, we use localhost:3000. In production, we use the same origin.
-export const apiEndpoint = import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin;
+export const apiEndpoint = ''
 
 export const cover = {
     docNumber: "FAMB0004",

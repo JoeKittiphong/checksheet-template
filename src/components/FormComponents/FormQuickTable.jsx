@@ -22,7 +22,8 @@ const FormQuickTable = ({
     data = [],
     headerRows = null,
     className = "",
-    navigationMode = 'vertical' // New prop
+    navigationMode = 'vertical', // New prop
+    disabled = false
 }) => {
     const { register, watch, setValue, control, formState: { errors } } = useFormContext(); // Add control and errors
     const { openKeypad, isKeypadEnabled } = useKeypad();
@@ -113,6 +114,7 @@ const FormQuickTable = ({
                                                             value={field.value}
                                                             onChange={field.onChange}
                                                             size="w-4 h-4"
+                                                            readOnly={disabled}
                                                         />
                                                     )}
                                                 />
@@ -193,6 +195,7 @@ const FormQuickTable = ({
                                                             error={!!error}
                                                             size="w-6 h-6"
                                                             className="mx-auto"
+                                                            readOnly={disabled}
                                                         />
                                                     )}
                                                 />
@@ -207,6 +210,7 @@ const FormQuickTable = ({
                                                             onChange={field.onChange}
                                                             error={!!error}
                                                             size="w-5 h-5"
+                                                            readOnly={disabled}
                                                         />
                                                     )}
                                                 />
@@ -225,14 +229,15 @@ const FormQuickTable = ({
                                                             <input
                                                                 type="text"
                                                                 {...(() => {
-                                                                    const { ref, ...rest } = register(cellValue, { required: true });
+                                                                    const { ref, ...rest } = register(cellValue, { required: !disabled });
                                                                     return {
                                                                         ...rest,
                                                                         ref: (e) => {
                                                                             ref(e);
                                                                             registerInput(rIdx, col.key)(e);
                                                                         },
-                                                                        onKeyDown: (e) => handleKeyDown(e, rIdx, col.key, columnKeys, navigationMode)
+                                                                        onKeyDown: (e) => handleKeyDown(e, rIdx, col.key, columnKeys, navigationMode),
+                                                                        disabled: disabled
                                                                     };
                                                                 })()}
                                                                 inputMode={isMobile ? "none" : "text"}

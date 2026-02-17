@@ -49,5 +49,5 @@ export const checkpoint = {
 
 export const imagePath = `${import.meta.env.BASE_URL}images/FAWI0002_V3/`
 // In development, we use localhost:3000. In production, we use the same origin.
-export const apiEndpoint = import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin;
+export const apiEndpoint = ''
 

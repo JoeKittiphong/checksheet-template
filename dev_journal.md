@@ -375,3 +375,15 @@ _2026-02-16_
   - **Section 8 & 10**: ติดตั้งระบบตรวจสอบขนานของ Ball Screw (Parallel Check) พร้อมรูปภาพประกอบและ Validation 5 µm
   - **Machine Running Test**: เพิ่มระบบบันทึกเวลา Run Test 2 ชั่วโมงพร้อมระบบตรวจสอบระยะข้าม (Minimum duration check)
   - **Signature Box**: วางตำแหน่งช่องเซ็นชื่อแบบ Absolute ไว้ที่ท้ายหน้าเพื่อความเป็นระเบียบ
+
+### 30. การจัดทำ FAMB0007_V3 Page 7 (Item 18 Ento Check)
+_2026-02-17_
+
+ดำเนินการสร้างหน้า 7 และพัฒนา Component ใหม่สำหรับตรวจสอบ Ento Data Check:
+- **New Component**: `FormTableEntoSingleDir` (และ `EntoTableSingleDir`)
+  - **Single Direction Logic**: ออกแบบมาสำหรับการตรวจสอบค่า "ขาเดียว" (Up leg only) โดยตัด Logic การสลับทิศทาง (Snake) ของ EntoTable เดิมออก
+  - **Custom Headers**: รองรับการกำหนด Header ด้านบนแบบกำหนดเองผ่าน prop `topHeader` (เช่น `[X-Axis = 150 mm]...`)
+  - **Simplified Structure**: ตัดคอลัมน์ Diff ออกเหลือเพียงคอลัมน์ข้อมูล (Z1, Z2) และย้ายการคำนวณสรุปไปไว้ที่ Input ด้านล่างแทน
+- **Page 7 Implementation**:
+  - **Item 17**: ใช้ `FormEDMTableStraightness` สำหรับตรวจสอบความตรง (Top View)
+  - **Item 18**: ใช้ `FormTableEntoSingleDir` สร้างตารางตรวจสอบ Ento แบบ Side/Front View พร้อมช่องกรอก Data/SD แยกต่างหาก

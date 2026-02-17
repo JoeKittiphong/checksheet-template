@@ -3,7 +3,7 @@ export const meta = {
     version: "3",
     title: "CHECK SHEET BODY ASS'Y OF K3HS",
     department: "EDM",
-    model: "K3HS",
+    model: "K3HS SD&K3HS CE",
     as_group: "BODY",
     checksheet_name: "FAMB0007_V3"
 }
@@ -38,4 +38,4 @@ export const checkpoint = {
 }
 
 // In development, we use localhost:3000. In production, we use the same origin.
-export const apiEndpoint = import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin;
+export const apiEndpoint = ''

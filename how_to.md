@@ -485,11 +485,39 @@ Rolling X วางแนวนอน แต่ลูกศรที่ใช้
     strokeStep={20}
     standard={3}
     // Custom Sizing for Compact View
+    // Custom Sizing for Compact View
     fontSize="text-[10px]"       // ลดขนาดตัวอักษร
     rowHeight={12}               // ลดความสูงแถว
     width="300px"                // ปรับความกว้างตาราง
     colWidths={['w-6', 'w-8', 'w-10']} // ปรับความกว้างคอลัมน์
     defaultValue={{}}
+/>
+```
+
+---
+
+## 5. FormTableEntoSingleDir
+
+ใช้สำหรับตาราง Ento Check ที่ต้องการตรวจสอบทิศทางเดียว (เช่น ขาขึ้นอย่างเดียว) โดยไม่มีการสลับฟันปลา (Snake) และไม่มีคอลัมน์ Diff ในตาราง
+
+### Props
+
+| Property | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `name` | `string` | - | **Required**. RHF field name prefix |
+| `sections` | `Array` | `[{ cols: ['Z1', 'Z2'] }]` | กำหนดโครงสร้างคอลัมน์ |
+| `rowCount` | `number` | `16` | จำนวนแถวข้อมูล (Default: 0-300 step 20) |
+| `topHeader` | `string` | `null` | ข้อความ Header ด้านบนสุด (span all columns) |
+| `maxValue` | `number` | `15` | ค่าสูงสุดสำหรับ Validation |
+
+### Example
+
+```jsx
+<FormTableEntoSingleDir 
+    name="p7_ento_side"
+    topHeader="[X-Axis = 150 mm] [Y-Axis = 300-400 mm]"
+    sections={[{ cols: ['Z1', 'Z2'] }]}
+    rowCount={16}
 />
 ```
 

@@ -9,12 +9,14 @@ const Checknumber = React.forwardRef(({
     inputClass = "w-20 text-sm",
     name, // Expect Name
     error = false, // Receive error state
+    disabled = false,
 }, ref) => {
     const { openKeypad, isKeypadEnabled } = useKeypad();
     // Simple mobile detection (can be extracted to util)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     const handleInputClick = (e) => {
+        if (disabled) return;
         if (isMobile || isKeypadEnabled) {
             // Blur to prevent system keyboard on mobile if readOnly logic fails
             e.target.blur();
@@ -29,15 +31,20 @@ const Checknumber = React.forwardRef(({
                 ref={ref}
                 type="text"
                 // Mobile: readOnly to force keypad. PC: readOnly=false to allow typing
-                readOnly={isMobile}
+                readOnly={isMobile || disabled}
                 inputMode={isMobile ? "none" : "text"}
                 className={`border-b outline-none px-1 font-arial cursor-pointer ${inputClass}
                     ${error ? 'border-red-500' : 'border-black'}
+                    ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 placeholder-transparent' : ''}
                 `}
                 style={{ textTransform: 'uppercase' }}
                 value={value}
                 onClick={handleInputClick}
                 onFocus={(e) => {
+                    if (disabled) {
+                        e.target.blur();
+                        return;
+                    }
                     // For mobile, force blur. For PC, do nothing (allow focus) unless we strictly want to block
                     if (isMobile) e.target.blur();
                     // We don't auto-open on focus for PC to avoid annoyance if tabbing
@@ -47,7 +54,7 @@ const Checknumber = React.forwardRef(({
                         openKeypad(name, value, { label, mode: 'text' });
                     }
                 }}
-                onChange={onChange} // Allow typing on PC
+                onChange={disabled ? undefined : onChange} // Allow typing on PC
             />
         </div>
     );

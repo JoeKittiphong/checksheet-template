@@ -35,6 +35,7 @@ const FormTablePitchCheck = ({ name, defaultValue, ...props }) => {
             }}
             render={({ field }) => (
                 <TablePitchCheck
+                    name={name}
                     data={field.value || {}}
                     onChange={field.onChange}
                     {...props}

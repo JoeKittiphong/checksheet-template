@@ -28,7 +28,8 @@ const FormItemCheck = ({
     showCheckbox = true,
     checkboxSize = "w-5 h-5",
     labelClassName = "text-sm",
-    onCheckedChange // Optional callback
+    onCheckedChange, // Optional callback
+    readOnly = false
 }) => {
     const { register, watch, setValue, control, formState: { errors } } = useFormContext();
 
@@ -97,6 +98,7 @@ const FormItemCheck = ({
                                 if (onCheckedChange) onCheckedChange(val);
                             }}
                             error={!!error}
+                            readOnly={readOnly}
                             className="mr-2 shrink-0 mt-0.5"
                             size={checkboxSize}
                         />

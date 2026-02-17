@@ -30,7 +30,8 @@ const TablePitchCheck = forwardRef(({
     disableReturnRow = false,
     disableTopRowB = true, // Default true (standard 0 start)
     disableTopRowA = false,
-    disableSecondRowB = false
+    disableSecondRowB = false,
+    disableTopRows = 0 // Disable N rows from the top (0 = none)
 }, ref) => {
     const { formState: { isSubmitted } } = useFormContext();
     const { moveFocus } = useFocusNavigation();
@@ -142,7 +143,7 @@ const TablePitchCheck = forwardRef(({
     const tableStyle = { borderCollapse: 'collapse', fontSize: '8px', fontFamily: 'Arial, sans-serif' };
     const thStyle = { border: '1px solid black', padding: '2px 4px', textAlign: 'center', fontWeight: 'normal', backgroundColor: 'white' };
     const tdStyle = { border: '1px solid black', padding: '2px 4px', textAlign: 'center', height: '14px', minWidth: '24px' };
-    const inputStyle = { width: '100%', height: '100%', border: 'none', textAlign: 'center', fontSize: '8px', padding: 0, margin: 0, background: 'transparent', outline: 'none' };
+    const inputStyle = { width: '100%', height: '100%', border: 'none', textAlign: 'center', fontSize: '8px', padding: 0, margin: 0, backgroundColor: 'transparent', outline: 'none' };
     const invalidStyle = { backgroundColor: '#ffcccc', color: 'red' };
 
     return (
@@ -172,7 +173,7 @@ const TablePitchCheck = forwardRef(({
                             <td style={tdStyle}>{showCalcCol && enabled ? getCalcCol(idx) : ''}</td>
 
                             {/* Column A */}
-                            <td style={{ ...tdStyle, padding: 0, ...(!enabled ? { backgroundColor: '#e0e0e0' } : {}) }}>
+                            <td style={{ ...tdStyle, padding: 0, ...(!enabled || idx < disableTopRows ? { backgroundColor: '#e0e0e0' } : {}) }}>
                                 <Controller
                                     name={`${name}.a.${idx}`}
                                     control={control}
@@ -180,7 +181,8 @@ const TablePitchCheck = forwardRef(({
                                     render={({ field, fieldState: { error } }) => {
                                         const val = field.value || '';
                                         const disabledRow = (idx === rowCount - 1 && disableBottomRowA) ||
-                                            (idx === 0 && disableTopRowA);
+                                            (idx === 0 && disableTopRowA) ||
+                                            (idx < disableTopRows);
                                         const invalid = enabled && !disabledRow && isABInvalid(val) && (isSubmitted || val);
                                         const isDisabled = !enabled || disabledRow;
 
@@ -209,7 +211,7 @@ const TablePitchCheck = forwardRef(({
                             </td>
 
                             {/* Column B */}
-                            <td style={{ ...tdStyle, padding: 0, ...((idx === 0 && disableTopRowB) || !enabled ? { backgroundColor: '#e0e0e0' } : {}) }}>
+                            <td style={{ ...tdStyle, padding: 0, ...((idx === 0 && disableTopRowB) || !enabled || idx <= disableTopRows ? { backgroundColor: '#e0e0e0' } : {}) }}>
                                 {(idx > 0 || !disableTopRowB) && (
                                     <Controller
                                         name={`${name}.b.${idx}`}
@@ -220,7 +222,8 @@ const TablePitchCheck = forwardRef(({
                                             const disabledRow = (idx === rowCount - 1 && disableBottomRowB) ||
                                                 (idx === rowCount - 2 && disablePenultimateRowB) ||
                                                 (idx === 0 && disableTopRowB) ||
-                                                (idx === 1 && disableSecondRowB);
+                                                (idx === 1 && disableSecondRowB) ||
+                                                (idx <= disableTopRows);
                                             const invalid = enabled && !disabledRow && isABInvalid(val) && (isSubmitted || val);
                                             const isDisabled = !enabled || disabledRow;
 

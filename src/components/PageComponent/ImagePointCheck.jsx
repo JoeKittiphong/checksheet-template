@@ -20,6 +20,7 @@ import TristateCheckbox from '@/components/UIcomponent/TristateCheckbox';
  * - defaultValue: Default value for RHF (Uncontrolled/Smart mode)
  * - control: RHF Control object (Optional)
  * - error: boolean default false
+ * - disabled: boolean default false
  */
 function ImagePointCheck({
     backgroundImage = '',
@@ -31,12 +32,18 @@ function ImagePointCheck({
     defaultValue, // RHF Mode
     control: passedControl, // Optional explicit control
     aspectRatio = null,
-    error = false
+    error = false,
+    disabled = false
 }) {
     // RHF Setup
     const formContext = useFormContext();
     const control = passedControl || formContext?.control;
     const setValue = formContext?.setValue;
+    const { formState: { errors } = { errors: {} } } = formContext || {};
+
+    // Get field error from RHF if name is provided
+    const fieldError = name ? name.split('.').reduce((acc, part) => acc && acc[part], errors) : null;
+    const isError = error || !!fieldError;
 
     // Always call useWatch, but ignore if no name
     const watchedValue = useWatch({
@@ -50,6 +57,7 @@ function ImagePointCheck({
 
     // Sync defaultValue changes (e.g. coordinates/layout updates from code) to the form state
     // while preserving the 'checked' status from the current form state.
+    // ALSO: If disabled is true, we force the 'N/A' state if it's not already set.
     React.useEffect(() => {
         if (!name || !setValue || !defaultValue) return;
 
@@ -57,10 +65,13 @@ function ImagePointCheck({
         // Map over defaultValue (source of truth for layout) and merge with current checked state
         const mergedPoints = defaultValue.map(defPoint => {
             const existingPoint = currentFormValue.find(p => p.id === defPoint.id);
-            // Use default layout but keep existing 'checked' status if available
-            return existingPoint
-                ? { ...defPoint, checked: existingPoint.checked }
-                : defPoint;
+            let finalChecked = existingPoint ? existingPoint.checked : defPoint.checked;
+
+            if (disabled) {
+                finalChecked = 'N/A';
+            }
+
+            return { ...defPoint, checked: finalChecked };
         });
 
         // Simple deep comparison to check if update is needed
@@ -68,9 +79,9 @@ function ImagePointCheck({
 
         if (isDifferent) {
             // Update form state with new layout + preserved values
-            setValue(name, mergedPoints, { shouldDirty: false }); // Don't mark dirty for layout updates
+            setValue(name, mergedPoints, { shouldDirty: false, shouldValidate: true });
         }
-    }, [defaultValue, name, setValue, watchedValue]);
+    }, [defaultValue, name, setValue, watchedValue, disabled]);
 
     const handleCheckChange = (pointId, checked) => {
         if (name && setValue) {
@@ -119,7 +130,7 @@ function ImagePointCheck({
             {Array.isArray(currentPoints) && currentPoints.map((point) => (
                 <div
                     key={point.id}
-                    className="absolute flex items-center"
+                    className={`absolute flex items-center ${disabled ? 'opacity-60 grayscale-[0.5]' : ''}`}
                     style={{
                         left: typeof point.x === 'number' ? `${point.x}%` : point.x,
                         top: typeof point.y === 'number' ? `${point.y}%` : point.y,
@@ -130,16 +141,17 @@ function ImagePointCheck({
                     <div className="relative flex items-center">
                         <TristateCheckbox
                             value={point.checked}
-                            onChange={(val) => handleCheckChange(point.id, val)}
+                            onChange={(val) => !disabled && handleCheckChange(point.id, val)}
                             size="w-5 h-5"
-                            className="bg-white/80"
-                            error={error && (point.checked === null || point.checked === '' || point.checked === undefined)}
+                            className={disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white/80'}
+                            error={isError && !disabled && (point.checked === null || point.checked === '' || point.checked === undefined)}
+                            readOnly={disabled}
                         />
 
                         {/* Label */}
                         {point.label && (
                             <span
-                                className="absolute text-xs"
+                                className={`absolute text-xs ${disabled ? 'text-gray-500' : 'text-black'}`}
                                 style={{
                                     fontSize: '12px',
                                     ...getTextStyle(point.textPosition || 'right')

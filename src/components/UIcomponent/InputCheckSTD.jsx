@@ -42,6 +42,7 @@ const InputCheckSTD = React.forwardRef(({
     checkboxName, // New prop for Tristate
     name, // Received from Controller/Register
     required = true, // New prop
+    disabled = false, // Add this
 }, ref) => {
     const { openKeypad, isKeypadEnabled } = useKeypad();
     const { control, formState: { errors } } = useFormContext(); // Get validation errors and control
@@ -87,6 +88,7 @@ const InputCheckSTD = React.forwardRef(({
     };
 
     const handleInputClick = (e) => {
+        if (disabled) return;
         if (isMobile || isKeypadEnabled) {
             e.target.blur();
             openKeypad(name, value, { label, mode: (name?.includes('machine_no') || label?.toLowerCase().includes('name')) ? 'text' : 'numeric' });
@@ -129,16 +131,17 @@ const InputCheckSTD = React.forwardRef(({
                         openKeypad(name, value, { label, mode: (name?.includes('machine_no') || label?.toLowerCase().includes('name')) ? 'text' : 'numeric' });
                     }
                 }}
-                readOnly={isMobile} // Only readOnly on mobile
+                readOnly={isMobile || disabled} // Only readOnly on mobile or if explicitly disabled
                 onChange={(e) => {
                     // PC Typing Logic
-                    if (!isMobile) {
+                    if (!isMobile && !disabled) {
                         handleChange(e);
                     }
                 }}
                 className={`border-b outline-none px-1 text-center cursor-pointer ${inputWidth} 
                     ${!isValid() ? 'bg-red-200' : ''}
                     ${hasError ? 'border-red-500 bg-red-100 ring-1 ring-red-500' : 'border-black'} 
+                    ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''}
                 `}
             />
 

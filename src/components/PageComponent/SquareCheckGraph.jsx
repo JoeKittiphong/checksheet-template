@@ -81,37 +81,35 @@ function SquareCheckGraph({
                     <div className="space-y-4 pl-2">
                         <div className="flex items-center gap-4">
                             <span className="w-8 font-black text-lg">X =</span>
-                            <div className="flex gap-4">
+                            <div className="flex gap-2">
                                 {['A', 'B', 'C', 'D'].map(side => (
-                                    <label key={side} className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="sq_side_x"
-                                            value={side}
-                                            checked={data.squareSideX === side}
-                                            onChange={() => handleSideChange('squareSideX', side)}
-                                            className="w-5 h-5 border-2 border-black rounded-none appearance-none checked:bg-black relative checked:after:content-[''] checked:after:absolute checked:after:inset-1 checked:after:border-2 checked:after:border-white"
-                                        />
-                                        <span className="font-black text-lg">{side}</span>
-                                    </label>
+                                    <div
+                                        key={side}
+                                        onClick={() => handleSideChange('squareSideX', side)}
+                                        className={`
+                                            w-8 h-8 flex items-center justify-center border border-black cursor-pointer font-bold select-none transition-colors
+                                            ${data.squareSideX === side ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}
+                                        `}
+                                    >
+                                        {side}
+                                    </div>
                                 ))}
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
                             <span className="w-8 font-black text-lg">Y =</span>
-                            <div className="flex gap-4">
+                            <div className="flex gap-2">
                                 {['A', 'B', 'C', 'D'].map(side => (
-                                    <label key={side} className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="sq_side_y"
-                                            value={side}
-                                            checked={data.squareSideY === side}
-                                            onChange={() => handleSideChange('squareSideY', side)}
-                                            className="w-5 h-5 border-2 border-black rounded-none appearance-none checked:bg-black relative"
-                                        />
-                                        <span className="font-black text-lg">{side}</span>
-                                    </label>
+                                    <div
+                                        key={side}
+                                        onClick={() => handleSideChange('squareSideY', side)}
+                                        className={`
+                                            w-8 h-8 flex items-center justify-center border border-black cursor-pointer font-bold select-none transition-colors
+                                            ${data.squareSideY === side ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}
+                                        `}
+                                    >
+                                        {side}
+                                    </div>
                                 ))}
                             </div>
                         </div>

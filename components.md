@@ -2606,3 +2606,21 @@ This document provides exhaustive, individual documentation for every component 
      <TableCalculateSetting multiplier={0.5} />
    </div>
    ```
+
+---
+
+## 🔌 46. `FormTableEntoSingleDir`
+**Purpose**: Specialized Ento table for single-direction checks (e.g. Up only), removing snake navigation and diff columns.
+
+### ⚙️ Prop Details
+| Prop | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `name` | `string` | **Required** | RHF name. |
+| `sections` | `Array` | `[{ cols: ['Z1', 'Z2'] }]` | Column configuration. |
+| `topHeader` | `string` | `null` | Optional top header text. |
+
+### 📝 Code Examples
+1. **Standard Usage**:
+   ```jsx
+   <FormTableEntoSingleDir name="ento_check" topHeader="My Header" />
+   ```

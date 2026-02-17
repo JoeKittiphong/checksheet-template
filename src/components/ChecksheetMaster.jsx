@@ -35,6 +35,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
     const [formId, setFormId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [status, setStatus] = useState('prepare'); // Status state
+    const [authError, setAuthError] = useState(false);
 
     const [pageStatus, setPageStatus] = useState({});
     const [checksheetData, setChecksheetData] = useState(null); // Store loaded data for comparison
@@ -78,7 +79,7 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
 
                 if (!authRes.data.success) {
                     console.warn("Auth failed: Response success is false");
-                    window.location.href = '/';
+                    setAuthError(true);
                     return;
                 }
                 const user = authRes.data.user;
@@ -133,8 +134,8 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
                 // Only redirect if it's an authentication error (401/403)
                 // If it's a network error (no response) or 500, we might stay on page for PWA/offline
                 if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                    console.error("Authentication expired. Redirecting to home...");
-                    window.location.href = '/';
+                    console.error("Authentication expired.");
+                    setAuthError(true);
                 } else if (!error.response) {
                     console.error("Network error. Server might be down or you are offline.");
                 }
@@ -290,6 +291,41 @@ function ChecksheetMaster({ config, pages, pageLabels, initialValues = {} }) {
             document.title = originalTitle;
         }, 800);
     };
+
+    // Show login form if auth failed (prevents infinite redirect in dev mode)
+    if (authError) {
+        const handleLogin = async (e) => {
+            e.preventDefault();
+            const code = e.target.code.value;
+            const password = e.target.password.value;
+            try {
+                const res = await axios.post(`${apiEndpoint}/auth/login`, { code, password }, { withCredentials: true });
+                if (res.data.success) {
+                    setAuthError(false);
+                    // Re-trigger auth check
+                    window.location.reload();
+                }
+            } catch (err) {
+                alert(err.response?.data?.error || 'Login failed');
+            }
+        };
+        return (
+            <div className="flex items-center justify-center h-screen bg-gray-50">
+                <form onSubmit={handleLogin} className="p-8 bg-white rounded-2xl shadow-lg w-full max-w-sm">
+                    <svg className="w-14 h-14 mx-auto mb-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                    <h2 className="text-xl font-bold text-gray-800 mb-1 text-center">กรุณาเข้าสู่ระบบ</h2>
+                    <p className="text-gray-400 text-sm mb-5 text-center">Session หมดอายุ หรือยังไม่ได้ Login</p>
+                    <input name="code" placeholder="รหัสพนักงาน" required className="w-full mb-3 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <input name="password" type="password" placeholder="รหัสผ่าน" required className="w-full mb-4 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <button type="submit" className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                        เข้าสู่ระบบ
+                    </button>
+                </form>
+            </div>
+        );
+    }
 
     return (
         <FormProvider {...methods}>
