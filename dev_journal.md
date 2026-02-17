@@ -362,3 +362,16 @@ _2026-02-14_
 
 - **Implementation Result**:
   - หน้า 10 (Straightness Top) สามารถแสดงผลข้อมูล 61 จุดวัดได้ครบถ้วนในหน้าเดียว โดยตารางมีความกระชับ อ่านง่าย และกราฟแสดงผลได้ถูกต้องไม่ผิดเพี้ยน
+### 29. การจัดทำ FAMB0007_V3 Page 3 และ Reusable Component
+_2026-02-16_
+
+ดำเนินการสร้างหน้า 3 ของชุด FAMB0007_V3 และพัฒนา Component ส่วนกลางใหม่:
+- **FormHorizontalTableSingleRow**: พัฒนา Component ตารางแนวนอนแถวเดียวขึ้นใหม่เพื่อใช้กับ Straightness Check
+  - **Single Row Layout**: ออกแบบให้รองรับการกรอกข้อมูล 0-6 จุดวัดในแถวเดียว พร้อม Label กำกับ (Z, W Axis)
+  - **Dynamic Features**: เพิ่ม Prop `showArrows` สำหรับเปิด/ปิดการแสดงผลลูกศร และ `validateStd` สำหรับการเช็คค่ามาตรฐานรายช่อง
+  - **Auto Diff Calculation**: มีระบบคำนวณค่า Max-Min ภายในเพื่อใช้ตรวจสอบความถูกต้องของข้อมูล
+- **Page 3 Implementation**:
+  - **Section 7 & 9**: ใช้ `FormHorizontalTableSingleRow` สำหรับการตรวจสอบความตรง (Straightness) ของแกน Z และ W ทั้งด้านหน้าและด้านข้าง
+  - **Section 8 & 10**: ติดตั้งระบบตรวจสอบขนานของ Ball Screw (Parallel Check) พร้อมรูปภาพประกอบและ Validation 5 µm
+  - **Machine Running Test**: เพิ่มระบบบันทึกเวลา Run Test 2 ชั่วโมงพร้อมระบบตรวจสอบระยะข้าม (Minimum duration check)
+  - **Signature Box**: วางตำแหน่งช่องเซ็นชื่อแบบ Absolute ไว้ที่ท้ายหน้าเพื่อความเป็นระเบียบ

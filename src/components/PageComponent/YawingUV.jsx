@@ -11,7 +11,6 @@ function SingleUVGraph({
     onPointChange,
     secondaryPoints,      // Secondary Points (Blue)
     onSecondaryPointChange,
-    onSecondaryPointChange,
     axisLabel1 = "U",
     axisLabel2 = "V",
     errorU = false,
@@ -226,7 +225,9 @@ function YawingUV({
     data = { u: '', v: '' },
     onChange = () => { },
     stdU = 2,
-    stdV = 2
+    stdV = 2,
+    axisLabel1 = "U",
+    axisLabel2 = "V"
 }) {
     const { formState: { isSubmitted } } = useFormContext();
     const [allPoints, setAllPoints] = useState({
@@ -283,8 +284,8 @@ function YawingUV({
                 onPointChange={(pk, val) => handlePointUpdate('primary', pk, val)}
                 secondaryPoints={allPoints.secondary}
                 onSecondaryPointChange={(pk, val) => handlePointUpdate('secondary', pk, val)}
-                axisLabel1="U"
-                axisLabel2="V"
+                axisLabel1={axisLabel1}
+                axisLabel2={axisLabel2}
                 errorU={isSubmitted && !data.u}
                 errorV={isSubmitted && !data.v}
             />

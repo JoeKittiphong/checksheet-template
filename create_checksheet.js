@@ -198,55 +198,37 @@ export default Page${i};`;
 
 console.log(`Successfully created Pages (Cover, Blank, 1-${totalPages})`);
 
-// 5. Add to build-all.cjs
-const buildScriptPath = path.join(__dirname, 'build-all.cjs');
-if (fs.existsSync(buildScriptPath)) {
+// 5. Add to forms.cjs
+const formsPath = path.join(__dirname, 'forms.cjs');
+if (fs.existsSync(formsPath)) {
     try {
-        let buildScriptContent = fs.readFileSync(buildScriptPath, 'utf8');
+        let formsContent = fs.readFileSync(formsPath, 'utf8');
 
-        // Check if form is already in the list to avoid duplicates
-        if (!buildScriptContent.includes(`"${checksheetName}"`)) {
-            // Regex to find the forms array and insert the new form
-            const formsRegex = /(const forms = \[\s*)([\s\S]*?)(\s*\];)/;
-            const match = buildScriptContent.match(formsRegex);
+        // Check if form is already in the list
+        if (!formsContent.includes(`"${checksheetName}"`)) {
+            // Regex to find the array content
+            const formsRegex = /(module\.exports\s*=\s*\[\s*)([\s\S]*?)(\s*\];)/;
+            const match = formsContent.match(formsRegex);
 
             if (match) {
-                let currentForms = match[2];
-                // Remove trailing whitespace/newlines from the end
-                currentForms = currentForms.replace(/\s+$/, '');
+                let currentForms = match[2].trimEnd();
+                // Add comma if needed
+                const needsComma = currentForms !== "" && !currentForms.endsWith(',') && !currentForms.split('\n').pop().trim().startsWith('//');
 
-                // Add comma if the last item doesn't have one and isn't empty, and isn't a comment
-                // We split by newline to check the last meaningful line
-                const lines = currentForms.split('\n');
-                let lastLine = lines.length > 0 ? lines[lines.length - 1].trim() : '';
+                const separator = currentForms === "" ? "" : (needsComma ? ",\n    " : "\n    ");
+                const newContent = formsContent.replace(formsRegex, `$1${currentForms}${separator}"${checksheetName}"\n$3`);
 
-                // If last line is empty and there are more lines, check previous
-                if (lastLine === '' && lines.length > 1) {
-                    lastLine = lines[lines.length - 2].trim();
-                }
-
-                const needsComma = lastLine !== '' && !lastLine.endsWith(',') && !lastLine.startsWith('//');
-
-                if (needsComma) {
-                    currentForms += ',';
-                }
-
-                const newFormsList = `${currentForms}\n    "${checksheetName}"`;
-
-                const newContent = buildScriptContent.replace(formsRegex, `$1${newFormsList}\n$3`);
-                fs.writeFileSync(buildScriptPath, newContent);
-                console.log(`Added ${checksheetName} to build-all.cjs`);
-            } else {
-                console.warn("Could not find 'forms' array in build-all.cjs. Please add manually.");
+                fs.writeFileSync(formsPath, newContent);
+                console.log(`Added ${checksheetName} to forms.cjs`);
             }
         } else {
-            console.log(`${checksheetName} already exists in build-all.cjs`);
+            console.log(`${checksheetName} already exists in forms.cjs`);
         }
     } catch (err) {
-        console.error("Error updating build-all.cjs:", err);
+        console.error("Error updating forms.cjs:", err);
     }
-} else {
-    console.warn("build-all.cjs not found. Skipping auto-add.");
 }
+
+
 
 console.log("Done.");

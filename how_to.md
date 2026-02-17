@@ -63,9 +63,118 @@ Example data row:
   reading_min: 10, 
   reading_max: 20 
 }
-```
 If the input value is outside 10-20, it will turn red.
 
+---
+
+# How to use Generic Table Components
+
+เราได้สร้าง Generic Component ขึ้นมา 2 ตัวหลักๆ เพื่อลด Code Duplication และจัดการ Logic การเดิน Focus (UseGridNavigation) ให้ง่ายขึ้น
+
+## 1. PitchingTable
+
+ใช้สำหรับ Pitching Table และ Rolling Table แบบมาตรฐาน (ที่มีโครงสร้างซับซ้อน เช่น Top/Bottom, Rows/Cols)
+
+### Props
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `axis` | `'x' \| 'y'` | **Layout Axis**: `'x'` = Horizontal, `'y'` = Vertical |
+| `arrowAxis` | `'x' \| 'y'` | **Arrow Direction**: ใช้บังคับทิศทางลูกศร. เช่น RollingX เป็น Layout X แต่ใช้ลูกศรขึ้นลง (Y) ให้ส่ง `'y'` |
+| `config` | `Object` | การตั้งค่า Row/Column และ Data Mapping |
+| `data` | `Object` | Data object จาก RHF (เช่น `{ b: [], t: [] }`) |
+| `standard` | `Object` | `{ min: -10, max: 10 }` |
+
+### Config Structure
+
+```js
+const config = {
+    // Array ของ Row ที่จะ Map กับ Data Key (เช่น 'b' หรือ 't')
+    rows: [
+        { key: 'b', label: 'B (Before)' }, 
+        { key: 't', label: 'T (Top)' }
+    ],
+    // Array ของ Column Header
+    cols: [
+        { label: 'X+' }, 
+        { label: 'X0', isRef: true }, // isRef = คอลัมน์อ้างอิง (สีเทา/ข้าม)
+        { label: 'X-' }
+    ],
+    // Label ของ Diff Row
+    diffLabel: 'DIFF',
+    // Header หลัก
+    dataLabel: 'PITCHING' 
+}
+```
+
+### Examples
+
+#### Pitching X (Layout X, Arrow X)
+```jsx
+<PitchingTable
+    axis="x"     // แนวนอน
+    arrowAxis="x" // ลูกศรซ้ายขวา
+    config={{ ... }}
+    data={data}
+```
+---
+
+## 4. FormHorizontalTableSingleRow
+
+ใช้สำหรับตารางตรวจสอบแนวนอนที่มีเพียงแถวเดียว (Single Row) เช่น Straightness Check ใน FAMB0007_V3 หรือตารางที่เน้นการกรอกข้อมูลแบบรวดเร็วและมีการคำนวณ Diff (Max-Min) อัตโนมัติ
+
+### Features
+
+-   **Compact Layout**: แสดงผลเป็นตารางแนวนอนแถวเดียว พร้อม Label ด้านซ้าย
+-   **Auto Diff calculation**: คำนวณค่าสูงสุด-ต่ำสุด (Max-Min) ให้อัตโนมัติ (ซ่อน/แสดงได้)
+-   **Configurable Arrows**: เลือกแสดงผลเป็นตัวเลขปกติหรือแบบมีลูกศร (↑/↓) ผ่าน prop `showArrows`
+-   **Validation**: รองรับการตรวจสอบค่ามาตรฐาน (STD) ทั้งแบบรายช่อง และแบบขอบเขตความต่าง (Diff)
+
+### Props
+
+| Property | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `name` | `string` | - | **Required**. RHF field name (เช่น `"p03_front_z"`) |
+| `header` | `string` | - | หัวข้อคอลัมน์แรกด้านบน (เช่น `"Front"`) |
+| `label` | `string` | - | ชื่อแถวด้านซ้าย (เช่น `"Z"`) |
+| `cols` | `number` | `7` | จำนวนคอลัมน์ข้อมูล |
+| `headerStart` | `number` | `0` | ตัวเลขเริ่มต้นของหัวตาราง (0, 1, 2...) |
+| `axis` | `string` | `"x"` | แกนข้อมูล (x/y) สำหรับการจัดการลูกศร |
+| `standard` | `number` | `5` | ค่ามาตรฐานสำหรับ Diff (Max-Min) |
+| `showArrows` | `boolean` | `false` | แสดงลูกศรหน้าตัวเลขหรือไม่ |
+| `validateStd` | `boolean` | `false` | เปิดการตรวจสอบค่า Standard รายช่องหรือไม่ |
+| `standards` | `Array` | `[]` | รายการ Standard รายคอลัมน์ `[{ min, max, ... }]` |
+
+### Examples
+
+#### Simple Usage (Straightness Style)
+กรอกตัวเลขปกติ ไม่แสดงลูกศร และเช็คค่า Diff ไม่เกิน 5 µm
+```jsx
+<FormHorizontalTableSingleRow
+    name="p3_front_z"
+    header="Front"
+    label="Z"
+    standard={5}
+    showArrows={false}
+/>
+```
+
+#### Advanced Usage (with Arrows & Validation)
+แสดงลูกศร และเช็คค่ามาตรฐานรายช่อง
+```jsx
+<FormHorizontalTableSingleRow
+    name="p3_axis_check"
+    header="Check"
+    label="Y"
+    showArrows={true}
+    validateStd={true}
+    standards={[
+        { maxDiff: 2 }, // Point 0
+        { maxDiff: 2 }, // Point 1
+        // ...
+    ]}
+/>
+```
 ---
 
 # How to use ShapedCheckGroup
