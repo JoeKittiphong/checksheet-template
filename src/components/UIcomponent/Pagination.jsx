@@ -78,7 +78,8 @@ function Pagination({
                     display: 'flex',
                     flexDirection: 'column',
                     // Drop Shadow for the whole strip
-                    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))'
+                    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
+                    ...props.style // Merge external styles
                 }}
             >
                 <div style={{

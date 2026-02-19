@@ -65,11 +65,17 @@ import ImageUploadBox from '../../components/FormComponents/ImageUploadBox';
 import InputWithArrow from '../../components/FormComponents/InputWithArrow';
 import ShapedCheckGroup from '../../components/FormComponents/ShapedCheckGroup';
 import TableCalculateSetting from '../../components/FormComponents/TableCalculateSetting';
+import Spacer from '../../components/FormComponents/Spacer';
+import SimpleText from '../../components/FormComponents/SimpleText';
+import StaticImage from '../../components/FormComponents/StaticImage';
 
 import PureGrid from './PureGrid';
 
 export const ComponentMap = {
     PureGrid,
+    Spacer,
+    SimpleText,
+    StaticImage,
     A4Paper,
     A4blank,
     CoverPage,

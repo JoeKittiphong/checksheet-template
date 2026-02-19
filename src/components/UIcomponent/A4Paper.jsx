@@ -73,9 +73,6 @@ function A4Paper({
                                 documentNo={content.documentNo}
                                 releaseNo={content.releaseNo}
                                 controlBy={content.controlBy}
-                                title={content.title}
-                                subtitle={content.subtitle}
-                                company={content.company}
                                 currentPage={currentPage}
                                 totalPage={content.totalPage}
                                 date={content.date}
@@ -84,7 +81,7 @@ function A4Paper({
                             />
                         </div>
                     )}
-                    <div className="m-2">
+                    <div className="relative flex-1">
                         {children}
                     </div>
                 </div>

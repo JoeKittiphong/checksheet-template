@@ -3,75 +3,75 @@
  * หัวกระดาษ A4 สำหรับใช้ในทุกหน้าเอกสาร
  */
 function PageHeader({
-    documentNo = 'FAEI0158',
-    releaseNo = '5.0',
+    documentNo = '',
+    releaseNo = '',
     controlBy = 'Assembly Division',
-    title = 'Check Sheet',
-    subtitle = 'ASSEMBLY',
-    company = 'Sodick (Thailand) Co.,Ltd',
     currentPage = 1,
     totalPage = 1,
-    date = '14/09/2017',
-    model = 'T-MASTER',
-    group = 'FINAL INSPECTION'
+    date = '',
+    model = '',
+    group = ''
 }) {
+    const title = "CHECKSHEET";
+    const subtitle = "ASSEMBLY";
+    const company = "Sodick (Thailand) Co.,Ltd";
     return (
-        <div className="border-b border-black text-sm">
+        <div className="border-b-2 border-black text-[9pt] leading-tight">
             {/* Top Section */}
             <div className="flex border-b border-black">
                 {/* Left Column */}
-                <div className="w-1/3 border-r border-black">
-                    <div className="flex border-b-0 border-black">
-                        <div className="w-1/2 p-1 pl-2">Document No.</div>
-                        <div className="w-1/2 p-1 text-center font-medium">{documentNo}</div>
+                <div className="w-[30%] border-r border-black flex flex-col">
+                    <div className="flex border-b border-black">
+                        <div className="w-1/2 p-1.5 pl-2 font-normal">Document No.</div>
+                        <div className="w-1/2 p-1.5 pr-2 text-right font-black uppercase">{documentNo}</div>
                     </div>
                     <div className="flex border-b border-black">
-                        <div className="w-1/2 p-1 pl-2">Release No.</div>
-                        <div className="w-1/2 p-1 text-center font-medium">{releaseNo}</div>
+                        <div className="w-1/2 p-1.5 pl-2 font-normal">Release No.</div>
+                        <div className="w-1/2 p-1.5 pr-4 text-right font-black">{releaseNo}</div>
                     </div>
-                    <div className="flex border-b-0 border-black">
-                        <div className="w-full p-1 pl-2">Control by</div>
-                    </div>
-                    <div className="flex">
-                        <div className="w-full p-1 pl-2">{controlBy}</div>
+                    <div className="flex-1 p-1.5 pl-2 flex flex-col justify-start">
+                        <div className="font-normal text-[8pt]">Control by</div>
+                        <div className="font-bold">{controlBy}</div>
                     </div>
                 </div>
 
                 {/* Middle Column */}
-                <div className="w-1/3 border-r border-black flex flex-col">
-                    <div className="flex-1 flex items-center justify-center border-b-0 border-black font-bold">
+                <div className="w-[40%] border-r border-black flex flex-col items-center justify-center p-2 text-center">
+                    <div className="font-black text-[12pt] uppercase tracking-wide leading-tight mb-1">
                         {title}
                     </div>
-                    <div className="flex-1 flex items-center justify-center border-b-0 border-black font-bold">
+                    <div className="font-black text-[11pt] uppercase leading-tight mb-1">
                         {subtitle}
                     </div>
-                    <div className="flex-1 flex items-center justify-center">
+                    <div className="font-normal text-[9pt]">
                         {company}
                     </div>
                 </div>
 
                 {/* Right Column */}
-                <div className="w-1/3">
-                    <div className="flex border-b-0 border-black h-8 items-center pl-2">
-                        Page
+                <div className="w-[30%] flex flex-col">
+                    <div className="flex flex-col border-b border-black p-1.5 pl-2 h-14 justify-between">
+                        <div className="font-normal">Page</div>
+                        <div className="font-black text-center text-[11pt]">
+                            {currentPage} of {totalPage}
+                        </div>
                     </div>
-                    <div className="flex-1 flex items-center justify-center border-b border-black font-medium h-[33px]">
-                        {currentPage} of {totalPage}
-                    </div>
-                    <div className="flex border-b-0 border-black">
-                        <div className="w-full p-1 pl-2">Date</div>
-                    </div>
-                    <div className="flex">
-                        <div className="w-full p-1 pl-2 text-center">{date}</div>
+                    <div className="flex-1 p-1.5 pl-2 flex flex-col justify-start">
+                        <div className="font-normal">Date</div>
+                        <div className="font-bold text-center mt-1">{date}</div>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Bar */}
-            <div className="flex bg-white border-black font-bold text-sm">
-                <div className="w-1/6 border-r-0 border-black p-1 pl-2">MODEL</div>
-                <div className="w-1/6 border-r-0 border-black p-1 text-center">{model}</div>
-                <div className="w-1/2 p-1 text-right pr-4">GROUP {group}</div>
+            {/* Bottom Bar: MODEL & GROUP */}
+            <div className="flex bg-white px-2 py-1 items-center justify-between font-black text-[10pt]">
+                <div className="flex gap-12">
+                    <div className="uppercase">MODEL</div>
+                    <div className="uppercase">{model}</div>
+                </div>
+                <div className="uppercase">
+                    GROUP {group}
+                </div>
             </div>
         </div>
     );
