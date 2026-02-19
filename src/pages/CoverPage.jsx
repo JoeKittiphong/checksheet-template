@@ -11,7 +11,7 @@ import SignBox from '../components/UIcomponent/SignBox';
  * @param {Object} props
  * @param {Object} props.headerData - ข้อมูลสำหรับ TableHeader
  */
-function CoverPage({ headerData = {} }) {
+function CoverPage({ headerData = {}, isBuilder = false }) {
     const { watch, setValue } = useFormContext();
 
     // Watch all relevant fields
@@ -46,7 +46,7 @@ function CoverPage({ headerData = {} }) {
     };
 
     return (
-        <A4Paper innerPadding="p-4">
+        <A4Paper innerPadding="p-4" isBuilder={isBuilder}>
             {/* Main Title */}
             <h1 className="text-center text-3xl font-bold tracking-[0.3em] mb-8 text-black">
                 COVER SHEET

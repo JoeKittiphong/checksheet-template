@@ -387,3 +387,27 @@ _2026-02-17_
 - **Page 7 Implementation**:
   - **Item 17**: ใช้ `FormEDMTableStraightness` สำหรับตรวจสอบความตรง (Top View)
   - **Item 18**: ใช้ `FormTableEntoSingleDir` สร้างตารางตรวจสอบ Ento แบบ Side/Front View พร้อมช่องกรอก Data/SD แยกต่างหาก
+
+### 31. การแก้ไขระบบ Form Builder - Drag & Drop และ Component Rendering
+_2026-02-19_
+
+แก้ไขปัญหาใหญ่ของระบบลากวาง (Drag and Drop) ในหน้า Form Builder ที่ทำให้วาง Component ไม่ได้ หรือวางแล้วข้อมูลหายไป:
+
+- **Drag & Drop Stabilization**:
+  - **Layering Fix**: เพิ่ม `pointer-events-none` ให้กับ Component ที่เป็นพื้นหลัง (Paper Template) เพื่อไม่ให้ไปขวางการรับ Mouse Event ของ Grid Layer
+  - **Event Capture**: เพิ่ม "Fallback Drop Zones" ไว้ที่ระดับหน้ากระดาษ (Page) และผืนผ้าใบ (Canvas) เพื่อดักจับกรณีลากวางพลาดเป้า ช่วยให้สร้าง Component ได้ง่ายขึ้น (ไม่ต้องแม่น Grid 100%)
+  - **Propagation Control**: ใช้ `stopPropagation()` และ `preventDefault()` อย่างเข้วงวดเพื่อป้องกัน Drop Event ไหลไปหา Container หลัก
+
+- **Fixing Metadata Loss (Critical)**:
+  - **Merge Logic**: แก้ไข `onPageLayoutChange` ให้ทำระบบ Merge แทนการ Overwrite ข้อมูลเดิม
+  - **Root Cause**: เนื่องจาก `react-grid-layout` ส่งคืนมาแค่พิกัด (x, y, w, h) การเขียนทับแบบเดิมจึงทำให้ "ชื่อ Component" และ "Props" หายไป ทำให้เรนเดอร์ไม่ได้ (ขึ้น Unknown?)
+
+- **Component Defaults & Property Editor**:
+  - **Exhaustive Defaults**: จัดทำ `ComponentDefaults.js` ให้รองรับ Component ทั้ง 64 ตัวในระบบ พร้อมใส่ค่าเริ่มต้นที่ถูกต้องตามความต้องการของแต่ละ Component
+  - **Advanced JSON Editor**: เพิ่มช่องสำหรับแก้ไข Props แบบ JSON โดยตรงใน `PropertyEditor.jsx` เพื่อความยืดหยุ่นสูงสุดในการตั้งค่า Component ที่ซับซ้อน
+  - **Numeric Conversion**: เพิ่มระบบแปลงค่า String เป็น Number อัตโนมัติสำหรับฟิลด์ทางเทคนิค (min, max, w, h) ป้องกัน Data Type Mismatch ใน React
+
+- **Robust Data Transfer**:
+  - ปรับการรับส่งข้อมูลผ่าน `dataTransfer` ใน `Toolbox.jsx` ให้ส่งหลาย Key (เช่น `component-name`, `application/x-component-name`) เพื่อความเสถียรข้ามเบราว์เซอร์
+
+**ผลลัพธ์**: ระบบ Form Builder สามารถลากวางได้อย่างลื่นไหล ข้อมูลไม่หายเมื่อขยับตำแหน่ง และ Component แสดงผลข้อมูลเริ่มต้นได้ทันทีที่วางลงบนกระดาษครับ🧪

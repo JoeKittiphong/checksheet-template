@@ -18,11 +18,91 @@ function A4Paper({
     content = null,
     currentPage = 1,
     showProblemButton = true,
-    showHeader = true
+    showHeader = true,
+    isBuilder = false
 }) {
     const { apiEndpoint } = useChecksheet();
     // ใช้ formNumber จาก props หรือจาก content
     const displayFormNumber = formNumber || (content?.formNumber || '');
+
+    const paperContent = (
+        <div
+            className={`
+      bg-white 
+      shadow-2xl 
+      border border-gray-300
+      p-[10mm]
+      box-border
+      relative
+      shrink-0
+      print:shadow-none
+      print:border-none
+      print:m-0
+      print:w-full
+      print:h-full
+      print:p-[10mm]
+      ${className}
+    `}
+            style={{
+                width: '210mm',
+                height: '297mm',
+                breakAfter: 'page',
+                pageBreakAfter: 'always'
+            }}
+        >
+            {/* ProblemDirect - Positioning at Top-Right of paper content */}
+            {showProblemButton && (
+                <div className="absolute top-0 right-0 z-50">
+                    <ProblemDirect
+                        name={`p${currentPage}_problem_id`}
+                        apiEndpoint={apiEndpoint}
+                    />
+                </div>
+            )}
+
+            {/* Inner content border */}
+            <div className="w-full h-full border-2 border-black relative overflow-hidden flex flex-col">
+
+
+                {/* Content Area with Padding */}
+                <div>
+                    {/* PageHeader - แสดงเมื่อมี content และ showHeader เป็น true */}
+                    {showHeader && content && (
+                        <div className="w-full">
+                            <PageHeader
+                                documentNo={content.documentNo}
+                                releaseNo={content.releaseNo}
+                                controlBy={content.controlBy}
+                                title={content.title}
+                                subtitle={content.subtitle}
+                                company={content.company}
+                                currentPage={currentPage}
+                                totalPage={content.totalPage}
+                                date={content.date}
+                                model={content.model}
+                                group={content.group}
+                            />
+                        </div>
+                    )}
+                    <div className="m-2">
+                        {children}
+                    </div>
+                </div>
+            </div>
+
+            {/* Form Number at bottom right corner */}
+            {displayFormNumber && (
+                <div
+                    className="mr-10 absolute bottom-1 right-1 text-[8pt] text-gray-600"
+                    style={{ fontFamily: 'Arial, sans-serif' }}
+                >
+                    {displayFormNumber}
+                </div>
+            )}
+        </div>
+    );
+
+    if (isBuilder) return paperContent;
 
     return (
         <div className="min-h-screen py-8 px-4 flex justify-center overflow-auto print:p-0 print:bg-white print:overflow-visible print:block print:min-h-0 relative">
@@ -44,80 +124,7 @@ function A4Paper({
                     }
                 }
             `}</style>
-            <div
-                className={`
-          bg-white 
-          shadow-2xl 
-          border border-gray-300
-          p-[10mm]
-          box-border
-          relative
-          shrink-0
-          print:shadow-none
-          print:border-none
-          print:m-0
-          print:w-full
-          print:h-full
-          print:p-[10mm]
-          ${className}
-        `}
-                style={{
-                    width: '210mm',
-                    height: '297mm',
-                    breakAfter: 'page',
-                    pageBreakAfter: 'always'
-                }}
-            >
-                {/* ProblemDirect - Positioning at Top-Right of paper content */}
-                {showProblemButton && (
-                    <div className="absolute top-0 right-0 z-50">
-                        <ProblemDirect
-                            name={`p${currentPage}_problem_id`}
-                            apiEndpoint={apiEndpoint}
-                        />
-                    </div>
-                )}
-
-                {/* Inner content border */}
-                <div className="w-full h-full border-2 border-black relative overflow-hidden flex flex-col">
-
-
-                    {/* Content Area with Padding */}
-                    <div>
-                        {/* PageHeader - แสดงเมื่อมี content และ showHeader เป็น true */}
-                        {showHeader && content && (
-                            <div className="w-full">
-                                <PageHeader
-                                    documentNo={content.documentNo}
-                                    releaseNo={content.releaseNo}
-                                    controlBy={content.controlBy}
-                                    title={content.title}
-                                    subtitle={content.subtitle}
-                                    company={content.company}
-                                    currentPage={currentPage}
-                                    totalPage={content.totalPage}
-                                    date={content.date}
-                                    model={content.model}
-                                    group={content.group}
-                                />
-                            </div>
-                        )}
-                        <div className="m-2">
-                            {children}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Form Number at bottom right corner */}
-                {displayFormNumber && (
-                    <div
-                        className="mr-10 absolute bottom-1 right-1 text-[8pt] text-gray-600"
-                        style={{ fontFamily: 'Arial, sans-serif' }}
-                    >
-                        {displayFormNumber}
-                    </div>
-                )}
-            </div>
+            {paperContent}
         </div>
     );
 }

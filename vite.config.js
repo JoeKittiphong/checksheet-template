@@ -7,7 +7,8 @@ import fs from 'fs'
 
 // แก้ตรงนี้ก่อน build หรือรับจาก env
 // const formName = process.env.FORM_NAME || 'Test';
-const formName = process.env.FORM_NAME || 'FAMB0007_V3';
+const formName = process.env.FORM_NAME || 'FORMBUILDER';
+// const formName = process.env.FORM_NAME || 'FAWI0099_V1';
 // const formName = process.env.FORM_NAME || 'FAMB0017_V1';
 // const formName = process.env.FORM_NAME || 'FAMB0004_V3';
 // const formName = process.env.FORM_NAME || 'FAMB0002V2';
