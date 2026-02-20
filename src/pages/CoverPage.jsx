@@ -11,7 +11,7 @@ import SignBox from '../components/UIcomponent/SignBox';
  * @param {Object} props
  * @param {Object} props.headerData - ข้อมูลสำหรับ TableHeader
  */
-function CoverPage({ headerData = {}, isBuilder = false }) {
+function CoverPage({ headerData = {}, content = {}, isBuilder = false }) {
     const { watch, setValue } = useFormContext();
 
     // Watch all relevant fields
@@ -65,7 +65,7 @@ function CoverPage({ headerData = {}, isBuilder = false }) {
             {/* Info Input Form */}
             <InfoInputForm
                 formData={formData}
-                model={headerData.model} // Pass model explicitly from headerData
+                model={content.model || headerData.model} // Prefer content.model as it contains available_models
                 onChange={handleInfoChange}
             />
 

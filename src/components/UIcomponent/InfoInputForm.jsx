@@ -61,18 +61,22 @@ function InfoInputForm({
                         <td className={`border-b border-black ${bgGreenLight} p-0 min-h-9 relative`}>
                             {/* Check if model contains & */}
                             {model && model.includes('&') ? (
-                                // Multiple models - show radio selection
+                                // Multiple models - show checkbox selection (single selection logic, but visual checkbox)
                                 <div className="w-full h-full flex items-center justify-center gap-6 py-1">
                                     {model.split('&').map((m, idx) => {
                                         const trimmedModel = m.trim();
                                         return (
                                             <label key={idx} className="flex items-center gap-1 cursor-pointer">
                                                 <input
-                                                    type="radio"
+                                                    type="checkbox"
                                                     name="model"
                                                     value={trimmedModel}
                                                     checked={formData.model === trimmedModel}
-                                                    onChange={(e) => onChange('model', e.target.value)}
+                                                    onChange={(e) => {
+                                                        // Behavior: If checked, set this value. If unchecked, clear value (or keep it? let's clear).
+                                                        // This mimics radio button behavior but with checkbox UI, plus allows deselecting.
+                                                        onChange('model', e.target.checked ? trimmedModel : '');
+                                                    }}
                                                     className="w-4 h-4"
                                                 />
                                                 <span className="font-medium text-sm">{trimmedModel}</span>

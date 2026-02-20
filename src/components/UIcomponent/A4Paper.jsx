@@ -64,26 +64,23 @@ function A4Paper({
             <div className="w-full h-full border-2 border-black relative overflow-hidden flex flex-col">
 
 
-                {/* Content Area with Padding */}
-                <div>
-                    {/* PageHeader - แสดงเมื่อมี content และ showHeader เป็น true */}
-                    {showHeader && content && (
-                        <div className="w-full">
-                            <PageHeader
-                                documentNo={content.documentNo}
-                                releaseNo={content.releaseNo}
-                                controlBy={content.controlBy}
-                                currentPage={currentPage}
-                                totalPage={content.totalPage}
-                                date={content.date}
-                                model={content.model}
-                                group={content.group}
-                            />
-                        </div>
-                    )}
-                    <div className="relative flex-1">
-                        {children}
+                {/* PageHeader - แสดงเมื่อมี content และ showHeader เป็น true */}
+                {showHeader && content && (
+                    <div className="w-full">
+                        <PageHeader
+                            documentNo={content.documentNo}
+                            releaseNo={content.releaseNo}
+                            controlBy={content.controlBy}
+                            currentPage={currentPage}
+                            totalPage={content.totalPage}
+                            date={content.date}
+                            model={content.model}
+                            group={content.group}
+                        />
                     </div>
+                )}
+                <div className="relative flex-1 p-2">
+                    {children}
                 </div>
             </div>
 

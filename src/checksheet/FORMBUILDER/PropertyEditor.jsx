@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ComponentSchemas } from './ComponentSchemas';
+import AssetManager from './AssetManager';
 
-const PropertyEditor = ({ element, onUpdate, onClose }) => {
+const PropertyEditor = ({ element, onUpdate, onClose, workspace, onDelete }) => {
     const [activeTab, setActiveTab] = useState('basic'); // 'basic' | 'advanced'
     const [jsonText, setJsonText] = useState('');
     const [jsonError, setJsonError] = useState(null);
+    const [assetManagerOpen, setAssetManagerOpen] = useState(false);
+    const [activeImageField, setActiveImageField] = useState(null);
 
     const { register, handleSubmit, reset, setValue } = useForm();
     const schema = ComponentSchemas[element?.component] || ComponentSchemas.default;
@@ -113,16 +116,36 @@ const PropertyEditor = ({ element, onUpdate, onClose }) => {
                 return (
                     <div key={name} className="space-y-2">
                         <label className={labelStyles}>{label}</label>
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                {...register(name)}
-                                disabled={disabled}
-                                className={`${inputStyles} ${disabledStyles} flex-1 text-[10px] font-mono`}
-                                placeholder="http://... or base64"
-                            />
-                            <label className="shrink-0 cursor-pointer px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold transition-all active:scale-95 flex items-center justify-center">
-                                Browse
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    {...register(name)}
+                                    disabled={disabled}
+                                    className={`${inputStyles} ${disabledStyles} flex-1 text-[10px] font-mono`}
+                                    placeholder="http://... or /uploads/..."
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setActiveImageField(name);
+                                        setAssetManagerOpen(true);
+                                    }}
+                                    className="shrink-0 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded text-xs font-bold transition-all active:scale-95 flex items-center gap-1"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                    </svg>
+                                    Library
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="h-px bg-gray-100 flex-1"></div>
+                                <span className="text-[9px] text-gray-400 font-bold uppercase">or</span>
+                                <div className="h-px bg-gray-100 flex-1"></div>
+                            </div>
+                            <label className="cursor-pointer w-full py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 border-dashed rounded text-[10px] font-bold text-gray-500 transition-all text-center">
+                                Upload Local (Base64)
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -133,7 +156,6 @@ const PropertyEditor = ({ element, onUpdate, onClose }) => {
                                             const reader = new FileReader();
                                             reader.onloadend = () => {
                                                 setValue(name, reader.result, { shouldDirty: true });
-                                                // Trigger submission to update canvas immediately
                                                 handleSubmit(onBasicSubmit)();
                                             };
                                             reader.readAsDataURL(file);
@@ -252,6 +274,31 @@ const PropertyEditor = ({ element, onUpdate, onClose }) => {
                     </div>
                 )}
             </div>
+
+            <div className="p-4 border-t border-gray-200 bg-white">
+                <button
+                    onClick={onDelete}
+                    className="w-full px-4 py-2 bg-red-50 text-red-600 text-sm font-bold rounded hover:bg-red-100 hover:text-red-700 shadow-sm border border-red-200 active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    Delete Component
+                </button>
+            </div>
+
+            <AssetManager
+                isOpen={assetManagerOpen}
+                onClose={() => setAssetManagerOpen(false)}
+                onSelect={(url) => {
+                    if (activeImageField) {
+                        setValue(activeImageField, url, { shouldDirty: true });
+                        handleSubmit(onBasicSubmit)();
+                    }
+                    setAssetManagerOpen(false);
+                }}
+                workspace={workspace}
+            />
         </div>
     );
 };

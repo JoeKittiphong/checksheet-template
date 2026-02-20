@@ -18,5 +18,7 @@ module.exports = [
     // "FAMB0015_V1",
     // "FAMB0016_V2",
     // "FAMB0017_V1",
-    "FAMB0007_V3"
+    // "FAMB0007_V3"
+    "FORMBUILDER",
+    "FORMVIEWER"
 ];

@@ -1,7 +1,7 @@
 import React, { Suspense, useMemo } from 'react';
+import FormViewer from './checksheet/FORMVIEWER/FormViewer';
 
 // Dynamic import of all checksheet forms
-// Removing { eager: true } makes it return a function that returns a promise
 const forms = import.meta.glob('./checksheet/*/*.jsx');
 
 function App() {
@@ -15,21 +15,13 @@ function App() {
   // Create a Lazy Component
   const FormComponent = useMemo(() => {
     const importFn = forms[formPath];
-    if (!importFn) return null;
+    if (!importFn) {
+      // If no JSX file exists, we assume it's a JSON Form and use the Viewer
+      console.log(`JSX form not found at ${formPath}. Handling with FormViewer.`);
+      return FormViewer;
+    }
     return React.lazy(importFn);
   }, [formName, formPath]);
-
-  if (!FormComponent) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-red-100 text-red-700">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">Form Not Found</h1>
-          <p>Could not load form: <strong>{formName}</strong></p>
-          <p className="text-xs mt-4 text-gray-500">Path: {formPath}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <Suspense fallback={

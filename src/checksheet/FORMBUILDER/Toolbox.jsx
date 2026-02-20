@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { ComponentMap } from './ComponentMap';
 import ComponentDefaults from './ComponentDefaults';
 
-const Toolbox = () => {
+const Toolbox = ({ onAdd, workspace }) => {
     const [previewItem, setPreviewItem] = useState(null);
+    const [activeTab, setActiveTab] = useState('elements'); // 'elements' | 'assets'
+    const [assets, setAssets] = useState([]);
+    const [loadingAssets, setLoadingAssets] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(null);
 
     // Categorization
     const PAGE_COMPONENTS = ['A4Paper', 'A4blank', 'CoverPage', 'PureGrid'];
@@ -11,6 +17,75 @@ const Toolbox = () => {
     const FORM_COMPONENTS = Object.keys(ComponentMap).filter(k =>
         !PAGE_COMPONENTS.includes(k) && !BASIC_ELEMENTS.includes(k)
     );
+
+    useEffect(() => {
+        if (activeTab === 'assets' && workspace) {
+            fetchAssets();
+        }
+    }, [activeTab, workspace]);
+
+    const fetchAssets = async () => {
+        setLoadingAssets(true);
+        try {
+            const response = await axios.get(`http://localhost:3000/api/upload/assets?workspace=${workspace}`);
+            if (response.data.success) {
+                setAssets(response.data.assets || []);
+            }
+        } catch (err) {
+            console.error('Failed to fetch toolbox assets:', err);
+        } finally {
+            setLoadingAssets(false);
+        }
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            await axios.post('http://localhost:3000/api/upload/assets', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'x-workspace-name': workspace || 'general'
+                }
+            });
+            fetchAssets();
+        } catch (err) {
+            console.error('Upload Error:', err);
+            alert('Upload failed');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleDelete = async (e, assetName) => {
+        e.stopPropagation();
+        if (!window.confirm(`Delete ${assetName}?`)) return;
+
+        try {
+            await axios.delete('http://localhost:3000/api/upload/assets', {
+                data: {
+                    filename: assetName,
+                    workspace: workspace || 'general'
+                }
+            });
+            fetchAssets();
+        } catch (err) {
+            console.error('Delete Error:', err);
+            alert('Failed to delete asset');
+        }
+    };
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopySuccess(text);
+            setTimeout(() => setCopySuccess(null), 2000);
+        });
+    };
 
     const renderDraggableItem = (key, type, icon, colorClass = 'bg-blue-500') => (
         <div
@@ -93,45 +168,145 @@ const Toolbox = () => {
     return (
         <div className="relative flex h-full">
             <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full shadow-inner z-30">
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
-                    <h2 className="text-lg font-bold text-gray-800">Toolbox</h2>
-                    <p className="text-[11px] text-gray-500 font-medium">Click to Preview | Drag to Add</p>
+                <div className="p-4 border-b border-gray-200 bg-gray-50 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-black text-gray-800 uppercase tracking-tighter leading-none">Toolbox</h2>
+                        <span className="text-[10px] font-bold text-gray-400 font-mono tracking-widest">{activeTab}</span>
+                    </div>
+
+                    <div className="flex bg-gray-200/50 p-1 rounded-xl">
+                        <button
+                            onClick={() => setActiveTab('elements')}
+                            className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'elements' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Elements
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('assets')}
+                            className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'assets' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Assets
+                        </button>
+                    </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300">
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                    {activeTab === 'elements' ? (
+                        <div className="space-y-8">
+                            {/* Pages Category */}
+                            <div>
+                                <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-purple-500">
+                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">A4 Pages</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {PAGE_COMPONENTS.map(key => renderDraggableItem(key, 'PAGE', 'P', 'bg-purple-500'))}
+                                </div>
+                            </div>
 
-                    {/* Pages Category */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-purple-500">
-                            <span className="text-xs font-black text-gray-700 uppercase tracking-widest">A4 Pages</span>
-                        </div>
-                        <div className="grid grid-cols-1 gap-2">
-                            {PAGE_COMPONENTS.map(key => renderDraggableItem(key, 'PAGE', 'P', 'bg-purple-500'))}
-                        </div>
-                    </div>
+                            {/* Basic Elements Category */}
+                            <div>
+                                <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-emerald-500">
+                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">Layout Tools</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {renderDraggableItem('SimpleText', 'ELEMENT', 'T', 'bg-emerald-500')}
+                                    {renderDraggableItem('StaticImage', 'ELEMENT', 'IMG', 'bg-emerald-500')}
+                                    {renderDraggableItem('Spacer', 'ELEMENT', 'S', 'bg-emerald-500')}
+                                </div>
+                            </div>
 
-                    {/* Basic Elements Category */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-emerald-500">
-                            <span className="text-xs font-black text-gray-700 uppercase tracking-widest">Layout Tools</span>
+                            {/* Form Components Category */}
+                            <div>
+                                <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-blue-500">
+                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">Form Fields</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {FORM_COMPONENTS.sort().map(key => renderDraggableItem(key, 'ELEMENT', null, 'bg-blue-500'))}
+                                </div>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 gap-2">
-                            {renderDraggableItem('SimpleText', 'ELEMENT', 'T', 'bg-emerald-500')}
-                            {renderDraggableItem('StaticImage', 'ELEMENT', 'IMG', 'bg-emerald-500')}
-                            {renderDraggableItem('Spacer', 'ELEMENT', 'S', 'bg-emerald-500')}
-                        </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Workspace Library</span>
+                                <div className="flex items-center gap-1">
+                                    <label className={`p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-blue-500 cursor-pointer ${uploading ? 'animate-pulse' : ''}`} title="Upload Image">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                                    </label>
+                                    <button onClick={fetchAssets} className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-blue-500" title="Refresh">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${loadingAssets ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
 
-                    {/* Form Components Category */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-blue-500">
-                            <span className="text-xs font-black text-gray-700 uppercase tracking-widest">Form Fields</span>
-                        </div>
-                        <div className="grid grid-cols-1 gap-2">
-                            {FORM_COMPONENTS.sort().map(key => renderDraggableItem(key, 'ELEMENT', null, 'bg-blue-500'))}
-                        </div>
-                    </div>
+                            {!workspace ? (
+                                <div className="py-20 text-center opacity-40">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 italic">No Workspace Selected</p>
+                                </div>
+                            ) : loadingAssets ? (
+                                <div className="py-20 flex flex-col items-center gap-2 text-gray-300">
+                                    <div className="w-6 h-6 border-2 border-gray-100 border-t-blue-500 rounded-full animate-spin"></div>
+                                    <span className="text-[9px] font-black uppercase">Scanning Assets...</span>
+                                </div>
+                            ) : assets.length === 0 ? (
+                                <div className="py-20 text-center text-gray-300 opacity-60">
+                                    <div className="text-4xl mb-2">📂</div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Empty Workspace</p>
+                                    <p className="text-[9px] mt-1 italic">Upload images using the <span className="font-bold">icon above</span></p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-3">
+                                    {assets.map((asset, idx) => (
+                                        <div
+                                            key={idx}
+                                            onClick={() => copyToClipboard(asset.url)}
+                                            className="group relative bg-white border border-gray-100 rounded-xl overflow-hidden cursor-pointer hover:shadow-xl hover:border-blue-400 transition-all active:scale-95"
+                                        >
+                                            <div className="aspect-square bg-gray-50 flex items-center justify-center">
+                                                <img src={asset.url} alt={asset.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            </div>
+                                            <div className="p-2 border-t border-gray-50 flex items-center justify-between">
+                                                <span className="text-[9px] font-bold text-gray-500 truncate flex-1">{asset.name}</span>
+                                                {copySuccess === asset.url ? (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-300 group-hover:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                                    </svg>
+                                                )}
+                                            </div>
 
+                                            {/* Tooltip Overlay */}
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col">
+                                                <div className="flex justify-end p-1">
+                                                    <button
+                                                        onClick={(e) => handleDelete(e, asset.name)}
+                                                        className="p-1 bg-white/90 rounded-full hover:bg-red-500 hover:text-white text-red-500 transition-colors shadow-sm"
+                                                        title="Delete"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <div className="flex-1 flex items-center justify-center pb-4" title="Click to Copy URL">
+                                                    <span className="text-[9px] font-black text-white uppercase tracking-widest bg-blue-600/80 px-2 py-1 rounded">Copy</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
             {renderPreview()}

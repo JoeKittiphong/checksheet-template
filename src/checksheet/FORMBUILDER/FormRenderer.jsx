@@ -50,14 +50,14 @@ const WidthProvider = (ComposedComponent) => {
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const FormRenderer = ({ pages }) => {
+const FormRenderer = ({ pages, isDraggable = false, isResizable = false }) => {
     const defaultProps = {
         className: "layout",
         breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
         cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
         rowHeight: 30,
-        isDraggable: false,
-        isResizable: false,
+        isDraggable: isDraggable,
+        isResizable: isResizable,
         isDroppable: false,
     };
 
@@ -106,7 +106,13 @@ const FormRenderer = ({ pages }) => {
                         <PageContainer>
                             <ResponsiveGridLayout
                                 {...defaultProps}
-                                layouts={{ lg: page.layout || [] }}
+                                layouts={{
+                                    lg: (page.layout || []).map(l => ({ ...l, static: !isDraggable })),
+                                    md: (page.layout || []).map(l => ({ ...l, static: !isDraggable })),
+                                    sm: (page.layout || []).map(l => ({ ...l, static: !isDraggable })),
+                                    xs: (page.layout || []).map(l => ({ ...l, static: !isDraggable })),
+                                    xxs: (page.layout || []).map(l => ({ ...l, static: !isDraggable }))
+                                }}
                                 useCSSTransforms={true}
                             >
                                 {generateDOM(page.layout || [])}
