@@ -38,10 +38,14 @@ const Builder = () => {
     const [mounted, setMounted] = useState(false);
     const [status, setStatus] = useState('work_in_progress');
     const [isVerifyMode, setIsVerifyMode] = useState(false);
+    const [isToolboxOpen, setIsToolboxOpen] = useState(true);
+    const [zoom, setZoom] = useState(1);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    // Zoom Handlers
+    const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
+    const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
+    const handleZoomReset = () => setZoom(1);
+
     const [formSettings, setFormSettings] = useState({
         meta: {
             form_name: 'FAWI0008',
@@ -343,8 +347,52 @@ const Builder = () => {
                                 </button>
                             </div>
                         )}
+                        {!isPreview && (
+                            <button
+                                onClick={() => setIsToolboxOpen(!isToolboxOpen)}
+                                className="ml-4 p-2 hover:bg-gray-100 rounded text-gray-500 hover:text-blue-600 transition-colors"
+                                title={isToolboxOpen ? "Hide Toolbox" : "Show Toolbox"}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                     <div className="flex items-center gap-2">
+                        {/* Zoom Controls */}
+                        <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-2 py-1 mr-2">
+                            <span className="text-xs font-bold text-gray-500 w-8 text-right font-mono select-none">
+                                {Math.round(zoom * 100)}%
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
+                                </svg>
+                                <input
+                                    type="range"
+                                    min="0.5"
+                                    max="2"
+                                    step="0.1"
+                                    value={zoom}
+                                    onChange={(e) => setZoom(parseFloat(e.target.value))}
+                                    className="w-48 h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600 hover:accent-blue-700 transition-all"
+                                />
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <button
+                                onClick={handleZoomReset}
+                                disabled={zoom === 1}
+                                className={`ml-1 p-1 rounded-full transition-colors ${zoom === 1 ? 'text-gray-300 cursor-default' : 'hover:bg-white text-gray-400 hover:text-red-500'}`}
+                                title="Reset Zoom"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
 
                         <div className="w-px h-8 bg-gray-100 mx-2"></div>
                         <button
@@ -405,7 +453,13 @@ const Builder = () => {
                 </div>
 
                 <div className="flex flex-1 overflow-hidden relative">
-                    {!isPreview && <Toolbox workspace={formName} />}
+                    {!isPreview && (
+                        <div
+                            className={`transition-all duration-300 ease-in-out bg-white border-r border-gray-200 flex flex-col h-full shadow-inner z-30 ${isToolboxOpen ? 'w-64' : 'w-0 overflow-hidden'}`}
+                        >
+                            <Toolbox workspace={formName} />
+                        </div>
+                    )}
                     {isPreview && (
                         <div className="absolute top-0 left-0 right-0 z-30">
                             <ProfileBar
@@ -425,22 +479,35 @@ const Builder = () => {
                     {/* Canvas Container */}
                     <div
                         ref={scrollContainerRef}
-                        className={`flex-1 overflow-auto bg-gray-100 relative custom-scrollbar flex flex-col ${isPreview ? 'pt-16' : 'pt-4'}`}
+                        className={`flex-1 overflow-auto bg-gray-100 relative custom-scrollbar flex flex-col items-center ${isPreview ? 'pt-16' : 'pt-4'}`}
                         onDragOver={(e) => !isPreview && e.preventDefault()}
                     >
-                        <Canvas
-                            pages={pages}
-                            formSettings={formSettings}
-                            onPageLayoutChange={onPageLayoutChange}
-                            onAddPage={onAddPage}
-                            onRemovePage={onRemovePage}
-                            onDuplicatePage={handleDuplicatePage}
-                            onMovePage={handleMovePage}
-                            onDropElement={onDropElement}
-                            onSelectElement={onSelectElement}
-                            selectedElementId={selectedElement?.elementId}
-                            isPreview={isPreview}
-                        />
+                        <div
+                            style={{
+                                transform: `scale(${zoom})`,
+                                transformOrigin: 'top center',
+                                width: '100%',
+                                display: 'flex',
+                                flexDirection: 'col',
+                                alignItems: 'center',
+                                transition: 'transform 0.2s ease-out'
+                            }}
+                            className="pb-32" // Add padding to bottom to allow scrolling when zoomed in
+                        >
+                            <Canvas
+                                pages={pages}
+                                formSettings={formSettings}
+                                onPageLayoutChange={onPageLayoutChange}
+                                onAddPage={onAddPage}
+                                onRemovePage={onRemovePage}
+                                onDuplicatePage={handleDuplicatePage}
+                                onMovePage={handleMovePage}
+                                onDropElement={onDropElement}
+                                onSelectElement={onSelectElement}
+                                selectedElementId={selectedElement?.elementId}
+                                isPreview={isPreview}
+                            />
+                        </div>
                     </div>
 
                     {/* Pagination Sidebar */}
@@ -510,7 +577,7 @@ const Builder = () => {
                     onWorkspaceSet={handleWorkspaceSet}
                 />
             </div>
-        </FormProvider>
+        </FormProvider >
     );
 };
 

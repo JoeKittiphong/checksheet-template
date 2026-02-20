@@ -87,6 +87,120 @@ const Toolbox = ({ onAdd, workspace }) => {
         });
     };
 
+    // Categorization Logic
+    const CATEGORIES = {
+        'Common': { color: 'border-blue-500', bg: 'bg-blue-500', icon: '⚡' },
+        'EDM': { color: 'border-orange-500', bg: 'bg-orange-500', icon: '⚡' },
+        'EDW': { color: 'border-cyan-500', bg: 'bg-cyan-500', icon: '⚡' },
+        'IMM': { color: 'border-pink-500', bg: 'bg-pink-500', icon: '⚡' }
+    };
+
+    const getCategory = (name) => {
+        if (name.includes('EDM')) return 'EDM';
+        if (name.includes('EDW')) return 'EDW';
+        if (name.includes('IMM')) return 'IMM';
+        return 'Common';
+    };
+
+    const ToolboxSection = ({ title, count, color, isOpen, onToggle, children }) => (
+        <div className="mb-2">
+            <div
+                onClick={onToggle}
+                className={`flex items-center justify-between mb-2 px-2 py-1.5 cursor-pointer hover:bg-gray-100 rounded transition-colors group border-l-4 ${color}`}
+            >
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">{title}</span>
+                    {count !== undefined && <span className="text-[9px] text-gray-400 font-mono">({count})</span>}
+                </div>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+            </div>
+
+            {isOpen && (
+                <div className="grid grid-cols-1 gap-2 pl-2 border-l border-gray-100 ml-1 animate-in slide-in-from-top-2 fade-in duration-200">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+
+    const FormComponentsSection = ({ components, renderItem }) => {
+        const [openCategories, setOpenCategories] = useState({
+            'Common': false,
+            'EDM': false,
+            'EDW': false,
+            'IMM': false
+        });
+
+        const toggleCategory = (cat) => {
+            setOpenCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
+        };
+
+        const categorized = components.reduce((acc, name) => {
+            const cat = getCategory(name);
+            if (!acc[cat]) acc[cat] = [];
+            acc[cat].push(name);
+            return acc;
+        }, { 'Common': [], 'EDM': [], 'EDW': [], 'IMM': [] });
+
+        return (
+            <div className="space-y-4">
+                {Object.entries(CATEGORIES).map(([catName, style]) => {
+                    const items = categorized[catName] || [];
+                    // if (items.length === 0) return null; // Uncomment to hide empty categories
+
+                    return (
+                        <div key={catName}>
+                            <div
+                                onClick={() => toggleCategory(catName)}
+                                className={`flex items-center justify-between mb-2 px-2 py-1.5 cursor-pointer hover:bg-gray-100 rounded transition-colors group border-l-4 ${style.color}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">{catName} Fields</span>
+                                    <span className="text-[9px] text-gray-400 font-mono">({items.length})</span>
+                                </div>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className={`h-4 w-4 text-gray-400 transition-transform ${openCategories[catName] ? 'rotate-180' : ''}`}
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+
+                            {openCategories[catName] && (
+                                <div className="grid grid-cols-1 gap-2 pl-2 border-l border-gray-100 ml-1 animate-in slide-in-from-top-2 fade-in duration-200">
+                                    {items.length > 0 ? (
+                                        items.sort().map(key => renderItem(key, 'ELEMENT', null, style.bg))
+                                    ) : (
+                                        <div className="text-[10px] text-gray-300 italic py-2 pl-2">No components</div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    // State for top-level sections
+    const [sectionsOpen, setSectionsOpen] = useState({
+        pages: false,
+        layout: false
+    });
+
+    const toggleSection = (section) => {
+        setSectionsOpen(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
     const renderDraggableItem = (key, type, icon, colorClass = 'bg-blue-500') => (
         <div
             key={key}
@@ -167,7 +281,7 @@ const Toolbox = ({ onAdd, workspace }) => {
 
     return (
         <div className="relative flex h-full">
-            <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full shadow-inner z-30">
+            <div className="w-full bg-white border-r border-gray-200 flex flex-col h-full shadow-inner z-30">
                 <div className="p-4 border-b border-gray-200 bg-gray-50 flex flex-col gap-3">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-black text-gray-800 uppercase tracking-tighter leading-none">Toolbox</h2>
@@ -192,38 +306,34 @@ const Toolbox = ({ onAdd, workspace }) => {
 
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     {activeTab === 'elements' ? (
-                        <div className="space-y-8">
+                        <div className="space-y-4">
                             {/* Pages Category */}
-                            <div>
-                                <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-purple-500">
-                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">A4 Pages</span>
-                                </div>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {PAGE_COMPONENTS.map(key => renderDraggableItem(key, 'PAGE', 'P', 'bg-purple-500'))}
-                                </div>
-                            </div>
+                            <ToolboxSection
+                                title="A4 Pages"
+                                color="border-purple-500"
+                                isOpen={sectionsOpen.pages}
+                                onToggle={() => toggleSection('pages')}
+                            >
+                                {PAGE_COMPONENTS.map(key => renderDraggableItem(key, 'PAGE', 'P', 'bg-purple-500'))}
+                            </ToolboxSection>
 
                             {/* Basic Elements Category */}
-                            <div>
-                                <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-emerald-500">
-                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">Layout Tools</span>
-                                </div>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {renderDraggableItem('SimpleText', 'ELEMENT', 'T', 'bg-emerald-500')}
-                                    {renderDraggableItem('StaticImage', 'ELEMENT', 'IMG', 'bg-emerald-500')}
-                                    {renderDraggableItem('Spacer', 'ELEMENT', 'S', 'bg-emerald-500')}
-                                </div>
-                            </div>
+                            <ToolboxSection
+                                title="Layout Tools"
+                                color="border-emerald-500"
+                                isOpen={sectionsOpen.layout}
+                                onToggle={() => toggleSection('layout')}
+                            >
+                                {renderDraggableItem('SimpleText', 'ELEMENT', 'T', 'bg-emerald-500')}
+                                {renderDraggableItem('StaticImage', 'ELEMENT', 'IMG', 'bg-emerald-500')}
+                                {renderDraggableItem('Spacer', 'ELEMENT', 'S', 'bg-emerald-500')}
+                            </ToolboxSection>
 
                             {/* Form Components Category */}
-                            <div>
-                                <div className="flex items-center gap-2 mb-3 px-1 border-l-4 border-blue-500">
-                                    <span className="text-xs font-black text-gray-700 uppercase tracking-widest">Form Fields</span>
-                                </div>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {FORM_COMPONENTS.sort().map(key => renderDraggableItem(key, 'ELEMENT', null, 'bg-blue-500'))}
-                                </div>
-                            </div>
+                            <FormComponentsSection
+                                components={FORM_COMPONENTS}
+                                renderItem={renderDraggableItem}
+                            />
                         </div>
                     ) : (
                         <div className="space-y-4">
